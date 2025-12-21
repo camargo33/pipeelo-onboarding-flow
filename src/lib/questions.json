@@ -1,0 +1,1586 @@
+{
+  "onboarding_structure": {
+    "total_departamentos": 4,
+    "ordem_sugerida": ["sac_geral", "financeiro", "suporte", "vendas"],
+    "tempo_total_estimado": "60-80 minutos",
+    "descricao": "Sistema de onboarding completo Pipeelo - 4 departamentos independentes"
+  },
+  
+  "departamentos": {
+    
+    "sac_geral": {
+      "nome": "SAC/Geral",
+      "slug": "sac_geral",
+      "responsavel_sugerido": "CEO ou Gerente Geral",
+      "tempo_estimado": "10-15 minutos",
+      "descricao": "Informações gerais da empresa, identidade, tom de voz e estrutura organizacional",
+      "ordem_execucao": 1,
+      "secoes": {
+        
+        "identidade": {
+          "titulo": "Identidade e Informações Gerais",
+          "icone": "🏢",
+          "perguntas": [
+            {
+              "id": "empresa_nome_oficial",
+              "pergunta": "Qual o nome oficial da empresa para uso nos atendimentos?",
+              "tipo": "text",
+              "obrigatoria": true,
+              "placeholder": "Ex: Proxxima Telecom Ltda",
+              "validacao": "min:3"
+            },
+            {
+              "id": "empresa_cidades",
+              "pergunta": "Quais cidades/regiões vocês atendem?",
+              "tipo": "textarea",
+              "obrigatoria": true,
+              "placeholder": "Ex: São Paulo, Campinas, Sorocaba...",
+              "hint": "Separe por vírgula"
+            },
+            {
+              "id": "empresa_site",
+              "pergunta": "Qual o site oficial da empresa?",
+              "tipo": "url",
+              "obrigatoria": true,
+              "placeholder": "https://www.exemplo.com.br"
+            },
+            {
+              "id": "empresa_portal_cliente",
+              "pergunta": "Qual o link do Portal/Central do cliente (área logada)?",
+              "tipo": "url",
+              "obrigatoria": false,
+              "placeholder": "https://portal.exemplo.com.br"
+            },
+            {
+              "id": "empresa_telefones",
+              "pergunta": "Quais os telefones de contato principais?",
+              "tipo": "textarea",
+              "obrigatoria": true,
+              "placeholder": "Ex: (11) 3000-0000, (11) 9 9000-0000",
+              "hint": "Separe por vírgula ou linha"
+            },
+            {
+              "id": "empresa_enderecos",
+              "pergunta": "Quais os endereços físicos (lojas/escritórios)?",
+              "tipo": "textarea",
+              "obrigatoria": true,
+              "placeholder": "Rua Exemplo, 123 - Centro - São Paulo/SP",
+              "hint": "Se tiver múltiplos, separe por linha"
+            },
+            {
+              "id": "horario_atendimento",
+              "pergunta": "Qual o horário de atendimento padrão?",
+              "tipo": "text",
+              "obrigatoria": true,
+              "placeholder": "Ex: Segunda a Sexta 8h-18h, Sábado 8h-12h"
+            },
+            {
+              "id": "tem_plantao",
+              "pergunta": "Existe plantão fora do horário comercial?",
+              "tipo": "select",
+              "obrigatoria": true,
+              "opcoes": [
+                {"value": "sim", "label": "Sim"},
+                {"value": "nao", "label": "Não"}
+              ]
+            },
+            {
+              "id": "horario_plantao",
+              "pergunta": "Qual o horário do plantão?",
+              "tipo": "text",
+              "obrigatoria": false,
+              "condicional": "tem_plantao == 'sim'",
+              "placeholder": "Ex: Após 18h e fins de semana"
+            },
+            {
+              "id": "horario_aciona_plantao",
+              "pergunta": "A partir de qual horário aciona o plantão?",
+              "tipo": "time",
+              "obrigatoria": false,
+              "condicional": "tem_plantao == 'sim'",
+              "placeholder": "18:00"
+            },
+            {
+              "id": "regiao_fronteira",
+              "pergunta": "Vocês atendem regiões de fronteira com países vizinhos?",
+              "tipo": "select",
+              "obrigatoria": true,
+              "opcoes": [
+                {"value": "sim", "label": "Sim, precisamos de atendimento em espanhol"},
+                {"value": "nao", "label": "Não"}
+              ]
+            }
+          ]
+        },
+
+        "identidade_ia": {
+          "titulo": "Identidade da IA",
+          "icone": "🤖",
+          "perguntas": [
+            {
+              "id": "nome_ia_customizado",
+              "pergunta": "Querem dar um nome personalizado para a IA?",
+              "tipo": "select",
+              "obrigatoria": true,
+              "opcoes": [
+                {"value": "sim", "label": "Sim, vou escolher um nome"},
+                {"value": "nao", "label": "Não, prefiro 'Assistente Virtual'"}
+              ]
+            },
+            {
+              "id": "nome_ia",
+              "pergunta": "Qual nome escolheram para a IA?",
+              "tipo": "text",
+              "obrigatoria": false,
+              "condicional": "nome_ia_customizado == 'sim'",
+              "placeholder": "Ex: Eva, Laila, Ana, Clara...",
+              "hint": "Pode deixar em branco agora e definir depois (até 7 dias)"
+            },
+            {
+              "id": "regionalismo",
+              "pergunta": "Existe algum regionalismo ou forma específica de tratamento que devemos usar?",
+              "tipo": "textarea",
+              "obrigatoria": false,
+              "placeholder": "Ex: 'Bah', 'Uai', gírias locais...",
+              "hint": "Opcional - ajuda a IA se conectar melhor com a região"
+            }
+          ]
+        },
+
+        "tom_voz": {
+          "titulo": "Tom de Voz e Estilo de Comunicação",
+          "icone": "💬",
+          "descricao": "Use a ferramenta Pipeelo Voice para definir o tom ideal",
+          "perguntas": [
+            {
+              "id": "tom_voz_link",
+              "pergunta": "Acesse o Pipeelo Voice para definir o tom de comunicação da IA",
+              "tipo": "info_link",
+              "obrigatoria": false,
+              "link": "https://pipeelo-voice.lovable.app",
+              "hint": "Clique no link acima para abrir a ferramenta em outra aba. Depois volte aqui e continue."
+            },
+            {
+              "id": "tom_voz_resultado",
+              "pergunta": "Cole aqui o resultado gerado pelo Pipeelo Voice (ou descreva o tom que vocês querem)",
+              "tipo": "textarea",
+              "obrigatoria": true,
+              "placeholder": "Ex: Tom profissional e acolhedor, com linguagem clara e objetiva...",
+              "hint": "Se preferir definir depois, pode deixar uma descrição básica agora"
+            }
+          ]
+        },
+
+        "estrutura_departamentos": {
+          "titulo": "Estrutura de Departamentos",
+          "icone": "🏗️",
+          "perguntas": [
+            {
+              "id": "departamentos_lista",
+              "pergunta": "Quais departamentos vocês têm hoje?",
+              "tipo": "checkbox_multiple",
+              "obrigatoria": true,
+              "opcoes": [
+                {"value": "atendimento_geral", "label": "Atendimento Geral / SAC"},
+                {"value": "financeiro", "label": "Financeiro"},
+                {"value": "suporte", "label": "Suporte Técnico"},
+                {"value": "vendas", "label": "Vendas / Comercial"},
+                {"value": "cobranca", "label": "Cobrança"},
+                {"value": "retencao", "label": "Retenção"},
+                {"value": "cancelamento", "label": "Cancelamento"},
+                {"value": "noc", "label": "NOC (Centro de Operações)"},
+                {"value": "administrativo", "label": "Administrativo"},
+                {"value": "outro", "label": "Outro"}
+              ]
+            },
+            {
+              "id": "departamentos_outros",
+              "pergunta": "Quais outros departamentos?",
+              "tipo": "text",
+              "obrigatoria": false,
+              "condicional": "departamentos_lista includes 'outro'",
+              "placeholder": "Ex: RH, Jurídico..."
+            },
+            {
+              "id": "atendimento_geral_atribuicoes",
+              "pergunta": "O que o Atendimento Geral/SAC resolve?",
+              "tipo": "checkbox_multiple",
+              "obrigatoria": true,
+              "opcoes": [
+                {"value": "reclamacoes", "label": "Reclamações"},
+                {"value": "troca_titularidade", "label": "Troca de Titularidade"},
+                {"value": "suspensao_temporaria", "label": "Suspensão Temporária"},
+                {"value": "duvidas_gerais", "label": "Dúvidas Gerais"},
+                {"value": "outro", "label": "Outro"}
+              ]
+            },
+            {
+              "id": "retencao_existe",
+              "pergunta": "Existe departamento específico de Retenção?",
+              "tipo": "select",
+              "obrigatoria": true,
+              "opcoes": [
+                {"value": "sim", "label": "Sim, temos departamento de Retenção"},
+                {"value": "nao_comercial", "label": "Não, vai para Comercial/Vendas"},
+                {"value": "nao_sac", "label": "Não, vai para SAC"}
+              ]
+            }
+          ]
+        },
+
+        "fluxo_transferencias": {
+          "titulo": "Fluxo de Transferências para Humanos",
+          "icone": "🔄",
+          "perguntas": [
+            {
+              "id": "departamentos_destino",
+              "pergunta": "Quais departamentos devem existir como destino de transferência da IA?",
+              "tipo": "checkbox_multiple",
+              "obrigatoria": true,
+              "hint": "Marque todos os departamentos que podem receber transferências da IA",
+              "opcoes": [
+                {"value": "suporte", "label": "Suporte Técnico"},
+                {"value": "financeiro", "label": "Financeiro"},
+                {"value": "comercial", "label": "Comercial/Vendas"},
+                {"value": "cobranca", "label": "Cobrança"},
+                {"value": "retencao", "label": "Retenção"},
+                {"value": "plantao", "label": "Plantão"},
+                {"value": "suporte_plantonista", "label": "Suporte Plantonista"},
+                {"value": "general", "label": "SAC/Geral"}
+              ]
+            },
+            {
+              "id": "mensagem_fora_horario",
+              "pergunta": "Qual mensagem mostrar quando está fora do horário de atendimento?",
+              "tipo": "textarea",
+              "obrigatoria": true,
+              "placeholder": "Ex: 'No momento estamos fora do horário de atendimento. Nosso horário é de segunda a sexta, das 8h às 18h. Sua mensagem será respondida assim que retornarmos.'",
+              "hint": "Esta mensagem será exibida fora do horário comercial"
+            },
+            {
+              "id": "conversa_fora_horario",
+              "pergunta": "A conversa vai para fila mesmo fora do horário?",
+              "tipo": "select",
+              "obrigatoria": true,
+              "opcoes": [
+                {"value": "sim", "label": "Sim, vai para fila e será atendida quando voltar o expediente"},
+                {"value": "nao", "label": "Não, apenas informa horário e não cria fila"}
+              ]
+            },
+            {
+              "id": "destino_por_horario",
+              "pergunta": "Existe diferença de destino por horário? (ex: depois das 18h vai para plantão)",
+              "tipo": "select",
+              "obrigatoria": true,
+              "opcoes": [
+                {"value": "sim", "label": "Sim"},
+                {"value": "nao", "label": "Não"}
+              ]
+            },
+            {
+              "id": "destino_por_horario_regras",
+              "pergunta": "Descreva as regras de destino por horário",
+              "tipo": "textarea",
+              "obrigatoria": false,
+              "condicional": "destino_por_horario == 'sim'",
+              "placeholder": "Ex: 'Após 18h e fins de semana: transfere para Plantão. Em horário comercial: transfere para departamento específico'",
+              "hint": "Seja específico sobre horários e destinos"
+            },
+            {
+              "id": "ia_avisa_transferencia",
+              "pergunta": "A IA deve avisar que vai transferir ou transferir silenciosamente?",
+              "tipo": "select",
+              "obrigatoria": true,
+              "opcoes": [
+                {"value": "avisar", "label": "Avisar o cliente antes de transferir"},
+                {"value": "silencioso", "label": "Transferir silenciosamente"}
+              ]
+            },
+            {
+              "id": "transferencia_imediata",
+              "pergunta": "Em quais situações a IA deve transferir IMEDIATAMENTE para humano?",
+              "tipo": "checkbox_multiple",
+              "obrigatoria": true,
+              "opcoes": [
+                {"value": "cliente_pede", "label": "Cliente pede para falar com atendente"},
+                {"value": "link_dedicado", "label": "Cliente de link dedicado"},
+                {"value": "contrato_cnpj", "label": "Cliente com contrato CNPJ"},
+                {"value": "casos_complexos", "label": "Casos que IA não consegue resolver"},
+                {"value": "cliente_irritado", "label": "Cliente visivelmente irritado/insatisfeito"}
+              ]
+            }
+          ]
+        },
+
+        "avaliacao_nps": {
+          "titulo": "Avaliação e NPS",
+          "icone": "⭐",
+          "perguntas": [
+            {
+              "id": "nps_ativo",
+              "pergunta": "Vocês querem coletar NPS (avaliação de 0 a 10) após atendimentos?",
+              "tipo": "select",
+              "obrigatoria": true,
+              "opcoes": [
+                {"value": "sim", "label": "Sim"},
+                {"value": "nao", "label": "Não"}
+              ]
+            },
+            {
+              "id": "nps_quando_perguntar",
+              "pergunta": "Quando a IA deve pedir avaliação?",
+              "tipo": "select",
+              "obrigatoria": false,
+              "condicional": "nps_ativo == 'sim'",
+              "opcoes": [
+                {"value": "sempre", "label": "Sempre, ao final de todo atendimento"},
+                {"value": "resolvido_ia", "label": "Apenas quando IA resolveu sem transferir"},
+                {"value": "apos_humano", "label": "Apenas após atendimento humano"}
+              ]
+            },
+            {
+              "id": "nps_nota_baixa_acao",
+              "pergunta": "Quando cliente dá nota baixa (0-3), o que fazer?",
+              "tipo": "select",
+              "obrigatoria": false,
+              "condicional": "nps_ativo == 'sim'",
+              "opcoes": [
+                {"value": "transferir_sac", "label": "Transferir para SAC/Geral"},
+                {"value": "transferir_gestor", "label": "Transferir para Gestor/Supervisor"},
+                {"value": "coletar_motivo", "label": "Apenas coletar motivo da insatisfação"},
+                {"value": "nada", "label": "Apenas registrar, sem ação"}
+              ]
+            },
+            {
+              "id": "nps_nota_alta_acao",
+              "pergunta": "Para notas altas (9-10), existe alguma ação especial?",
+              "tipo": "select",
+              "obrigatoria": false,
+              "condicional": "nps_ativo == 'sim'",
+              "opcoes": [
+                {"value": "pedir_indicacao", "label": "Pedir indicação de amigos"},
+                {"value": "pedir_avaliacao_google", "label": "Solicitar avaliação no Google"},
+                {"value": "agradecer", "label": "Apenas agradecer"},
+                {"value": "nada", "label": "Nenhuma ação especial"}
+              ]
+            }
+          ]
+        }
+
+      }
+    },
+
+    "financeiro": {
+      "nome": "Financeiro",
+      "slug": "financeiro",
+      "responsavel_sugerido": "Diretor Financeiro ou Gerente Administrativo",
+      "tempo_estimado": "15-20 minutos",
+      "descricao": "Processos financeiros, cobrança, bloqueios e negociações",
+      "ordem_execucao": 2,
+      "secoes": {
+        
+        "processos_financeiros": {
+          "titulo": "Processos Financeiros",
+          "icone": "💰",
+          "perguntas": [
+            {
+              "id": "vencimentos_disponiveis",
+              "pergunta": "Qual(is) dia(s) de vencimento disponíveis?",
+              "tipo": "checkbox_multiple",
+              "obrigatoria": true,
+              "opcoes": [
+                {"value": "5", "label": "Dia 5"},
+                {"value": "10", "label": "Dia 10"},
+                {"value": "15", "label": "Dia 15"},
+                {"value": "20", "label": "Dia 20"},
+                {"value": "25", "label": "Dia 25"},
+                {"value": "outro", "label": "Outro"}
+              ]
+            },
+            {
+              "id": "vencimentos_outros",
+              "pergunta": "Quais outros dias de vencimento?",
+              "tipo": "text",
+              "obrigatoria": false,
+              "condicional": "vencimentos_disponiveis includes 'outro'",
+              "placeholder": "Ex: 1, 7, 18"
+            },
+            {
+              "id": "unifica_boletos",
+              "pergunta": "Vocês unificam boletos de múltiplos contratos do mesmo cliente?",
+              "tipo": "select",
+              "obrigatoria": true,
+              "opcoes": [
+                {"value": "sim", "label": "Sim, unificamos automaticamente"},
+                {"value": "nao", "label": "Não, cada contrato tem boleto separado"},
+                {"value": "cliente_escolhe", "label": "Cliente pode escolher"}
+              ]
+            },
+            {
+              "id": "segunda_via_boleto",
+              "pergunta": "Como funciona a 2ª via de boleto?",
+              "tipo": "select",
+              "obrigatoria": true,
+              "opcoes": [
+                {"value": "mesmo_codigo", "label": "Mesmo código de barras, sem custo"},
+                {"value": "novo_codigo", "label": "Gera novo código com atualização de juros/multa"},
+                {"value": "taxa", "label": "Cobra taxa para 2ª via"}
+              ]
+            },
+            {
+              "id": "emite_carnes",
+              "pergunta": "Vocês emitem carnês?",
+              "tipo": "select",
+              "obrigatoria": true,
+              "opcoes": [
+                {"value": "sim", "label": "Sim"},
+                {"value": "nao", "label": "Não"}
+              ]
+            }
+          ]
+        },
+
+        "formas_pagamento": {
+          "titulo": "Formas de Pagamento",
+          "icone": "💳",
+          "perguntas": [
+            {
+              "id": "formas_pagamento_disponiveis",
+              "pergunta": "Quais formas de pagamento vocês aceitam?",
+              "tipo": "checkbox_multiple",
+              "obrigatoria": true,
+              "opcoes": [
+                {"value": "boleto", "label": "Boleto Bancário"},
+                {"value": "pix", "label": "PIX"},
+                {"value": "cartao_credito", "label": "Cartão de Crédito"},
+                {"value": "debito_conta", "label": "Débito em Conta"},
+                {"value": "dinheiro", "label": "Dinheiro (presencial)"}
+              ]
+            },
+            {
+              "id": "salvar_preferencia_pagamento",
+              "pergunta": "A IA deve salvar a preferência de pagamento do cliente?",
+              "tipo": "select",
+              "obrigatoria": true,
+              "hint": "Para oferecer automaticamente o método preferido nas próximas interações",
+              "opcoes": [
+                {"value": "sim", "label": "Sim, salvar preferência"},
+                {"value": "nao", "label": "Não, perguntar sempre"}
+              ]
+            },
+            {
+              "id": "metodo_pagamento_padrao",
+              "pergunta": "Se cliente não informar método preferido, qual usar como padrão?",
+              "tipo": "select",
+              "obrigatoria": true,
+              "opcoes": [
+                {"value": "pix", "label": "PIX (recomendado)"},
+                {"value": "boleto", "label": "Boleto"},
+                {"value": "perguntar", "label": "Sempre perguntar"}
+              ]
+            }
+          ]
+        },
+
+        "bloqueio_desbloqueio": {
+          "titulo": "Bloqueio e Desbloqueio",
+          "icone": "🔒",
+          "perguntas": [
+            {
+              "id": "dias_atraso_bloqueio",
+              "pergunta": "A partir de quantos dias de atraso há bloqueio?",
+              "tipo": "number",
+              "obrigatoria": true,
+              "placeholder": "Ex: 5",
+              "hint": "Número de dias após o vencimento"
+            },
+            {
+              "id": "tipo_bloqueio",
+              "pergunta": "Vocês fazem redução de velocidade antes ou bloqueio total?",
+              "tipo": "select",
+              "obrigatoria": true,
+              "opcoes": [
+                {"value": "reducao", "label": "Redução de velocidade primeiro"},
+                {"value": "bloqueio_total", "label": "Bloqueio total direto"},
+                {"value": "ambos", "label": "Redução, depois bloqueio se não pagar"}
+              ]
+            },
+            {
+              "id": "velocidade_reduzida",
+              "pergunta": "Para qual velocidade é reduzida?",
+              "tipo": "text",
+              "obrigatoria": false,
+              "condicional": "tipo_bloqueio == 'reducao' || tipo_bloqueio == 'ambos'",
+              "placeholder": "Ex: 10 Mbps ou 2 Mbps"
+            },
+            {
+              "id": "liberacao_confianca",
+              "pergunta": "Existe liberação em confiança (promessa de pagamento)?",
+              "tipo": "select",
+              "obrigatoria": true,
+              "opcoes": [
+                {"value": "sim", "label": "Sim"},
+                {"value": "nao", "label": "Não"}
+              ]
+            },
+            {
+              "id": "dias_liberacao_confianca",
+              "pergunta": "Por quantos dias permite liberação em confiança?",
+              "tipo": "number",
+              "obrigatoria": false,
+              "condicional": "liberacao_confianca == 'sim'",
+              "placeholder": "Ex: 3",
+              "hint": "Dias concedidos para pagamento após desbloqueio"
+            },
+            {
+              "id": "limite_dias_sem_confianca",
+              "pergunta": "A partir de quantos dias de atraso NÃO pode fazer desbloqueio em confiança?",
+              "tipo": "number",
+              "obrigatoria": false,
+              "condicional": "liberacao_confianca == 'sim'",
+              "placeholder": "Ex: 30",
+              "hint": "Acima deste prazo, só desbloqueia com pagamento confirmado"
+            },
+            {
+              "id": "liberacao_todos_servicos",
+              "pergunta": "Liberação em confiança vale para todos os serviços ou só internet?",
+              "tipo": "select",
+              "obrigatoria": false,
+              "condicional": "liberacao_confianca == 'sim'",
+              "opcoes": [
+                {"value": "todos", "label": "Todos os serviços (internet, TV, telefone)"},
+                {"value": "so_internet", "label": "Apenas internet"}
+              ]
+            },
+            {
+              "id": "promessa_pagamento",
+              "pergunta": "Vocês trabalham com sistema de promessa de pagamento?",
+              "tipo": "select",
+              "obrigatoria": true,
+              "hint": "Cliente agenda data para pagar e sistema desbloqueia temporariamente",
+              "opcoes": [
+                {"value": "sim", "label": "Sim"},
+                {"value": "nao", "label": "Não"}
+              ]
+            }
+          ]
+        },
+
+        "taxas_cobrancas": {
+          "titulo": "Taxas e Cobranças",
+          "icone": "💵",
+          "perguntas": [
+            {
+              "id": "taxa_religacao",
+              "pergunta": "Existe taxa de religação?",
+              "tipo": "select",
+              "obrigatoria": true,
+              "opcoes": [
+                {"value": "sim", "label": "Sim"},
+                {"value": "nao", "label": "Não"}
+              ]
+            },
+            {
+              "id": "valor_taxa_religacao",
+              "pergunta": "Qual o valor da taxa de religação?",
+              "tipo": "currency",
+              "obrigatoria": false,
+              "condicional": "taxa_religacao == 'sim'",
+              "placeholder": "Ex: 50.00"
+            },
+            {
+              "id": "taxa_troca_titularidade",
+              "pergunta": "Existe taxa para troca de titularidade?",
+              "tipo": "select",
+              "obrigatoria": true,
+              "opcoes": [
+                {"value": "sim", "label": "Sim"},
+                {"value": "nao", "label": "Não"}
+              ]
+            },
+            {
+              "id": "valor_taxa_titularidade",
+              "pergunta": "Qual o valor da taxa de troca de titularidade?",
+              "tipo": "currency",
+              "obrigatoria": false,
+              "condicional": "taxa_troca_titularidade == 'sim'",
+              "placeholder": "Ex: 30.00"
+            },
+            {
+              "id": "taxa_boleto",
+              "pergunta": "Existe taxa de boleto?",
+              "tipo": "select",
+              "obrigatoria": true,
+              "opcoes": [
+                {"value": "sim", "label": "Sim"},
+                {"value": "nao", "label": "Não"}
+              ]
+            },
+            {
+              "id": "valor_taxa_boleto",
+              "pergunta": "Qual o valor da taxa de boleto?",
+              "tipo": "currency",
+              "obrigatoria": false,
+              "condicional": "taxa_boleto == 'sim'",
+              "placeholder": "Ex: 3.50"
+            },
+            {
+              "id": "outras_taxas",
+              "pergunta": "Existem outras taxas que a IA deve informar ao cliente?",
+              "tipo": "textarea",
+              "obrigatoria": false,
+              "placeholder": "Ex: 'Taxa de ponto adicional: R$ 80,00 | Taxa de mudança de endereço: R$ 50,00'",
+              "hint": "Descreva taxa e valor, separe por linha"
+            }
+          ]
+        },
+
+        "negociacao_debitos": {
+          "titulo": "Negociação de Débitos",
+          "icone": "🤝",
+          "perguntas": [
+            {
+              "id": "oferece_negociacao",
+              "pergunta": "Vocês oferecem negociação para débitos em atraso?",
+              "tipo": "select",
+              "obrigatoria": true,
+              "opcoes": [
+                {"value": "sim", "label": "Sim"},
+                {"value": "nao", "label": "Não"}
+              ]
+            },
+            {
+              "id": "negociacao_condicoes",
+              "pergunta": "Quais condições de negociação vocês oferecem?",
+              "tipo": "textarea",
+              "obrigatoria": false,
+              "condicional": "oferece_negociacao == 'sim'",
+              "placeholder": "Ex: 'Desconto de 20% para pagamento à vista | Parcelamento em até 3x sem juros | Parcelamento em até 6x com juros de 2% ao mês'",
+              "hint": "Descreva todas as condições possíveis"
+            },
+            {
+              "id": "faturas_transfere_cobranca",
+              "pergunta": "A partir de quantas faturas em atraso deve transferir para Cobrança/Financeiro?",
+              "tipo": "number",
+              "obrigatoria": true,
+              "placeholder": "Ex: 2",
+              "hint": "Número de faturas vencidas para escalar para humano"
+            }
+          ]
+        },
+
+        "casos_especiais_financeiro": {
+          "titulo": "Casos Especiais",
+          "icone": "⚠️",
+          "perguntas": [
+            {
+              "id": "cobranca_incorreta",
+              "pergunta": "Quando cliente relata cobrança incorreta, a IA deve:",
+              "tipo": "select",
+              "obrigatoria": true,
+              "opcoes": [
+                {"value": "coletar_transferir", "label": "Coletar dados e transferir para Financeiro"},
+                {"value": "verificar_resolver", "label": "Verificar no sistema e tentar resolver"},
+                {"value": "transferir_direto", "label": "Transferir direto para Financeiro"}
+              ]
+            },
+            {
+              "id": "pagamento_duplicado",
+              "pergunta": "Quando cliente relata pagamento duplicado, a IA deve:",
+              "tipo": "select",
+              "obrigatoria": true,
+              "opcoes": [
+                {"value": "coletar_transferir", "label": "Coletar comprovantes e transferir"},
+                {"value": "verificar_credito", "label": "Verificar e informar que virará crédito"},
+                {"value": "transferir_direto", "label": "Transferir direto para Financeiro"}
+              ]
+            },
+            {
+              "id": "comprovante_enviado",
+              "pergunta": "Quando cliente envia comprovante de pagamento, a IA pode liberar conexão?",
+              "tipo": "select",
+              "obrigatoria": true,
+              "opcoes": [
+                {"value": "sim", "label": "Sim, pode liberar imediatamente"},
+                {"value": "validar_primeiro", "label": "Apenas após validação humana"},
+                {"value": "transferir", "label": "Transferir para Financeiro validar"}
+              ]
+            }
+          ]
+        }
+
+      }
+    },
+
+    "suporte": {
+      "nome": "Suporte Técnico",
+      "slug": "suporte",
+      "responsavel_sugerido": "CTO, Coordenador NOC ou Gerente Técnico",
+      "tempo_estimado": "20-25 minutos",
+      "descricao": "Processos técnicos, diagnósticos, integrações e suporte",
+      "ordem_execucao": 3,
+      "secoes": {
+        
+        "fluxo_diagnostico_internet": {
+          "titulo": "Fluxo de Diagnóstico - Internet",
+          "icone": "🌐",
+          "perguntas": [
+            {
+              "id": "diagnostico_sequencia",
+              "pergunta": "Confirme a sequência do diagnóstico de problemas de internet:",
+              "tipo": "info",
+              "obrigatoria": false,
+              "texto": "Sequência padrão: 1) Verificar inadimplência, 2) Desligar roteador 30s, 3) Reset ONU, 4) Solicitar foto equipamento, 5) Verificar caixa emenda, 6) Verificar caixas ao redor, 7) Abrir OS e transferir"
+            },
+            {
+              "id": "sequencia_customizada",
+              "pergunta": "Vocês seguem esta sequência padrão ou têm processo diferente?",
+              "tipo": "select",
+              "obrigatoria": true,
+              "opcoes": [
+                {"value": "padrao", "label": "Sequência padrão está correta"},
+                {"value": "customizada", "label": "Temos sequência diferente"}
+              ]
+            },
+            {
+              "id": "sequencia_descricao",
+              "pergunta": "Descreva a sequência de diagnóstico que vocês seguem:",
+              "tipo": "textarea",
+              "obrigatoria": false,
+              "condicional": "sequencia_customizada == 'customizada'",
+              "placeholder": "Ex: 1) Verificar inadimplência, 2) Pedir cliente reiniciar roteador, 3) ...",
+              "hint": "Descreva passo a passo a ordem das verificações"
+            },
+            {
+              "id": "tempo_desligar_roteador",
+              "pergunta": "Por quantos segundos pedir para desligar o roteador da tomada?",
+              "tipo": "number",
+              "obrigatoria": true,
+              "placeholder": "Ex: 30",
+              "hint": "Tempo padrão é 30 segundos"
+            }
+          ]
+        },
+
+        "integracoes_diagnostico": {
+          "titulo": "Integrações de Diagnóstico",
+          "icone": "🔌",
+          "perguntas": [
+            {
+              "id": "reset_onu_remoto",
+              "pergunta": "Vocês têm reset remoto de ONU via API?",
+              "tipo": "select",
+              "obrigatoria": true,
+              "opcoes": [
+                {"value": "sim", "label": "Sim, temos API"},
+                {"value": "nao", "label": "Não temos"}
+              ]
+            },
+            {
+              "id": "sistema_monitoramento",
+              "pergunta": "Qual sistema de monitoramento de rede vocês usam?",
+              "tipo": "select",
+              "obrigatoria": true,
+              "opcoes": [
+                {"value": "olt_cloud", "label": "OLT Cloud"},
+                {"value": "smart_olt", "label": "Smart OLT"},
+                {"value": "zabbix", "label": "Zabbix"},
+                {"value": "grafana", "label": "Grafana"},
+                {"value": "outro", "label": "Outro"},
+                {"value": "nenhum", "label": "Não temos sistema de monitoramento"}
+              ]
+            },
+            {
+              "id": "sistema_monitoramento_outro",
+              "pergunta": "Qual sistema de monitoramento?",
+              "tipo": "text",
+              "obrigatoria": false,
+              "condicional": "sistema_monitoramento == 'outro'",
+              "placeholder": "Nome do sistema"
+            },
+            {
+              "id": "api_verificar_status_onu",
+              "pergunta": "A IA pode verificar status da ONU via API?",
+              "tipo": "select",
+              "obrigatoria": true,
+              "opcoes": [
+                {"value": "sim_mostrar", "label": "Sim, e pode mostrar status ao cliente"},
+                {"value": "sim_interno", "label": "Sim, mas uso apenas interno (não mostrar ao cliente)"},
+                {"value": "nao", "label": "Não temos esta integração"}
+              ]
+            },
+            {
+              "id": "verificacao_caixas",
+              "pergunta": "A IA pode verificar status de caixas de emenda/distribuição?",
+              "tipo": "select",
+              "obrigatoria": true,
+              "opcoes": [
+                {"value": "sim", "label": "Sim, temos monitoramento de caixas"},
+                {"value": "nao", "label": "Não temos"}
+              ]
+            }
+          ]
+        },
+
+        "visita_tecnica": {
+          "titulo": "Visita Técnica",
+          "icone": "🚗",
+          "perguntas": [
+            {
+              "id": "agendamento_visita",
+              "pergunta": "Como funciona o agendamento de visita técnica?",
+              "tipo": "select",
+              "obrigatoria": true,
+              "opcoes": [
+                {"value": "ia_agenda", "label": "IA pode agendar diretamente no sistema"},
+                {"value": "ia_coleta", "label": "IA coleta dados e transfere para Suporte agendar"},
+                {"value": "humano", "label": "Sempre transfere para humano agendar"}
+              ]
+            },
+            {
+              "id": "periodos_visita",
+              "pergunta": "O agendamento é por horário específico ou por período?",
+              "tipo": "select",
+              "obrigatoria": true,
+              "opcoes": [
+                {"value": "horario", "label": "Horário específico (ex: 14h)"},
+                {"value": "periodo", "label": "Período (ex: manhã, tarde)"}
+              ]
+            },
+            {
+              "id": "periodos_disponiveis",
+              "pergunta": "Quais períodos estão disponíveis para visitas?",
+              "tipo": "checkbox_multiple",
+              "obrigatoria": false,
+              "condicional": "periodos_visita == 'periodo'",
+              "opcoes": [
+                {"value": "manha", "label": "Manhã (8h-12h)"},
+                {"value": "tarde", "label": "Tarde (13h-17h)"},
+                {"value": "noite", "label": "Noite (18h-21h)"}
+              ]
+            },
+            {
+              "id": "taxa_visita",
+              "pergunta": "Existe taxa para visita técnica?",
+              "tipo": "select",
+              "obrigatoria": true,
+              "opcoes": [
+                {"value": "sim", "label": "Sim, sempre cobra"},
+                {"value": "condicional", "label": "Depende da situação"},
+                {"value": "nao", "label": "Não, visita é gratuita"}
+              ]
+            },
+            {
+              "id": "taxa_visita_condicoes",
+              "pergunta": "Em quais situações cobra taxa de visita?",
+              "tipo": "textarea",
+              "obrigatoria": false,
+              "condicional": "taxa_visita == 'condicional'",
+              "placeholder": "Ex: 'Cobra se o problema for no equipamento do cliente. Não cobra se for problema na rede externa.'",
+              "hint": "Explique as condições de cobrança"
+            }
+          ]
+        },
+
+        "alteracoes_remotas": {
+          "titulo": "Alterações Remotas",
+          "icone": "🔧",
+          "perguntas": [
+            {
+              "id": "troca_senha_wifi",
+              "pergunta": "A IA pode executar troca de senha Wi-Fi remotamente?",
+              "tipo": "select",
+              "obrigatoria": true,
+              "opcoes": [
+                {"value": "sim", "label": "Sim, pode trocar via API"},
+                {"value": "nao", "label": "Não, precisa transferir para Suporte"}
+              ]
+            },
+            {
+              "id": "validacao_troca_senha",
+              "pergunta": "Quais dados validam a troca de senha Wi-Fi?",
+              "tipo": "checkbox_multiple",
+              "obrigatoria": false,
+              "condicional": "troca_senha_wifi == 'sim'",
+              "opcoes": [
+                {"value": "data_nascimento", "label": "Data de nascimento"},
+                {"value": "cpf", "label": "CPF"},
+                {"value": "endereco", "label": "Endereço completo"},
+                {"value": "email", "label": "Email cadastrado"},
+                {"value": "telefone", "label": "Telefone cadastrado"}
+              ]
+            },
+            {
+              "id": "troca_nome_wifi",
+              "pergunta": "A IA pode alterar nome da rede Wi-Fi (SSID)?",
+              "tipo": "select",
+              "obrigatoria": true,
+              "opcoes": [
+                {"value": "sim", "label": "Sim, pode alterar via API"},
+                {"value": "nao", "label": "Não, precisa transferir para Suporte"}
+              ]
+            },
+            {
+              "id": "verificar_dispositivos",
+              "pergunta": "A IA pode verificar quantos dispositivos estão conectados?",
+              "tipo": "select",
+              "obrigatoria": true,
+              "opcoes": [
+                {"value": "sim_mostrar", "label": "Sim, e pode mostrar ao cliente"},
+                {"value": "sim_interno", "label": "Sim, mas não mostrar ao cliente"},
+                {"value": "nao", "label": "Não temos esta funcionalidade"}
+              ]
+            }
+          ]
+        },
+
+        "outros_servicos": {
+          "titulo": "Outros Serviços (TV, Telefonia)",
+          "icone": "📺",
+          "perguntas": [
+            {
+              "id": "suporte_tv",
+              "pergunta": "Vocês oferecem suporte de TV?",
+              "tipo": "select",
+              "obrigatoria": true,
+              "opcoes": [
+                {"value": "sim", "label": "Sim"},
+                {"value": "nao", "label": "Não"}
+              ]
+            },
+            {
+              "id": "diagnostico_tv",
+              "pergunta": "Para suporte de TV, a IA deve:",
+              "tipo": "select",
+              "obrigatoria": false,
+              "condicional": "suporte_tv == 'sim'",
+              "opcoes": [
+                {"value": "diagnostico", "label": "Fazer diagnóstico básico"},
+                {"value": "transferir", "label": "Transferir direto para Suporte"}
+              ]
+            },
+            {
+              "id": "perguntas_tv",
+              "pergunta": "Quais perguntas básicas fazer para diagnóstico de TV?",
+              "tipo": "textarea",
+              "obrigatoria": false,
+              "condicional": "diagnostico_tv == 'diagnostico'",
+              "placeholder": "Ex: 'TV está ligando? Aparece mensagem de erro? Todos os canais estão sem sinal ou só alguns?'",
+              "hint": "Liste as perguntas de diagnóstico básico"
+            },
+            {
+              "id": "suporte_telefonia_fixa",
+              "pergunta": "Vocês oferecem suporte de Telefonia Fixa?",
+              "tipo": "select",
+              "obrigatoria": true,
+              "opcoes": [
+                {"value": "sim", "label": "Sim"},
+                {"value": "nao", "label": "Não"}
+              ]
+            },
+            {
+              "id": "suporte_telefonia_movel",
+              "pergunta": "Vocês oferecem suporte de Telefonia Móvel?",
+              "tipo": "select",
+              "obrigatoria": true,
+              "opcoes": [
+                {"value": "sim", "label": "Sim"},
+                {"value": "nao", "label": "Não"}
+              ]
+            }
+          ]
+        },
+
+        "casos_especificos_suporte": {
+          "titulo": "Casos Específicos",
+          "icone": "🔍",
+          "perguntas": [
+            {
+              "id": "redirecionamento_porta",
+              "pergunta": "A IA pode ajudar com redirecionamento de porta?",
+              "tipo": "select",
+              "obrigatoria": true,
+              "opcoes": [
+                {"value": "coletar_dados", "label": "Sim, coletar dados e configurar"},
+                {"value": "instruir", "label": "Sim, instruir cliente como fazer"},
+                {"value": "transferir", "label": "Não, transferir para Suporte"}
+              ]
+            },
+            {
+              "id": "dados_redirecionamento",
+              "pergunta": "Quais dados coletar para redirecionamento de porta?",
+              "tipo": "textarea",
+              "obrigatoria": false,
+              "condicional": "redirecionamento_porta == 'coletar_dados'",
+              "placeholder": "Ex: 'Porta externa, Porta interna, IP interno do dispositivo, Protocolo (TCP/UDP)'",
+              "hint": "Liste todos os dados necessários"
+            },
+            {
+              "id": "login_senha_app",
+              "pergunta": "Qual o nome do aplicativo de vocês para cliente?",
+              "tipo": "text",
+              "obrigatoria": false,
+              "placeholder": "Ex: 'Meu Provedor', 'App Conecta'",
+              "hint": "A IA pode informar ao cliente"
+            },
+            {
+              "id": "base_conhecimento",
+              "pergunta": "Vocês têm base de conhecimento ou scripts de troubleshooting?",
+              "tipo": "select",
+              "obrigatoria": true,
+              "opcoes": [
+                {"value": "sim", "label": "Sim, temos documentação"},
+                {"value": "nao", "label": "Não temos"}
+              ]
+            },
+            {
+              "id": "link_base_conhecimento",
+              "pergunta": "Onde está a base de conhecimento?",
+              "tipo": "url",
+              "obrigatoria": false,
+              "condicional": "base_conhecimento == 'sim'",
+              "placeholder": "https://docs.provedor.com.br",
+              "hint": "A IA pode consultar para responder dúvidas"
+            }
+          ]
+        },
+
+        "processos_especiais_suporte": {
+          "titulo": "Processos Especiais",
+          "icone": "⚙️",
+          "perguntas": [
+            {
+              "id": "cancelamento_coletar_motivo",
+              "pergunta": "Quando cliente pede cancelamento, a IA deve coletar o motivo?",
+              "tipo": "select",
+              "obrigatoria": true,
+              "opcoes": [
+                {"value": "sim", "label": "Sim, sempre coletar motivo"},
+                {"value": "nao", "label": "Não, transferir direto"}
+              ]
+            },
+            {
+              "id": "cancelamento_mencionar_multa",
+              "pergunta": "A IA deve mencionar multa/quebra de contrato?",
+              "tipo": "select",
+              "obrigatoria": true,
+              "opcoes": [
+                {"value": "sim", "label": "Sim, informar sobre multa"},
+                {"value": "nao", "label": "Não, evitar mencionar"},
+                {"value": "verificar", "label": "Verificar se há fidelidade e informar"}
+              ]
+            },
+            {
+              "id": "cancelamento_tentar_reter",
+              "pergunta": "A IA deve tentar reter o cliente ou apenas coletar info?",
+              "tipo": "select",
+              "obrigatoria": true,
+              "opcoes": [
+                {"value": "tentar_reter", "label": "Tentar reter com argumentos"},
+                {"value": "coletar_transferir", "label": "Apenas coletar e transferir"},
+                {"value": "transferir_direto", "label": "Transferir direto para Retenção"}
+              ]
+            },
+            {
+              "id": "cancelamento_departamento",
+              "pergunta": "Para qual departamento transferir pedidos de cancelamento?",
+              "tipo": "select",
+              "obrigatoria": true,
+              "opcoes": [
+                {"value": "retencao", "label": "Retenção"},
+                {"value": "comercial", "label": "Comercial/Vendas"},
+                {"value": "sac", "label": "SAC/Geral"},
+                {"value": "financeiro", "label": "Financeiro"}
+              ]
+            },
+            {
+              "id": "mudanca_endereco",
+              "pergunta": "Para mudança de endereço, a IA deve:",
+              "tipo": "select",
+              "obrigatoria": true,
+              "opcoes": [
+                {"value": "coletar_verificar", "label": "Coletar novo endereço e verificar viabilidade"},
+                {"value": "coletar_transferir", "label": "Coletar dados e transferir"},
+                {"value": "transferir_direto", "label": "Transferir direto para Suporte"}
+              ]
+            },
+            {
+              "id": "mudanca_endereco_taxa",
+              "pergunta": "Há taxa para mudança de endereço?",
+              "tipo": "select",
+              "obrigatoria": true,
+              "opcoes": [
+                {"value": "sim", "label": "Sim"},
+                {"value": "nao", "label": "Não"},
+                {"value": "depende", "label": "Depende da distância/situação"}
+              ]
+            },
+            {
+              "id": "valor_mudanca_endereco",
+              "pergunta": "Qual o valor da taxa de mudança de endereço?",
+              "tipo": "currency",
+              "obrigatoria": false,
+              "condicional": "mudanca_endereco_taxa == 'sim'",
+              "placeholder": "Ex: 50.00"
+            },
+            {
+              "id": "troca_titularidade_quem",
+              "pergunta": "Quem pode solicitar troca de titularidade?",
+              "tipo": "select",
+              "obrigatoria": true,
+              "opcoes": [
+                {"value": "titular_atual", "label": "Apenas titular atual"},
+                {"value": "novo_titular", "label": "Apenas novo titular"},
+                {"value": "ambos", "label": "Titular atual ou novo titular"}
+              ]
+            },
+            {
+              "id": "troca_titularidade_documentos",
+              "pergunta": "Quais documentos necessários do novo titular?",
+              "tipo": "checkbox_multiple",
+              "obrigatoria": true,
+              "opcoes": [
+                {"value": "nome_completo", "label": "Nome completo"},
+                {"value": "rg", "label": "RG"},
+                {"value": "cpf", "label": "CPF"},
+                {"value": "telefone", "label": "Telefone"},
+                {"value": "email", "label": "Email"},
+                {"value": "endereco", "label": "Endereço (se diferente)"},
+                {"value": "comprovante_residencia", "label": "Comprovante de residência"}
+              ]
+            },
+            {
+              "id": "troca_titularidade_ia_finaliza",
+              "pergunta": "A IA coleta dados e transfere ou finaliza o processo?",
+              "tipo": "select",
+              "obrigatoria": true,
+              "opcoes": [
+                {"value": "finaliza", "label": "IA pode finalizar a troca"},
+                {"value": "transfere", "label": "Coleta dados e transfere para aprovação"}
+              ]
+            },
+            {
+              "id": "suspensao_temporaria",
+              "pergunta": "Vocês oferecem suspensão temporária do serviço?",
+              "tipo": "select",
+              "obrigatoria": true,
+              "opcoes": [
+                {"value": "sim", "label": "Sim"},
+                {"value": "nao", "label": "Não"}
+              ]
+            },
+            {
+              "id": "suspensao_periodo",
+              "pergunta": "Por quanto tempo pode suspender?",
+              "tipo": "text",
+              "obrigatoria": false,
+              "condicional": "suspensao_temporaria == 'sim'",
+              "placeholder": "Ex: '30 a 90 dias'",
+              "hint": "Período mínimo e máximo"
+            },
+            {
+              "id": "suspensao_cobranca",
+              "pergunta": "Há cobrança reduzida durante suspensão?",
+              "tipo": "select",
+              "obrigatoria": false,
+              "condicional": "suspensao_temporaria == 'sim'",
+              "opcoes": [
+                {"value": "sim", "label": "Sim, cobra taxa reduzida"},
+                {"value": "nao", "label": "Não, sem cobrança"}
+              ]
+            },
+            {
+              "id": "ponto_adicional_taxa",
+              "pergunta": "Há taxa para instalação de ponto adicional?",
+              "tipo": "select",
+              "obrigatoria": true,
+              "opcoes": [
+                {"value": "sim", "label": "Sim"},
+                {"value": "nao", "label": "Não"}
+              ]
+            },
+            {
+              "id": "valor_ponto_adicional",
+              "pergunta": "Qual o valor da instalação de ponto adicional?",
+              "tipo": "currency",
+              "obrigatoria": false,
+              "condicional": "ponto_adicional_taxa == 'sim'",
+              "placeholder": "Ex: 80.00"
+            }
+          ]
+        },
+
+        "integracoes_tecnicas": {
+          "titulo": "Integrações Técnicas",
+          "icone": "🔗",
+          "perguntas": [
+            {
+              "id": "sistema_erp",
+              "pergunta": "Qual sistema de gestão/ERP vocês usam?",
+              "tipo": "select",
+              "obrigatoria": true,
+              "opcoes": [
+                {"value": "mk_solutions", "label": "MK Solutions"},
+                {"value": "ixcsoft", "label": "IXCSoft"},
+                {"value": "rbxsoft", "label": "RBXSoft"},
+                {"value": "voalle", "label": "Voalle"},
+                {"value": "sgp", "label": "SGP"},
+                {"value": "hubsoft", "label": "Hubsoft"},
+                {"value": "integrator", "label": "Integrator"},
+                {"value": "conesul", "label": "Conesul"},
+                {"value": "outro", "label": "Outro"}
+              ]
+            },
+            {
+              "id": "sistema_erp_outro",
+              "pergunta": "Qual ERP vocês usam?",
+              "tipo": "text",
+              "obrigatoria": false,
+              "condicional": "sistema_erp == 'outro'",
+              "placeholder": "Nome do sistema"
+            },
+            {
+              "id": "erp_tem_api",
+              "pergunta": "Vocês têm acesso à API do sistema?",
+              "tipo": "select",
+              "obrigatoria": true,
+              "opcoes": [
+                {"value": "sim", "label": "Sim, temos API ativa"},
+                {"value": "nao", "label": "Não temos ou não sabemos"}
+              ]
+            },
+            {
+              "id": "sistema_viabilidade",
+              "pergunta": "Usam sistema para verificação de viabilidade técnica?",
+              "tipo": "select",
+              "obrigatoria": true,
+              "opcoes": [
+                {"value": "geogrid", "label": "GeoGrid"},
+                {"value": "ozmaps", "label": "OZMaps"},
+                {"value": "outro", "label": "Outro"},
+                {"value": "nenhum", "label": "Não temos"}
+              ]
+            },
+            {
+              "id": "sistema_viabilidade_outro",
+              "pergunta": "Qual sistema de viabilidade?",
+              "tipo": "text",
+              "obrigatoria": false,
+              "condicional": "sistema_viabilidade == 'outro'",
+              "placeholder": "Nome do sistema"
+            }
+          ]
+        }
+
+      }
+    },
+
+    "vendas": {
+      "nome": "Vendas/Comercial",
+      "slug": "vendas",
+      "responsavel_sugerido": "Gerente Comercial ou Coordenador de Vendas",
+      "tempo_estimado": "15-20 minutos",
+      "descricao": "Processos de vendas, produtos, viabilidade e instalação",
+      "ordem_execucao": 4,
+      "secoes": {
+        
+        "portfolio_produtos": {
+          "titulo": "Portfólio de Produtos",
+          "icone": "📦",
+          "perguntas": [
+            {
+              "id": "envio_catalogo_separado",
+              "pergunta": "IMPORTANTE: O catálogo completo de planos será enviado separadamente",
+              "tipo": "info",
+              "obrigatoria": false,
+              "texto": "Você não precisa listar todos os planos aqui. Após o onboarding, envie um documento com: ID do plano no sistema, nome, velocidade, preço, benefícios, e se tem fidelidade."
+            },
+            {
+              "id": "tem_fidelidade",
+              "pergunta": "Vocês trabalham com período de fidelidade?",
+              "tipo": "select",
+              "obrigatoria": true,
+              "opcoes": [
+                {"value": "sim", "label": "Sim"},
+                {"value": "nao", "label": "Não"}
+              ]
+            },
+            {
+              "id": "periodo_fidelidade",
+              "pergunta": "Qual o período de fidelidade?",
+              "tipo": "select",
+              "obrigatoria": false,
+              "condicional": "tem_fidelidade == 'sim'",
+              "opcoes": [
+                {"value": "12", "label": "12 meses"},
+                {"value": "24", "label": "24 meses"},
+                {"value": "variavel", "label": "Varia por plano"}
+              ]
+            },
+            {
+              "id": "produtos_adicionais",
+              "pergunta": "Quais produtos adicionais vocês oferecem além de internet?",
+              "tipo": "checkbox_multiple",
+              "obrigatoria": true,
+              "opcoes": [
+                {"value": "tv", "label": "TV por assinatura"},
+                {"value": "telefonia_fixa", "label": "Telefonia fixa"},
+                {"value": "telefonia_movel", "label": "Telefonia móvel"},
+                {"value": "wifi_mesh", "label": "WiFi Mesh"},
+                {"value": "seguranca", "label": "Segurança (alarme, câmeras)"},
+                {"value": "nenhum", "label": "Apenas internet"}
+              ]
+            },
+            {
+              "id": "combos_disponiveis",
+              "pergunta": "Vocês oferecem combos/pacotes?",
+              "tipo": "select",
+              "obrigatoria": true,
+              "opcoes": [
+                {"value": "sim", "label": "Sim, temos combos pré-definidos"},
+                {"value": "personalizado", "label": "Sim, mas personalizado por cliente"},
+                {"value": "nao", "label": "Não, apenas produtos individuais"}
+              ]
+            },
+            {
+              "id": "promocoes_ativas",
+              "pergunta": "Existem promoções ativas no momento?",
+              "tipo": "select",
+              "obrigatoria": true,
+              "opcoes": [
+                {"value": "sim", "label": "Sim"},
+                {"value": "nao", "label": "Não"}
+              ]
+            },
+            {
+              "id": "promocoes_descricao",
+              "pergunta": "Descreva as promoções ativas:",
+              "tipo": "textarea",
+              "obrigatoria": false,
+              "condicional": "promocoes_ativas == 'sim'",
+              "placeholder": "Ex: '3 meses de desconto de 50% em planos acima de 300 Mbps | WiFi mesh grátis em planos 500 Mbps+'",
+              "hint": "A IA pode informar ao cliente durante a venda"
+            },
+            {
+              "id": "diferenciais_concorrencia",
+              "pergunta": "Quais os principais diferenciais vs concorrência?",
+              "tipo": "textarea",
+              "obrigatoria": true,
+              "placeholder": "Ex: 'Fibra óptica 100% até a casa | Suporte 24/7 | Instalação em 24h | Sem fidelidade'",
+              "hint": "A IA usará estes argumentos de venda"
+            }
+          ]
+        },
+
+        "viabilidade_tecnica": {
+          "titulo": "Viabilidade Técnica",
+          "icone": "📍",
+          "perguntas": [
+            {
+              "id": "verificacao_viabilidade",
+              "pergunta": "Como funciona a verificação de viabilidade de endereço?",
+              "tipo": "select",
+              "obrigatoria": true,
+              "opcoes": [
+                {"value": "ia_verifica", "label": "IA pode verificar automaticamente via API"},
+                {"value": "ia_coleta", "label": "IA coleta endereço e transfere para Comercial verificar"},
+                {"value": "manual", "label": "Sempre manual, transfere direto"}
+              ]
+            },
+            {
+              "id": "tempo_verificacao",
+              "pergunta": "Quanto tempo leva para verificar viabilidade manualmente?",
+              "tipo": "select",
+              "obrigatoria": false,
+              "condicional": "verificacao_viabilidade == 'ia_coleta' || verificacao_viabilidade == 'manual'",
+              "opcoes": [
+                {"value": "imediato", "label": "Resposta imediata (mesmo dia)"},
+                {"value": "24h", "label": "Até 24 horas"},
+                {"value": "48h", "label": "Até 48 horas"}
+              ]
+            }
+          ]
+        },
+
+        "qualificacao_lead": {
+          "titulo": "Qualificação do Lead",
+          "icone": "🎯",
+          "perguntas": [
+            {
+              "id": "perguntas_qualificacao",
+              "pergunta": "A IA deve fazer perguntas de qualificação para recomendar plano ideal?",
+              "tipo": "select",
+              "obrigatoria": true,
+              "opcoes": [
+                {"value": "sim", "label": "Sim, fazer diagnóstico de necessidade"},
+                {"value": "nao", "label": "Não, apenas mostrar todos os planos"}
+              ]
+            },
+            {
+              "id": "perguntas_lista",
+              "pergunta": "Quais perguntas fazer para qualificar?",
+              "tipo": "checkbox_multiple",
+              "obrigatoria": false,
+              "condicional": "perguntas_qualificacao == 'sim'",
+              "opcoes": [
+                {"value": "dispositivos", "label": "Quantos dispositivos conectados?"},
+                {"value": "pessoas", "label": "Quantas pessoas usam internet?"},
+                {"value": "tipo_imovel", "label": "Casa térrea ou sobrado?"},
+                {"value": "home_office", "label": "Usa para home office?"},
+                {"value": "streaming", "label": "Assiste streaming/jogos online?"}
+              ]
+            }
+          ]
+        },
+
+        "processo_pre_cadastro": {
+          "titulo": "Processo de Pré-Cadastro",
+          "icone": "📝",
+          "perguntas": [
+            {
+              "id": "ia_faz_pre_cadastro",
+              "pergunta": "A IA faz pré-cadastro completo ou apenas qualificação básica?",
+              "tipo": "select",
+              "obrigatoria": true,
+              "opcoes": [
+                {"value": "completo", "label": "Pré-cadastro completo"},
+                {"value": "basico", "label": "Apenas qualificação básica"},
+                {"value": "transfere", "label": "Transfere para Vendas fazer"}
+              ]
+            },
+            {
+              "id": "dados_pre_cadastro",
+              "pergunta": "Quais dados coletar para pré-cadastro?",
+              "tipo": "checkbox_multiple",
+              "obrigatoria": false,
+              "condicional": "ia_faz_pre_cadastro == 'completo'",
+              "opcoes": [
+                {"value": "nome_completo", "label": "Nome completo"},
+                {"value": "cpf", "label": "CPF"},
+                {"value": "rg", "label": "RG"},
+                {"value": "telefone", "label": "Telefone para contato"},
+                {"value": "email", "label": "Email"},
+                {"value": "endereco_completo", "label": "Endereço completo"},
+                {"value": "cep", "label": "CEP"},
+                {"value": "ponto_referencia", "label": "Ponto de referência"},
+                {"value": "data_nascimento", "label": "Data de nascimento"}
+              ]
+            },
+            {
+              "id": "solicitar_foto_documentos",
+              "pergunta": "A IA pode solicitar foto dos documentos?",
+              "tipo": "select",
+              "obrigatoria": true,
+              "opcoes": [
+                {"value": "sim", "label": "Sim, pode solicitar"},
+                {"value": "nao", "label": "Não, deixa para depois"}
+              ]
+            }
+          ]
+        },
+
+        "cliente_existente": {
+          "titulo": "Cliente Existente vs Novo",
+          "icone": "👤",
+          "perguntas": [
+            {
+              "id": "upgrade_plano",
+              "pergunta": "Cliente existente que quer fazer upgrade de plano:",
+              "tipo": "select",
+              "obrigatoria": true,
+              "opcoes": [
+                {"value": "ia_resolve", "label": "IA pode processar upgrade"},
+                {"value": "transfere", "label": "Transfere para Comercial"}
+              ]
+            },
+            {
+              "id": "segundo_ponto",
+              "pergunta": "Cliente existente quer segundo ponto em outro endereço:",
+              "tipo": "select",
+              "obrigatoria": true,
+              "opcoes": [
+                {"value": "novo_contrato", "label": "Trata como nova venda"},
+                {"value": "vinculado", "label": "Vincula ao contrato existente"},
+                {"value": "transfere", "label": "Transfere para Comercial decidir"}
+              ]
+            }
+          ]
+        },
+
+        "instalacao": {
+          "titulo": "Instalação",
+          "icone": "🔧",
+          "perguntas": [
+            {
+              "id": "tempo_instalacao",
+              "pergunta": "Qual o tempo médio de instalação após venda aprovada?",
+              "tipo": "select",
+              "obrigatoria": true,
+              "opcoes": [
+                {"value": "24h", "label": "Até 24 horas"},
+                {"value": "48h", "label": "Até 48 horas"},
+                {"value": "72h", "label": "Até 72 horas"},
+                {"value": "5_dias", "label": "Até 5 dias úteis"},
+                {"value": "7_dias", "label": "Até 7 dias úteis"}
+              ]
+            },
+            {
+              "id": "taxa_instalacao",
+              "pergunta": "Existe taxa de instalação?",
+              "tipo": "select",
+              "obrigatoria": true,
+              "opcoes": [
+                {"value": "sim", "label": "Sim, sempre cobra"},
+                {"value": "promocional", "label": "Depende da promoção"},
+                {"value": "nao", "label": "Não, instalação gratuita"}
+              ]
+            },
+            {
+              "id": "valor_taxa_instalacao",
+              "pergunta": "Qual o valor da taxa de instalação?",
+              "tipo": "currency",
+              "obrigatoria": false,
+              "condicional": "taxa_instalacao == 'sim'",
+              "placeholder": "Ex: 100.00"
+            },
+            {
+              "id": "quando_cobrada_instalacao",
+              "pergunta": "Quando a taxa de instalação é cobrada?",
+              "tipo": "select",
+              "obrigatoria": false,
+              "condicional": "taxa_instalacao == 'sim' || taxa_instalacao == 'promocional'",
+              "opcoes": [
+                {"value": "antecipado", "label": "Antecipado (antes da instalação)"},
+                {"value": "primeira_fatura", "label": "Na primeira fatura"},
+                {"value": "separado", "label": "Boleto separado"}
+              ]
+            },
+            {
+              "id": "agendamento_instalacao",
+              "pergunta": "Quem faz o agendamento da instalação?",
+              "tipo": "select",
+              "obrigatoria": true,
+              "opcoes": [
+                {"value": "comercial", "label": "Comercial/Vendas"},
+                {"value": "suporte", "label": "Suporte/NOC"},
+                {"value": "administrativo", "label": "Administrativo"}
+              ]
+            },
+            {
+              "id": "tipo_agendamento",
+              "pergunta": "Agendamento é por horário específico ou período?",
+              "tipo": "select",
+              "obrigatoria": true,
+              "opcoes": [
+                {"value": "horario", "label": "Horário específico (ex: 14h)"},
+                {"value": "periodo", "label": "Período (manhã, tarde, noite)"}
+              ]
+            }
+          ]
+        }
+
+      }
+    }
+
+  }
+}
