@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { PipeeloLogo } from "@/components/PipeeloLogo";
@@ -43,6 +44,8 @@ const departments = [
 ];
 
 const Index = () => {
+  const navigate = useNavigate();
+  
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -80,6 +83,7 @@ const Index = () => {
             <Button 
               size="lg" 
               className="bg-gradient-primary hover:opacity-90 text-primary-foreground shadow-glow gap-2 px-8"
+              onClick={() => navigate('/onboarding')}
             >
               Iniciar Onboarding
               <ArrowRight className="h-5 w-5" />
