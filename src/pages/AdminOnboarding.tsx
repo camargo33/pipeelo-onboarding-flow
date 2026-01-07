@@ -137,11 +137,11 @@ const AdminOnboarding = () => {
     toast.success('Link copiado!');
   };
 
-  const getStatusBadge = (status: string | null) => {
+  const getStatusBadge = (status: string | null, label: string) => {
     if (status === 'concluido') {
-      return <Badge className="bg-green-500/20 text-green-400 border-green-500/30"><Check className="w-3 h-3 mr-1" /> Completo</Badge>;
+      return <Badge className="bg-green-500/20 text-green-500 border-green-500/30"><Check className="w-3 h-3 mr-1" />{label}</Badge>;
     }
-    return <Badge variant="outline" className="text-muted-foreground"><Clock className="w-3 h-3 mr-1" /> Pendente</Badge>;
+    return <Badge className="bg-red-500/20 text-red-500 border-red-500/30"><Clock className="w-3 h-3 mr-1" />{label}</Badge>;
   };
 
   const getCompletedCount = (session: OnboardingSession) => {
@@ -287,10 +287,10 @@ const AdminOnboarding = () => {
                         </div>
                         
                         <div className="flex flex-wrap gap-2 mb-3">
-                          {getStatusBadge(session.status_sac_geral)}
-                          {getStatusBadge(session.status_financeiro)}
-                          {getStatusBadge(session.status_suporte)}
-                          {getStatusBadge(session.status_vendas)}
+                          {getStatusBadge(session.status_sac_geral, 'SAC/Geral')}
+                          {getStatusBadge(session.status_financeiro, 'Financeiro')}
+                          {getStatusBadge(session.status_suporte, 'Suporte')}
+                          {getStatusBadge(session.status_vendas, 'Vendas')}
                         </div>
 
                         <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
