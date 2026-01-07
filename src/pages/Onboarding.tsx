@@ -93,7 +93,7 @@ export default function Onboarding() {
 
       // Check if department already completed
       const statusField = `status_${urlDepartamento}` as keyof typeof session;
-      if (session[statusField] === 'completo') {
+      if (session[statusField] === 'concluido') {
         toast({
           title: 'Departamento já preenchido',
           description: 'Este departamento já foi respondido.',
@@ -221,7 +221,7 @@ export default function Onboarding() {
       const { error: updateError } = await supabase
         .from('onboarding_sessions')
         .update({
-          [statusField]: 'completo',
+          [statusField]: 'concluido',
           [responsavelField]: state.responsavelNome,
           [concluidoField]: new Date().toISOString(),
         })

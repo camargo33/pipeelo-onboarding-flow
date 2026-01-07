@@ -86,7 +86,7 @@ const AdminOnboarding = () => {
   };
 
   const getStatusBadge = (status: string | null) => {
-    if (status === 'completo') {
+    if (status === 'concluido') {
       return <Badge className="bg-green-500/20 text-green-400 border-green-500/30"><Check className="w-3 h-3 mr-1" /> Completo</Badge>;
     }
     return <Badge variant="outline" className="text-muted-foreground"><Clock className="w-3 h-3 mr-1" /> Pendente</Badge>;
@@ -94,10 +94,10 @@ const AdminOnboarding = () => {
 
   const getCompletedCount = (session: OnboardingSession) => {
     let count = 0;
-    if (session.status_sac_geral === 'completo') count++;
-    if (session.status_financeiro === 'completo') count++;
-    if (session.status_suporte === 'completo') count++;
-    if (session.status_vendas === 'completo') count++;
+    if (session.status_sac_geral === 'concluido') count++;
+    if (session.status_financeiro === 'concluido') count++;
+    if (session.status_suporte === 'concluido') count++;
+    if (session.status_vendas === 'concluido') count++;
     return count;
   };
 
