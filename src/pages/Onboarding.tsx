@@ -70,9 +70,12 @@ export default function Onboarding() {
         return false;
       }
       
-      if (currentQuestion.tipo === 'checkbox_multiple' && (!Array.isArray(resposta) || resposta.length === 0)) {
-        setError('Selecione pelo menos uma opção');
-        return false;
+      if (currentQuestion.tipo === 'checkbox_multiple') {
+        const selectedValues = resposta?.selected || (Array.isArray(resposta) ? resposta : []);
+        if (selectedValues.length === 0) {
+          setError('Selecione pelo menos uma opção');
+          return false;
+        }
       }
     }
 
