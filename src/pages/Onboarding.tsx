@@ -218,16 +218,38 @@ export default function Onboarding() {
       const responsavelField = `responsavel_${state.departamento}` as const;
       const concluidoField = `concluido_${state.departamento}_at` as const;
       
-      const { error: updateError } = await supabase
+      const { data: updatedSession, error: updateError } = await supabase
         .from('onboarding_sessions')
         .update({
           [statusField]: 'concluido',
           [responsavelField]: state.responsavelNome,
           [concluidoField]: new Date().toISOString(),
         })
-        .eq('id', sessionId);
+        .eq('id', sessionId)
+        .select()
+        .single();
       
       if (updateError) throw updateError;
+
+      // Check if all departments are complete and send webhook
+      if (
+        updatedSession &&
+        updatedSession.status_sac_geral === 'concluido' &&
+        updatedSession.status_financeiro === 'concluido' &&
+        updatedSession.status_suporte === 'concluido' &&
+        updatedSession.status_vendas === 'concluido'
+      ) {
+        console.log('All departments complete, sending webhook...');
+        const { error: webhookError } = await supabase.functions.invoke('send-webhook-complete', {
+          body: { sessionId },
+        });
+        
+        if (webhookError) {
+          console.error('Error sending webhook:', webhookError);
+        } else {
+          console.log('Webhook sent successfully');
+        }
+      }
       
       // 3. Send email notification
       const { error: emailError } = await supabase.functions.invoke('send-onboarding-email', {
