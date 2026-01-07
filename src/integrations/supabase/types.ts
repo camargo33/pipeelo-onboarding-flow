@@ -54,6 +54,7 @@ export type Database = {
       }
       onboarding_sessions: {
         Row: {
+          access_token: string | null
           ceo_email: string | null
           concluido_financeiro_at: string | null
           concluido_sac_geral_at: string | null
@@ -73,6 +74,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          access_token?: string | null
           ceo_email?: string | null
           concluido_financeiro_at?: string | null
           concluido_sac_geral_at?: string | null
@@ -92,6 +94,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          access_token?: string | null
           ceo_email?: string | null
           concluido_financeiro_at?: string | null
           concluido_sac_geral_at?: string | null

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, ArrowRight, Check, Building2, DollarSign, Wrench, TrendingUp, Loader2 } from 'lucide-react';
@@ -7,13 +7,12 @@ import { Input } from '@/components/ui/input';
 import { PipeeloLogo } from '@/components/PipeeloLogo';
 import { ProgressBar } from '@/components/onboarding/ProgressBar';
 import { QuestionRenderer } from '@/components/onboarding/QuestionRenderer';
-import { DepartmentSelector } from '@/components/onboarding/DepartmentSelector';
 import { useOnboarding } from '@/hooks/useOnboarding';
 import { DepartmentId } from '@/types/onboarding';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 
-type Step = 'empresa' | 'departamento' | 'perguntas' | 'resumo' | 'sucesso';
+type Step = 'perguntas' | 'resumo' | 'sucesso';
 
 const departmentIcons = {
   sac_geral: Building2,
@@ -30,12 +29,15 @@ const departmentColors = {
 };
 
 export default function Onboarding() {
+  const { token, departamento: urlDepartamento } = useParams<{ token: string; departamento: string }>();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [step, setStep] = useState<Step>('empresa');
+  const [step, setStep] = useState<Step>('perguntas');
   const [error, setError] = useState<string>('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [sessionId, setSessionId] = useState<string | null>(null);
+  const [empresaNome, setEmpresaNomeState] = useState<string>('');
+  const [loading, setLoading] = useState(true);
   
   const {
     state,
@@ -57,6 +59,59 @@ export default function Onboarding() {
     setResponsavelNome,
     resetOnboarding
   } = useOnboarding();
+
+  // Load session data from token
+  useEffect(() => {
+    const loadSession = async () => {
+      if (!token || !urlDepartamento) {
+        navigate('/');
+        return;
+      }
+
+      // Validate department
+      const validDepts: DepartmentId[] = ['sac_geral', 'financeiro', 'suporte', 'vendas'];
+      if (!validDepts.includes(urlDepartamento as DepartmentId)) {
+        navigate('/');
+        return;
+      }
+
+      const { data: session, error: sessionError } = await supabase
+        .from('onboarding_sessions')
+        .select('*')
+        .eq('access_token', token)
+        .maybeSingle();
+
+      if (sessionError || !session) {
+        toast({
+          title: 'Link inválido',
+          description: 'Este link não existe ou expirou.',
+          variant: 'destructive',
+        });
+        navigate('/');
+        return;
+      }
+
+      // Check if department already completed
+      const statusField = `status_${urlDepartamento}` as keyof typeof session;
+      if (session[statusField] === 'completo') {
+        toast({
+          title: 'Departamento já preenchido',
+          description: 'Este departamento já foi respondido.',
+          variant: 'destructive',
+        });
+        navigate(`/onboarding/${token}`);
+        return;
+      }
+
+      setSessionId(session.id);
+      setEmpresaNomeState(session.empresa_nome);
+      setEmpresaNome(session.empresa_nome);
+      setDepartamento(urlDepartamento as DepartmentId);
+      setLoading(false);
+    };
+
+    loadSession();
+  }, [token, urlDepartamento, navigate, toast, setEmpresaNome, setDepartamento]);
 
   const validateCurrentQuestion = () => {
     if (!currentQuestion) return true;
@@ -106,21 +161,7 @@ export default function Onboarding() {
   };
 
   const handleNext = () => {
-    if (step === 'empresa') {
-      if (!state.empresaNome.trim()) {
-        setError('Digite o nome da empresa');
-        return;
-      }
-      setError('');
-      setStep('departamento');
-    } else if (step === 'departamento') {
-      if (!state.departamento) {
-        setError('Selecione um departamento');
-        return;
-      }
-      setError('');
-      setStep('perguntas');
-    } else if (step === 'perguntas') {
+    if (step === 'perguntas') {
       if (!validateCurrentQuestion()) return;
       
       if (isLastQuestion) {
@@ -139,11 +180,9 @@ export default function Onboarding() {
 
   const handleBack = () => {
     setError('');
-    if (step === 'departamento') {
-      setStep('empresa');
-    } else if (step === 'perguntas') {
+    if (step === 'perguntas') {
       if (isFirstQuestion) {
-        setStep('departamento');
+        navigate(`/onboarding/${token}`);
       } else {
         previousQuestion();
       }
@@ -153,31 +192,14 @@ export default function Onboarding() {
   };
 
   const handleSubmit = async () => {
-    if (!state.departamento || !departamentoData) return;
+    if (!state.departamento || !departamentoData || !sessionId) return;
     
     setIsSubmitting(true);
     
     try {
-      // 1. Create or get session
-      let currentSessionId = sessionId;
-      
-      if (!currentSessionId) {
-        const { data: newSession, error: sessionError } = await supabase
-          .from('onboarding_sessions')
-          .insert({
-            empresa_nome: state.empresaNome,
-          })
-          .select('id')
-          .single();
-        
-        if (sessionError) throw sessionError;
-        currentSessionId = newSession.id;
-        setSessionId(currentSessionId);
-      }
-      
-      // 2. Save all responses
+      // 1. Save all responses
       const respostasToInsert = Object.entries(state.respostas).map(([perguntaId, resposta]) => ({
-        session_id: currentSessionId,
+        session_id: sessionId,
         departamento: state.departamento!,
         pergunta_id: perguntaId,
         resposta: resposta,
@@ -191,7 +213,7 @@ export default function Onboarding() {
       
       if (respostasError) throw respostasError;
       
-      // 3. Update session status for this department
+      // 2. Update session status for this department
       const statusField = `status_${state.departamento}` as const;
       const responsavelField = `responsavel_${state.departamento}` as const;
       const concluidoField = `concluido_${state.departamento}_at` as const;
@@ -199,29 +221,28 @@ export default function Onboarding() {
       const { error: updateError } = await supabase
         .from('onboarding_sessions')
         .update({
-          [statusField]: 'concluido',
+          [statusField]: 'completo',
           [responsavelField]: state.responsavelNome,
           [concluidoField]: new Date().toISOString(),
         })
-        .eq('id', currentSessionId);
+        .eq('id', sessionId);
       
       if (updateError) throw updateError;
       
-      // 4. Send email notification
+      // 3. Send email notification
       const { error: emailError } = await supabase.functions.invoke('send-onboarding-email', {
         body: {
-          empresaNome: state.empresaNome,
+          empresaNome: empresaNome,
           departamento: state.departamento,
           departamentoNome: departamentoData.nome,
           responsavelNome: state.responsavelNome,
           respostas: state.respostas,
-          sessionId: currentSessionId,
+          sessionId: sessionId,
         },
       });
       
       if (emailError) {
         console.error('Error sending email:', emailError);
-        // Don't throw - email failure shouldn't block success
       }
       
       toast({
@@ -243,6 +264,14 @@ export default function Onboarding() {
   };
 
   const DeptIcon = state.departamento ? departmentIcons[state.departamento] : null;
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -279,91 +308,6 @@ export default function Onboarding() {
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8 max-w-2xl">
         <AnimatePresence mode="wait">
-          {/* Step: Empresa */}
-          {step === 'empresa' && (
-            <motion.div
-              key="empresa"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              className="space-y-8"
-            >
-              <div className="space-y-2 text-center">
-                <h1 className="text-3xl font-bold">Vamos começar!</h1>
-                <p className="text-muted-foreground">
-                  Primeiro, qual o nome da sua empresa?
-                </p>
-              </div>
-
-              <div className="space-y-4">
-                <Input
-                  type="text"
-                  value={state.empresaNome}
-                  onChange={(e) => setEmpresaNome(e.target.value)}
-                  placeholder="Ex: Proxxima Telecom"
-                  className="text-lg py-6"
-                  autoFocus
-                  onKeyPress={(e) => e.key === 'Enter' && handleNext()}
-                />
-                {error && <p className="text-sm text-destructive">{error}</p>}
-              </div>
-
-              <Button 
-                onClick={handleNext}
-                className="w-full bg-pipeelo-green hover:bg-pipeelo-green/90"
-                size="lg"
-              >
-                Continuar
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
-            </motion.div>
-          )}
-
-          {/* Step: Departamento */}
-          {step === 'departamento' && (
-            <motion.div
-              key="departamento"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              className="space-y-8"
-            >
-              <div className="space-y-2 text-center">
-                <h1 className="text-3xl font-bold">Escolha o departamento</h1>
-                <p className="text-muted-foreground">
-                  Qual área você vai responder?
-                </p>
-              </div>
-
-              <DepartmentSelector 
-                onSelect={setDepartamento}
-                selected={state.departamento}
-              />
-              
-              {error && <p className="text-sm text-destructive text-center">{error}</p>}
-
-              <div className="flex gap-4">
-                <Button 
-                  variant="outline" 
-                  onClick={handleBack}
-                  size="lg"
-                >
-                  <ArrowLeft className="mr-2 h-4 w-4" />
-                  Voltar
-                </Button>
-                <Button 
-                  onClick={handleNext}
-                  className="flex-1 bg-pipeelo-green hover:bg-pipeelo-green/90"
-                  size="lg"
-                  disabled={!state.departamento}
-                >
-                  Continuar
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Button>
-              </div>
-            </motion.div>
-          )}
-
           {/* Step: Perguntas */}
           {step === 'perguntas' && currentQuestion && (
             <motion.div
@@ -570,21 +514,11 @@ export default function Onboarding() {
 
               <div className="flex flex-col gap-3">
                 <Button 
-                  onClick={() => {
-                    resetOnboarding();
-                    setStep('departamento');
-                  }}
+                  onClick={() => navigate(`/onboarding/${token}`)}
                   className="bg-pipeelo-green hover:bg-pipeelo-green/90"
                   size="lg"
                 >
-                  Preencher outro departamento
-                </Button>
-                <Button 
-                  variant="outline"
-                  onClick={() => navigate('/')}
-                  size="lg"
-                >
-                  Voltar ao início
+                  Ver status dos departamentos
                 </Button>
               </div>
             </motion.div>
