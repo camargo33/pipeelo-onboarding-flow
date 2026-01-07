@@ -458,6 +458,12 @@
               ]
             },
             {
+              "id": "aviso_mk_solutions",
+              "pergunta": "A API do MK Solutions possui endpoints especiais que são pagos, como remover a redução de velocidade e consulta de viabilidade. Você terá que verificar com a MK se esses recursos estão disponíveis no seu plano.",
+              "tipo": "info",
+              "condicional": "sistema_erp == 'mk_solutions'"
+            },
+            {
               "id": "sistema_erp_outro",
               "pergunta": "Qual ERP vocês usam?",
               "tipo": "text",
@@ -474,6 +480,25 @@
                 {"value": "sim", "label": "Sim, temos API ativa"},
                 {"value": "nao", "label": "Não temos ou não sabemos"}
               ]
+            },
+            {
+              "id": "ferramenta_pagamentos",
+              "pergunta": "Com relação aos pagamentos, vocês usam alguma ferramenta externa, como 7AZ, ou usam um gateway de pagamento integrado diretamente no ERP?",
+              "tipo": "select",
+              "obrigatoria": true,
+              "opcoes": [
+                {"value": "7az", "label": "7AZ"},
+                {"value": "gateway_erp", "label": "Gateway integrado no ERP"},
+                {"value": "outro", "label": "Outra ferramenta"}
+              ]
+            },
+            {
+              "id": "ferramenta_pagamentos_outro",
+              "pergunta": "Qual ferramenta de pagamentos vocês usam?",
+              "tipo": "text",
+              "obrigatoria": false,
+              "condicional": "ferramenta_pagamentos == 'outro'",
+              "placeholder": "Nome da ferramenta"
             },
             {
               "id": "sistema_viabilidade",
