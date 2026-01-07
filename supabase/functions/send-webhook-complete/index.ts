@@ -78,6 +78,50 @@ serve(async (req: Request): Promise<Response> => {
       );
     }
 
+    // Helper function to expand horario_semanal into individual days
+    const expandHorarioSemanal = (horario: any) => {
+      if (!horario || typeof horario !== 'object') return horario;
+      
+      const result: Record<string, any> = {};
+      
+      // Expand segunda_sexta into individual weekdays
+      if (horario.segunda_sexta) {
+        const diasSemana = ['segunda_feira', 'terca_feira', 'quarta_feira', 'quinta_feira', 'sexta_feira'];
+        for (const dia of diasSemana) {
+          result[dia] = {
+            inicio: horario.segunda_sexta.inicio || null,
+            fim: horario.segunda_sexta.fim || null,
+            nao_atende: horario.segunda_sexta.nao_atende || false,
+          };
+        }
+      }
+      
+      // Add sabado
+      if (horario.sabado) {
+        result.sabado = {
+          inicio: horario.sabado.inicio || null,
+          fim: horario.sabado.fim || null,
+          nao_atende: horario.sabado.nao_atende || false,
+        };
+      }
+      
+      // Add domingo (from domingo_feriado)
+      if (horario.domingo_feriado) {
+        result.domingo = {
+          inicio: horario.domingo_feriado.inicio || null,
+          fim: horario.domingo_feriado.fim || null,
+          nao_atende: horario.domingo_feriado.nao_atende || false,
+        };
+        result.feriado = {
+          inicio: horario.domingo_feriado.inicio || null,
+          fim: horario.domingo_feriado.fim || null,
+          nao_atende: horario.domingo_feriado.nao_atende || false,
+        };
+      }
+      
+      return result;
+    };
+
     // Organize responses by department
     const respostasPorDepartamento: Record<string, Record<string, any>> = {
       sac_geral: {},
@@ -88,7 +132,14 @@ serve(async (req: Request): Promise<Response> => {
 
     for (const resposta of respostas || []) {
       if (respostasPorDepartamento[resposta.departamento]) {
-        respostasPorDepartamento[resposta.departamento][resposta.pergunta_id] = resposta.resposta;
+        let valor = resposta.resposta;
+        
+        // Check if this is a horario_semanal type and expand it
+        if (valor && typeof valor === 'object' && (valor.segunda_sexta || valor.sabado || valor.domingo_feriado)) {
+          valor = expandHorarioSemanal(valor);
+        }
+        
+        respostasPorDepartamento[resposta.departamento][resposta.pergunta_id] = valor;
       }
     }
 
