@@ -243,10 +243,9 @@
               "tipo": "select",
               "obrigatoria": true,
               "opcoes": [
-                {"value": "transferir_sac", "label": "Transferir para SAC/Geral"},
-                {"value": "transferir_gestor", "label": "Transferir para Gestor/Supervisor"},
-                {"value": "coletar_motivo", "label": "Apenas coletar motivo da insatisfação"},
-                {"value": "nada", "label": "Apenas registrar, sem ação"}
+                {"value": "transferir_sucesso", "label": "Transferir para o departamento Sucesso do Cliente"},
+                {"value": "transferir_geral", "label": "Transferir para categoria Geral"},
+                {"value": "coletar_motivo", "label": "Apenas coletar o motivo da insatisfação"}
               ]
             },
             {
