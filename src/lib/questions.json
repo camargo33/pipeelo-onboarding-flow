@@ -268,6 +268,157 @@
               "placeholder": "Descreva a ação desejada..."
             }
           ]
+        },
+
+        "processos_especiais": {
+          "titulo": "Processos Especiais",
+          "icone": "⚙️",
+          "perguntas": [
+            {
+              "id": "cancelamento_coletar_motivo",
+              "pergunta": "Quando cliente pede cancelamento, a IA deve coletar o motivo?",
+              "tipo": "select",
+              "obrigatoria": true,
+              "opcoes": [
+                {"value": "sim", "label": "Sim, sempre coletar motivo"},
+                {"value": "nao", "label": "Não, transferir direto"}
+              ]
+            },
+            {
+              "id": "cancelamento_tentar_reter",
+              "pergunta": "A IA deve tentar reter o cliente ou apenas coletar info?",
+              "tipo": "select",
+              "obrigatoria": true,
+              "opcoes": [
+                {"value": "tentar_reter", "label": "Tentar reter com argumentos"},
+                {"value": "coletar_transferir", "label": "Apenas coletar e transferir"},
+                {"value": "transferir_direto", "label": "Transferir direto para Retenção"}
+              ]
+            },
+            {
+              "id": "cancelamento_departamento",
+              "pergunta": "Para qual departamento transferir pedidos de cancelamento?",
+              "tipo": "select",
+              "obrigatoria": true,
+              "opcoes": [
+                {"value": "retencao", "label": "Retenção"},
+                {"value": "comercial", "label": "Comercial/Vendas"},
+                {"value": "sac", "label": "SAC/Geral"},
+                {"value": "financeiro", "label": "Financeiro"}
+              ]
+            },
+            {
+              "id": "mudanca_endereco",
+              "pergunta": "Para mudança de endereço, a IA coleta dados básicos e transfere para qual departamento?",
+              "tipo": "select",
+              "obrigatoria": true,
+              "opcoes": [
+                {"value": "suporte", "label": "Suporte Técnico"},
+                {"value": "comercial", "label": "Comercial/Vendas"},
+                {"value": "sac", "label": "SAC/Geral"}
+              ]
+            },
+            {
+              "id": "mudanca_endereco_taxa",
+              "pergunta": "Há taxa para mudança de endereço?",
+              "tipo": "select",
+              "obrigatoria": true,
+              "opcoes": [
+                {"value": "sim", "label": "Sim"},
+                {"value": "nao", "label": "Não"},
+                {"value": "depende", "label": "Depende da distância/situação"}
+              ]
+            },
+            {
+              "id": "valor_mudanca_endereco",
+              "pergunta": "Qual o valor da taxa de mudança de endereço?",
+              "tipo": "currency",
+              "obrigatoria": false,
+              "condicional": "mudanca_endereco_taxa == 'sim'",
+              "placeholder": "Ex: 50.00"
+            },
+            {
+              "id": "troca_titularidade_departamento",
+              "pergunta": "Para troca de titularidade, a IA coleta dados básicos e transfere para qual departamento?",
+              "tipo": "select",
+              "obrigatoria": true,
+              "opcoes": [
+                {"value": "sac", "label": "SAC/Geral"},
+                {"value": "administrativo", "label": "Administrativo"},
+                {"value": "financeiro", "label": "Financeiro"}
+              ]
+            },
+            {
+              "id": "troca_titularidade_documentos",
+              "pergunta": "Quais dados básicos a IA deve coletar do novo titular?",
+              "tipo": "checkbox_multiple",
+              "obrigatoria": true,
+              "opcoes": [
+                {"value": "nome_completo", "label": "Nome completo"},
+                {"value": "cpf", "label": "CPF"},
+                {"value": "telefone", "label": "Telefone"},
+                {"value": "email", "label": "Email"}
+              ]
+            },
+            {
+              "id": "suspensao_temporaria_departamento",
+              "pergunta": "Para suspensão temporária, a IA coleta dados e transfere para qual departamento?",
+              "tipo": "select",
+              "obrigatoria": true,
+              "opcoes": [
+                {"value": "sac", "label": "SAC/Geral"},
+                {"value": "financeiro", "label": "Financeiro"},
+                {"value": "comercial", "label": "Comercial"}
+              ]
+            },
+            {
+              "id": "suspensao_periodo",
+              "pergunta": "Por quanto tempo pode suspender?",
+              "tipo": "text",
+              "obrigatoria": false,
+              "placeholder": "Ex: '30 a 90 dias'",
+              "hint": "Período mínimo e máximo"
+            },
+            {
+              "id": "suspensao_cobranca",
+              "pergunta": "Há cobrança reduzida durante suspensão?",
+              "tipo": "select",
+              "obrigatoria": true,
+              "opcoes": [
+                {"value": "sim", "label": "Sim, cobra taxa reduzida"},
+                {"value": "nao", "label": "Não, sem cobrança"}
+              ]
+            },
+            {
+              "id": "ponto_adicional_departamento",
+              "pergunta": "Para ponto adicional, a IA coleta dados e transfere para qual departamento?",
+              "tipo": "select",
+              "obrigatoria": true,
+              "opcoes": [
+                {"value": "comercial", "label": "Comercial/Vendas"},
+                {"value": "suporte", "label": "Suporte Técnico"},
+                {"value": "sac", "label": "SAC/Geral"}
+              ]
+            },
+            {
+              "id": "ponto_adicional_taxa",
+              "pergunta": "Há taxa para instalação de ponto adicional?",
+              "tipo": "select",
+              "obrigatoria": true,
+              "opcoes": [
+                {"value": "sim", "label": "Sim"},
+                {"value": "nao", "label": "Não"}
+              ]
+            },
+            {
+              "id": "valor_ponto_adicional",
+              "pergunta": "Qual o valor da instalação de ponto adicional?",
+              "tipo": "currency",
+              "obrigatoria": false,
+              "condicional": "ponto_adicional_taxa == 'sim'",
+              "placeholder": "Ex: 80.00"
+            }
+          ]
         }
 
       }
@@ -613,14 +764,6 @@
               "placeholder": "Ex: 1) Verificar inadimplência, 2) Pedir cliente reiniciar roteador, 3) ...",
               "hint": "Descreva passo a passo a ordem das verificações"
             },
-            {
-              "id": "tempo_desligar_roteador",
-              "pergunta": "Por quantos segundos pedir para desligar o roteador da tomada?",
-              "tipo": "number",
-              "obrigatoria": true,
-              "placeholder": "Ex: 30",
-              "hint": "Tempo padrão é 30 segundos"
-            }
           ]
         },
 
@@ -656,8 +799,8 @@
               "hint": "Isso nos ajuda a entender a cobertura da automação"
             },
             {
-              "id": "sistema_monitoramento",
-              "pergunta": "Qual sistema de monitoramento de rede vocês usam?",
+              "id": "sistema_gerenciamento",
+              "pergunta": "Qual sistema de gerenciamento de redes vocês usam?",
               "tipo": "select",
               "obrigatoria": true,
               "opcoes": [
@@ -668,16 +811,26 @@
                 {"value": "ixc_acs", "label": "IXC ACS"},
                 {"value": "unm", "label": "UNM"},
                 {"value": "outro", "label": "Outro"},
-                {"value": "nenhum", "label": "Não temos sistema de monitoramento"}
+                {"value": "nenhum", "label": "Não temos sistema de gerenciamento de redes"}
               ]
             },
             {
-              "id": "sistema_monitoramento_outro",
-              "pergunta": "Qual sistema de monitoramento?",
+              "id": "sistema_gerenciamento_outro",
+              "pergunta": "Qual sistema de gerenciamento?",
               "tipo": "text",
               "obrigatoria": false,
-              "condicional": "sistema_monitoramento == 'outro'",
+              "condicional": "sistema_gerenciamento == 'outro'",
               "placeholder": "Nome do sistema"
+            },
+            {
+              "id": "protocolo_tr069",
+              "pergunta": "Vocês possuem protocolo TR-069 ativo?",
+              "tipo": "select",
+              "obrigatoria": true,
+              "opcoes": [
+                {"value": "sim", "label": "Sim"},
+                {"value": "nao", "label": "Não"}
+              ]
             }
           ]
         },
@@ -718,7 +871,7 @@
               "pergunta": "A IA pode executar troca de senha Wi-Fi remotamente?",
               "tipo": "select",
               "obrigatoria": true,
-              "hint": "⚠️ Esta funcionalidade só está disponível se você tiver sistema de monitoramento configurado",
+              "hint": "⚠️ Esta funcionalidade só está disponível se você tiver protocolo TR-069 ativo",
               "opcoes": [
                 {"value": "sim", "label": "Sim, pode trocar via API"},
                 {"value": "nao", "label": "Não, precisa transferir para Suporte"}
@@ -824,205 +977,16 @@
           "icone": "🔍",
           "perguntas": [
             {
-              "id": "redirecionamento_porta",
-              "pergunta": "A IA pode ajudar com redirecionamento de porta?",
-              "tipo": "select",
-              "obrigatoria": true,
-              "opcoes": [
-                {"value": "coletar_dados", "label": "Sim, coletar dados e configurar"},
-                {"value": "instruir", "label": "Sim, instruir cliente como fazer"},
-                {"value": "transferir", "label": "Não, transferir para Suporte"}
-              ]
-            },
-            {
-              "id": "dados_redirecionamento",
-              "pergunta": "Quais dados coletar para redirecionamento de porta?",
-              "tipo": "textarea",
-              "obrigatoria": false,
-              "condicional": "redirecionamento_porta == 'coletar_dados'",
-              "placeholder": "Ex: 'Porta externa, Porta interna, IP interno do dispositivo, Protocolo (TCP/UDP)'",
-              "hint": "Liste todos os dados necessários"
-            },
-            {
               "id": "login_senha_app",
               "pergunta": "Qual o nome do aplicativo de vocês para cliente?",
               "tipo": "text",
               "obrigatoria": false,
               "placeholder": "Ex: 'Meu Provedor', 'App Conecta'",
               "hint": "A IA pode informar ao cliente"
-            },
-            {
-              "id": "base_conhecimento",
-              "pergunta": "Vocês têm base de conhecimento ou scripts de troubleshooting?",
-              "tipo": "select",
-              "obrigatoria": true,
-              "opcoes": [
-                {"value": "sim", "label": "Sim, temos documentação"},
-                {"value": "nao", "label": "Não temos"}
-              ]
-            },
-            {
-              "id": "link_base_conhecimento",
-              "pergunta": "Onde está a base de conhecimento?",
-              "tipo": "url",
-              "obrigatoria": false,
-              "condicional": "base_conhecimento == 'sim'",
-              "placeholder": "https://docs.provedor.com.br",
-              "hint": "A IA pode consultar para responder dúvidas"
             }
           ]
         },
 
-        "processos_especiais_suporte": {
-          "titulo": "Processos Especiais",
-          "icone": "⚙️",
-          "perguntas": [
-            {
-              "id": "cancelamento_coletar_motivo",
-              "pergunta": "Quando cliente pede cancelamento, a IA deve coletar o motivo?",
-              "tipo": "select",
-              "obrigatoria": true,
-              "opcoes": [
-                {"value": "sim", "label": "Sim, sempre coletar motivo"},
-                {"value": "nao", "label": "Não, transferir direto"}
-              ]
-            },
-            {
-              "id": "cancelamento_tentar_reter",
-              "pergunta": "A IA deve tentar reter o cliente ou apenas coletar info?",
-              "tipo": "select",
-              "obrigatoria": true,
-              "opcoes": [
-                {"value": "tentar_reter", "label": "Tentar reter com argumentos"},
-                {"value": "coletar_transferir", "label": "Apenas coletar e transferir"},
-                {"value": "transferir_direto", "label": "Transferir direto para Retenção"}
-              ]
-            },
-            {
-              "id": "cancelamento_departamento",
-              "pergunta": "Para qual departamento transferir pedidos de cancelamento?",
-              "tipo": "select",
-              "obrigatoria": true,
-              "opcoes": [
-                {"value": "retencao", "label": "Retenção"},
-                {"value": "comercial", "label": "Comercial/Vendas"},
-                {"value": "sac", "label": "SAC/Geral"},
-                {"value": "financeiro", "label": "Financeiro"}
-              ]
-            },
-            {
-              "id": "mudanca_endereco",
-              "pergunta": "Para mudança de endereço, a IA coleta dados básicos e transfere para qual departamento?",
-              "tipo": "select",
-              "obrigatoria": true,
-              "opcoes": [
-                {"value": "suporte", "label": "Suporte Técnico"},
-                {"value": "comercial", "label": "Comercial/Vendas"},
-                {"value": "sac", "label": "SAC/Geral"}
-              ]
-            },
-            {
-              "id": "mudanca_endereco_taxa",
-              "pergunta": "Há taxa para mudança de endereço?",
-              "tipo": "select",
-              "obrigatoria": true,
-              "opcoes": [
-                {"value": "sim", "label": "Sim"},
-                {"value": "nao", "label": "Não"},
-                {"value": "depende", "label": "Depende da distância/situação"}
-              ]
-            },
-            {
-              "id": "valor_mudanca_endereco",
-              "pergunta": "Qual o valor da taxa de mudança de endereço?",
-              "tipo": "currency",
-              "obrigatoria": false,
-              "condicional": "mudanca_endereco_taxa == 'sim'",
-              "placeholder": "Ex: 50.00"
-            },
-            {
-              "id": "troca_titularidade_departamento",
-              "pergunta": "Para troca de titularidade, a IA coleta dados básicos e transfere para qual departamento?",
-              "tipo": "select",
-              "obrigatoria": true,
-              "opcoes": [
-                {"value": "sac", "label": "SAC/Geral"},
-                {"value": "administrativo", "label": "Administrativo"},
-                {"value": "financeiro", "label": "Financeiro"}
-              ]
-            },
-            {
-              "id": "troca_titularidade_documentos",
-              "pergunta": "Quais dados básicos a IA deve coletar do novo titular?",
-              "tipo": "checkbox_multiple",
-              "obrigatoria": true,
-              "opcoes": [
-                {"value": "nome_completo", "label": "Nome completo"},
-                {"value": "cpf", "label": "CPF"},
-                {"value": "telefone", "label": "Telefone"},
-                {"value": "email", "label": "Email"}
-              ]
-            },
-            {
-              "id": "suspensao_temporaria_departamento",
-              "pergunta": "Para suspensão temporária, a IA coleta dados e transfere para qual departamento?",
-              "tipo": "select",
-              "obrigatoria": true,
-              "opcoes": [
-                {"value": "sac", "label": "SAC/Geral"},
-                {"value": "financeiro", "label": "Financeiro"},
-                {"value": "comercial", "label": "Comercial"}
-              ]
-            },
-            {
-              "id": "suspensao_periodo",
-              "pergunta": "Por quanto tempo pode suspender?",
-              "tipo": "text",
-              "obrigatoria": false,
-              "placeholder": "Ex: '30 a 90 dias'",
-              "hint": "Período mínimo e máximo"
-            },
-            {
-              "id": "suspensao_cobranca",
-              "pergunta": "Há cobrança reduzida durante suspensão?",
-              "tipo": "select",
-              "obrigatoria": true,
-              "opcoes": [
-                {"value": "sim", "label": "Sim, cobra taxa reduzida"},
-                {"value": "nao", "label": "Não, sem cobrança"}
-              ]
-            },
-            {
-              "id": "ponto_adicional_departamento",
-              "pergunta": "Para ponto adicional, a IA coleta dados e transfere para qual departamento?",
-              "tipo": "select",
-              "obrigatoria": true,
-              "opcoes": [
-                {"value": "comercial", "label": "Comercial/Vendas"},
-                {"value": "suporte", "label": "Suporte Técnico"},
-                {"value": "sac", "label": "SAC/Geral"}
-              ]
-            },
-            {
-              "id": "ponto_adicional_taxa",
-              "pergunta": "Há taxa para instalação de ponto adicional?",
-              "tipo": "select",
-              "obrigatoria": true,
-              "opcoes": [
-                {"value": "sim", "label": "Sim"},
-                {"value": "nao", "label": "Não"}
-              ]
-            },
-            {
-              "id": "valor_ponto_adicional",
-              "pergunta": "Qual o valor da instalação de ponto adicional?",
-              "tipo": "currency",
-              "obrigatoria": false,
-              "condicional": "ponto_adicional_taxa == 'sim'",
-              "placeholder": "Ex: 80.00"
-            }
-          ]
-        },
 
         "integracoes_tecnicas": {
           "titulo": "Integrações Técnicas",
