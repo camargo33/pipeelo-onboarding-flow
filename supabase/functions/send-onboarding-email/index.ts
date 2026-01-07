@@ -436,7 +436,7 @@ const handler = async (req: Request): Promise<Response> => {
 
     // Send email notification
     const emailResponse = await resend.emails.send({
-      from: "Pipeelo Onboarding <onboarding@resend.dev>",
+      from: "Pipeelo Onboarding <noreply@pipeelo.com>",
       to: ["onboarding@pipeelo.com"],
       subject: `${departmentEmoji} Onboarding ${empresaNome} - ${departamentoNome} concluído`,
       html: `
