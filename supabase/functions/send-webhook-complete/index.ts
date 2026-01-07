@@ -8,6 +8,7 @@ const corsHeaders = {
 
 interface WebhookRequest {
   sessionId: string;
+  testWebhookUrl?: string;
 }
 
 serve(async (req: Request): Promise<Response> => {
@@ -17,7 +18,7 @@ serve(async (req: Request): Promise<Response> => {
   }
 
   try {
-    const { sessionId }: WebhookRequest = await req.json();
+    const { sessionId, testWebhookUrl }: WebhookRequest = await req.json();
     
     if (!sessionId) {
       console.error("Missing sessionId");
@@ -117,10 +118,12 @@ serve(async (req: Request): Promise<Response> => {
 
     console.log("Sending webhook payload:", JSON.stringify(payload, null, 2));
 
-    // Send to external API
+    // Send to external API (use testWebhookUrl for testing, otherwise use production URL)
+    const targetUrl = testWebhookUrl || "http://admin.pipeelo.com/api/clients/onboarding/create";
     const apiToken = Deno.env.get("PIPEELO_ADMIN_API_TOKEN");
     
-    if (!apiToken) {
+    // Only require token for production URL
+    if (!testWebhookUrl && !apiToken) {
       console.error("PIPEELO_ADMIN_API_TOKEN not configured");
       return new Response(
         JSON.stringify({ error: "API token not configured" }),
@@ -128,12 +131,20 @@ serve(async (req: Request): Promise<Response> => {
       );
     }
 
-    const webhookResponse = await fetch("http://admin.pipeelo.com/api/clients/onboarding/create", {
+    const headers: Record<string, string> = {
+      "Content-Type": "application/json",
+    };
+    
+    // Add auth header only for production
+    if (!testWebhookUrl && apiToken) {
+      headers["Authorization"] = `Bearer ${apiToken}`;
+    }
+
+    console.log(`Sending to: ${targetUrl}`);
+
+    const webhookResponse = await fetch(targetUrl, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${apiToken}`,
-      },
+      headers,
       body: JSON.stringify(payload),
     });
 
