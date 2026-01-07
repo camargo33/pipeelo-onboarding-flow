@@ -419,6 +419,106 @@
               "placeholder": "Ex: 80.00"
             }
           ]
+        },
+
+        "integracao_app": {
+          "titulo": "Aplicativo do Cliente",
+          "icone": "📱",
+          "perguntas": [
+            {
+              "id": "login_senha_app",
+              "pergunta": "Qual o nome do aplicativo de vocês para cliente?",
+              "tipo": "text",
+              "obrigatoria": false,
+              "placeholder": "Ex: 'Meu Provedor', 'App Conecta'",
+              "hint": "A IA pode informar ao cliente"
+            }
+          ]
+        },
+
+        "integracoes_tecnicas": {
+          "titulo": "Integrações Técnicas",
+          "icone": "🔗",
+          "perguntas": [
+            {
+              "id": "sistema_erp",
+              "pergunta": "Qual sistema de gestão/ERP vocês usam?",
+              "tipo": "select",
+              "obrigatoria": true,
+              "opcoes": [
+                {"value": "mk_solutions", "label": "MK Solutions"},
+                {"value": "ixcsoft", "label": "IXCSoft"},
+                {"value": "rbxsoft", "label": "RBXSoft"},
+                {"value": "voalle", "label": "Voalle"},
+                {"value": "sgp", "label": "SGP"},
+                {"value": "hubsoft", "label": "Hubsoft"},
+                {"value": "integrator", "label": "Integrator"},
+                {"value": "conesul", "label": "Conesul"},
+                {"value": "outro", "label": "Outro"}
+              ]
+            },
+            {
+              "id": "sistema_erp_outro",
+              "pergunta": "Qual ERP vocês usam?",
+              "tipo": "text",
+              "obrigatoria": false,
+              "condicional": "sistema_erp == 'outro'",
+              "placeholder": "Nome do sistema"
+            },
+            {
+              "id": "erp_tem_api",
+              "pergunta": "Vocês têm acesso à API do sistema?",
+              "tipo": "select",
+              "obrigatoria": true,
+              "opcoes": [
+                {"value": "sim", "label": "Sim, temos API ativa"},
+                {"value": "nao", "label": "Não temos ou não sabemos"}
+              ]
+            },
+            {
+              "id": "sistema_viabilidade",
+              "pergunta": "Em qual sistema vocês consultam se tem viabilidade no endereço do cliente?",
+              "tipo": "select",
+              "obrigatoria": true,
+              "opcoes": [
+                {"value": "geogrid", "label": "GeoGrid"},
+                {"value": "ozmaps", "label": "OZMaps"},
+                {"value": "outro", "label": "Outro"},
+                {"value": "nenhum", "label": "Não temos"}
+              ]
+            },
+            {
+              "id": "sistema_viabilidade_outro",
+              "pergunta": "Qual sistema de viabilidade?",
+              "tipo": "text",
+              "obrigatoria": false,
+              "condicional": "sistema_viabilidade == 'outro'",
+              "placeholder": "Nome do sistema"
+            },
+            {
+              "id": "rede_documentada",
+              "pergunta": "A rede está bem documentada ou boa parte não consta no sistema?",
+              "tipo": "select",
+              "obrigatoria": true,
+              "opcoes": [
+                {"value": "bem_documentada", "label": "Bem documentada (>80% mapeado)"},
+                {"value": "parcialmente", "label": "Parcialmente documentada (40-80%)"},
+                {"value": "pouco_documentada", "label": "Pouco documentada (<40%)"}
+              ]
+            },
+            {
+              "id": "usar_base_conhecimento_ceps",
+              "pergunta": "Podemos colocar os CEPs e endereços em base de conhecimento para que a IA tenha contexto?",
+              "tipo": "select",
+              "obrigatoria": false,
+              "condicional": "rede_documentada == 'pouco_documentada'",
+              "hint": "Você nos fornecerá lista de CEPs/ruas atendidas e a IA usará como referência",
+              "opcoes": [
+                {"value": "sim", "label": "Sim"},
+                {"value": "nao", "label": "Não"}
+              ]
+            }
+          ]
         }
 
       }
@@ -930,24 +1030,24 @@
               ]
             },
             {
-              "id": "diagnostico_tv",
+              "id": "fluxo_suporte_tv",
               "pergunta": "Para suporte de TV, a IA deve:",
               "tipo": "select",
               "obrigatoria": false,
               "condicional": "suporte_tv == 'sim'",
               "opcoes": [
-                {"value": "diagnostico", "label": "Fazer diagnóstico básico"},
-                {"value": "transferir", "label": "Transferir direto para Suporte"}
+                {"value": "perguntas_antes", "label": "Fazer algumas perguntas antes de transferir"},
+                {"value": "transferir_direto", "label": "Transferir direto para Suporte"}
               ]
             },
             {
               "id": "perguntas_tv",
-              "pergunta": "Quais perguntas básicas fazer para diagnóstico de TV?",
+              "pergunta": "Quais perguntas a IA deve fazer antes de transferir?",
               "tipo": "textarea",
               "obrigatoria": false,
-              "condicional": "diagnostico_tv == 'diagnostico'",
+              "condicional": "fluxo_suporte_tv == 'perguntas_antes'",
               "placeholder": "Ex: 'TV está ligando? Aparece mensagem de erro? Todos os canais estão sem sinal ou só alguns?'",
-              "hint": "Liste as perguntas de diagnóstico básico"
+              "hint": "Liste as perguntas que a IA deve fazer antes de transferir"
             },
             {
               "id": "suporte_telefonia_fixa",
@@ -960,6 +1060,26 @@
               ]
             },
             {
+              "id": "fluxo_suporte_telefonia_fixa",
+              "pergunta": "Para suporte de Telefonia Fixa, a IA deve:",
+              "tipo": "select",
+              "obrigatoria": false,
+              "condicional": "suporte_telefonia_fixa == 'sim'",
+              "opcoes": [
+                {"value": "perguntas_antes", "label": "Fazer algumas perguntas antes de transferir"},
+                {"value": "transferir_direto", "label": "Transferir direto para Suporte"}
+              ]
+            },
+            {
+              "id": "perguntas_telefonia_fixa",
+              "pergunta": "Quais perguntas a IA deve fazer antes de transferir?",
+              "tipo": "textarea",
+              "obrigatoria": false,
+              "condicional": "fluxo_suporte_telefonia_fixa == 'perguntas_antes'",
+              "placeholder": "Ex: 'A linha está muda? Consegue fazer ligações? Só receber não funciona?'",
+              "hint": "Liste as perguntas que a IA deve fazer antes de transferir"
+            },
+            {
               "id": "suporte_telefonia_movel",
               "pergunta": "Vocês oferecem suporte de Telefonia Móvel?",
               "tipo": "select",
@@ -968,107 +1088,26 @@
                 {"value": "sim", "label": "Sim"},
                 {"value": "nao", "label": "Não"}
               ]
-            }
-          ]
-        },
-
-        "casos_especificos_suporte": {
-          "titulo": "Casos Específicos",
-          "icone": "🔍",
-          "perguntas": [
-            {
-              "id": "login_senha_app",
-              "pergunta": "Qual o nome do aplicativo de vocês para cliente?",
-              "tipo": "text",
-              "obrigatoria": false,
-              "placeholder": "Ex: 'Meu Provedor', 'App Conecta'",
-              "hint": "A IA pode informar ao cliente"
-            }
-          ]
-        },
-
-
-        "integracoes_tecnicas": {
-          "titulo": "Integrações Técnicas",
-          "icone": "🔗",
-          "perguntas": [
-            {
-              "id": "sistema_erp",
-              "pergunta": "Qual sistema de gestão/ERP vocês usam?",
-              "tipo": "select",
-              "obrigatoria": true,
-              "opcoes": [
-                {"value": "mk_solutions", "label": "MK Solutions"},
-                {"value": "ixcsoft", "label": "IXCSoft"},
-                {"value": "rbxsoft", "label": "RBXSoft"},
-                {"value": "voalle", "label": "Voalle"},
-                {"value": "sgp", "label": "SGP"},
-                {"value": "hubsoft", "label": "Hubsoft"},
-                {"value": "integrator", "label": "Integrator"},
-                {"value": "conesul", "label": "Conesul"},
-                {"value": "outro", "label": "Outro"}
-              ]
             },
             {
-              "id": "sistema_erp_outro",
-              "pergunta": "Qual ERP vocês usam?",
-              "tipo": "text",
-              "obrigatoria": false,
-              "condicional": "sistema_erp == 'outro'",
-              "placeholder": "Nome do sistema"
-            },
-            {
-              "id": "erp_tem_api",
-              "pergunta": "Vocês têm acesso à API do sistema?",
-              "tipo": "select",
-              "obrigatoria": true,
-              "opcoes": [
-                {"value": "sim", "label": "Sim, temos API ativa"},
-                {"value": "nao", "label": "Não temos ou não sabemos"}
-              ]
-            },
-            {
-              "id": "sistema_viabilidade",
-              "pergunta": "Em qual sistema vocês consultam se tem viabilidade no endereço do cliente?",
-              "tipo": "select",
-              "obrigatoria": true,
-              "opcoes": [
-                {"value": "geogrid", "label": "GeoGrid"},
-                {"value": "ozmaps", "label": "OZMaps"},
-                {"value": "outro", "label": "Outro"},
-                {"value": "nenhum", "label": "Não temos"}
-              ]
-            },
-            {
-              "id": "sistema_viabilidade_outro",
-              "pergunta": "Qual sistema de viabilidade?",
-              "tipo": "text",
-              "obrigatoria": false,
-              "condicional": "sistema_viabilidade == 'outro'",
-              "placeholder": "Nome do sistema"
-            },
-            {
-              "id": "rede_documentada",
-              "pergunta": "A rede está bem documentada ou boa parte não consta no sistema?",
-              "tipo": "select",
-              "obrigatoria": true,
-              "opcoes": [
-                {"value": "bem_documentada", "label": "Bem documentada (>80% mapeado)"},
-                {"value": "parcialmente", "label": "Parcialmente documentada (40-80%)"},
-                {"value": "pouco_documentada", "label": "Pouco documentada (<40%)"}
-              ]
-            },
-            {
-              "id": "usar_base_conhecimento_ceps",
-              "pergunta": "Podemos colocar os CEPs e endereços em base de conhecimento para que a IA tenha contexto?",
+              "id": "fluxo_suporte_telefonia_movel",
+              "pergunta": "Para suporte de Telefonia Móvel, a IA deve:",
               "tipo": "select",
               "obrigatoria": false,
-              "condicional": "rede_documentada == 'pouco_documentada'",
-              "hint": "Você nos fornecerá lista de CEPs/ruas atendidas e a IA usará como referência",
+              "condicional": "suporte_telefonia_movel == 'sim'",
               "opcoes": [
-                {"value": "sim", "label": "Sim"},
-                {"value": "nao", "label": "Não"}
+                {"value": "perguntas_antes", "label": "Fazer algumas perguntas antes de transferir"},
+                {"value": "transferir_direto", "label": "Transferir direto para Suporte"}
               ]
+            },
+            {
+              "id": "perguntas_telefonia_movel",
+              "pergunta": "Quais perguntas a IA deve fazer antes de transferir?",
+              "tipo": "textarea",
+              "obrigatoria": false,
+              "condicional": "fluxo_suporte_telefonia_movel == 'perguntas_antes'",
+              "placeholder": "Ex: 'O chip está funcionando? Aparece sinal na tela? Consegue fazer ligações?'",
+              "hint": "Liste as perguntas que a IA deve fazer antes de transferir"
             }
           ]
         }
