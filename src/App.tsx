@@ -20,8 +20,8 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/admin" element={<AdminOnboarding />} />
-          <Route path="/onboarding/:token" element={<OnboardingSession />} />
-          <Route path="/onboarding/:token/:departamento" element={<Onboarding />} />
+          <Route path="/:slug" element={<OnboardingSession />} />
+          <Route path="/:slug/:departamento" element={<Onboarding />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

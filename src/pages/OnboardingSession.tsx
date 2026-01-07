@@ -12,7 +12,7 @@ import { DepartmentId } from '@/types/onboarding';
 interface SessionData {
   id: string;
   empresa_nome: string;
-  access_token: string;
+  slug: string;
   status_sac_geral: string | null;
   status_financeiro: string | null;
   status_suporte: string | null;
@@ -80,7 +80,7 @@ const departmentConfig: Record<DepartmentId, {
 };
 
 const OnboardingSession = () => {
-  const { token } = useParams<{ token: string }>();
+  const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
   const [session, setSession] = useState<SessionData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -88,8 +88,8 @@ const OnboardingSession = () => {
 
   useEffect(() => {
     const fetchSession = async () => {
-      if (!token) {
-        setError('Token inválido');
+      if (!slug) {
+        setError('Link inválido');
         setLoading(false);
         return;
       }
@@ -97,7 +97,7 @@ const OnboardingSession = () => {
       const { data, error: fetchError } = await supabase
         .from('onboarding_sessions')
         .select('*')
-        .eq('access_token', token)
+        .eq('slug', slug)
         .maybeSingle();
 
       if (fetchError) {
@@ -112,7 +112,7 @@ const OnboardingSession = () => {
     };
 
     fetchSession();
-  }, [token]);
+  }, [slug]);
 
   const getDepartmentStatus = (deptId: DepartmentId) => {
     if (!session) return { completed: false, responsavel: null, completedAt: null };
@@ -138,7 +138,7 @@ const OnboardingSession = () => {
       toast.error('Este departamento já foi preenchido');
       return;
     }
-    navigate(`/onboarding/${token}/${deptId}`);
+    navigate(`/${slug}/${deptId}`);
   };
 
   const getCompletedCount = () => {

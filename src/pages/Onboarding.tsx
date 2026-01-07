@@ -29,7 +29,7 @@ const departmentColors = {
 };
 
 export default function Onboarding() {
-  const { token, departamento: urlDepartamento } = useParams<{ token: string; departamento: string }>();
+  const { slug, departamento: urlDepartamento } = useParams<{ slug: string; departamento: string }>();
   const navigate = useNavigate();
   const { toast } = useToast();
   const [step, setStep] = useState<Step>('perguntas');
@@ -60,10 +60,10 @@ export default function Onboarding() {
     resetOnboarding
   } = useOnboarding();
 
-  // Load session data from token
+  // Load session data from slug
   useEffect(() => {
     const loadSession = async () => {
-      if (!token || !urlDepartamento) {
+      if (!slug || !urlDepartamento) {
         navigate('/');
         return;
       }
@@ -78,7 +78,7 @@ export default function Onboarding() {
       const { data: session, error: sessionError } = await supabase
         .from('onboarding_sessions')
         .select('*')
-        .eq('access_token', token)
+        .eq('slug', slug)
         .maybeSingle();
 
       if (sessionError || !session) {
@@ -99,7 +99,7 @@ export default function Onboarding() {
           description: 'Este departamento já foi respondido.',
           variant: 'destructive',
         });
-        navigate(`/onboarding/${token}`);
+        navigate(`/${slug}`);
         return;
       }
 
@@ -111,7 +111,7 @@ export default function Onboarding() {
     };
 
     loadSession();
-  }, [token, urlDepartamento, navigate, toast, setEmpresaNome, setDepartamento]);
+  }, [slug, urlDepartamento, navigate, toast, setEmpresaNome, setDepartamento]);
 
   const validateCurrentQuestion = () => {
     if (!currentQuestion) return true;
@@ -182,7 +182,7 @@ export default function Onboarding() {
     setError('');
     if (step === 'perguntas') {
       if (isFirstQuestion) {
-        navigate(`/onboarding/${token}`);
+        navigate(`/${slug}`);
       } else {
         previousQuestion();
       }
@@ -536,7 +536,7 @@ export default function Onboarding() {
 
               <div className="flex flex-col gap-3">
                 <Button 
-                  onClick={() => navigate(`/onboarding/${token}`)}
+                  onClick={() => navigate(`/${slug}`)}
                   className="bg-pipeelo-green hover:bg-pipeelo-green/90"
                   size="lg"
                 >

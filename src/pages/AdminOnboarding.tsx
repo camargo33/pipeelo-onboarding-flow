@@ -11,7 +11,7 @@ import { PipeeloLogo } from '@/components/PipeeloLogo';
 interface OnboardingSession {
   id: string;
   empresa_nome: string;
-  access_token: string;
+  slug: string;
   ceo_email: string | null;
   created_at: string;
   status_sac_geral: string | null;
@@ -75,13 +75,13 @@ const AdminOnboarding = () => {
     setCreating(false);
   };
 
-  const getOnboardingUrl = (token: string) => {
+  const getOnboardingUrl = (slug: string) => {
     const baseUrl = window.location.origin;
-    return `${baseUrl}/onboarding/${token}`;
+    return `${baseUrl}/${slug}`;
   };
 
-  const copyLink = (token: string) => {
-    navigator.clipboard.writeText(getOnboardingUrl(token));
+  const copyLink = (slug: string) => {
+    navigator.clipboard.writeText(getOnboardingUrl(slug));
     toast.success('Link copiado!');
   };
 
@@ -214,7 +214,7 @@ const AdminOnboarding = () => {
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => copyLink(session.access_token)}
+                        onClick={() => copyLink(session.slug)}
                       >
                         <Copy className="w-4 h-4 mr-2" />
                         Copiar Link
@@ -222,7 +222,7 @@ const AdminOnboarding = () => {
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => window.open(getOnboardingUrl(session.access_token), '_blank')}
+                        onClick={() => window.open(getOnboardingUrl(session.slug), '_blank')}
                       >
                         <ExternalLink className="w-4 h-4" />
                       </Button>
