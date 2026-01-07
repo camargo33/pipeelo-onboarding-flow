@@ -67,6 +67,7 @@ export type Database = {
           responsavel_sac_geral: string | null
           responsavel_suporte: string | null
           responsavel_vendas: string | null
+          slug: string | null
           status_financeiro: string | null
           status_sac_geral: string | null
           status_suporte: string | null
@@ -87,6 +88,7 @@ export type Database = {
           responsavel_sac_geral?: string | null
           responsavel_suporte?: string | null
           responsavel_vendas?: string | null
+          slug?: string | null
           status_financeiro?: string | null
           status_sac_geral?: string | null
           status_suporte?: string | null
@@ -107,6 +109,7 @@ export type Database = {
           responsavel_sac_geral?: string | null
           responsavel_suporte?: string | null
           responsavel_vendas?: string | null
+          slug?: string | null
           status_financeiro?: string | null
           status_sac_geral?: string | null
           status_suporte?: string | null
@@ -120,7 +123,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      generate_slug: { Args: { nome: string }; Returns: string }
     }
     Enums: {
       [_ in never]: never
