@@ -763,7 +763,7 @@
               "condicional": "sequencia_customizada == 'customizada'",
               "placeholder": "Ex: 1) Verificar inadimplência, 2) Pedir cliente reiniciar roteador, 3) ...",
               "hint": "Descreva passo a passo a ordem das verificações"
-            },
+            }
           ]
         },
 
