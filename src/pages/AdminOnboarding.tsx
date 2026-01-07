@@ -5,8 +5,9 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
-import { Copy, Plus, Building2, ExternalLink, Check, Clock, RefreshCw, Trash2, Loader2 } from 'lucide-react';
+import { Copy, Plus, Building2, ExternalLink, Check, Clock, RefreshCw, Trash2, Loader2, LogOut } from 'lucide-react';
 import { PipeeloLogo } from '@/components/PipeeloLogo';
+import { AdminLogin } from '@/components/AdminLogin';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -44,6 +45,7 @@ const AdminOnboarding = () => {
   const [refreshing, setRefreshing] = useState(false);
   const [creating, setCreating] = useState(false);
   const [deleting, setDeleting] = useState<string | null>(null);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
 
   const fetchSessions = async (showRefresh = false) => {
     if (showRefresh) setRefreshing(true);
@@ -64,8 +66,28 @@ const AdminOnboarding = () => {
   };
 
   useEffect(() => {
-    fetchSessions();
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      setIsAuthenticated(!!session);
+      if (session) {
+        fetchSessions();
+      }
+    });
+
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setIsAuthenticated(!!session);
+      if (session) {
+        fetchSessions();
+      }
+    });
+
+    return () => subscription.unsubscribe();
   }, []);
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    setIsAuthenticated(false);
+    toast.success('Logout realizado');
+  };
 
   const createSession = async () => {
     if (!empresaNome.trim()) {
@@ -179,13 +201,31 @@ const AdminOnboarding = () => {
     return getCompletedCount(session) === 4;
   };
 
+  if (isAuthenticated === null) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return <AdminLogin onSuccess={() => setIsAuthenticated(true)} />;
+  }
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
       <header className="border-b border-border/40 bg-card/50 backdrop-blur-sm">
         <div className="container mx-auto px-6 py-4 flex items-center justify-between">
           <PipeeloLogo className="h-8" />
-          <h1 className="text-lg font-semibold text-foreground">Gerador de Links</h1>
+          <div className="flex items-center gap-4">
+            <h1 className="text-lg font-semibold text-foreground">Gerador de Links</h1>
+            <Button variant="ghost" size="sm" onClick={handleLogout}>
+              <LogOut className="w-4 h-4 mr-2" />
+              Sair
+            </Button>
+          </div>
         </div>
       </header>
 
