@@ -1,6 +1,10 @@
+import pipeeloLogo from "@/assets/pipeelo-logo.png";
+import pipeeloIcon from "@/assets/pipeelo-icon.png";
+
 interface PipeeloLogoProps {
   className?: string;
   size?: "sm" | "md" | "lg";
+  iconOnly?: boolean;
 }
 
 const sizeClasses = {
@@ -9,27 +13,22 @@ const sizeClasses = {
   lg: "h-10",
 };
 
-export const PipeeloLogo = ({ className = "", size = "md" }: PipeeloLogoProps) => {
+export const PipeeloLogo = ({ className = "", size = "md", iconOnly = false }: PipeeloLogoProps) => {
+  if (iconOnly) {
+    return (
+      <img 
+        src={pipeeloIcon} 
+        alt="Pipeelo" 
+        className={`${sizeClasses[size]} ${className}`}
+      />
+    );
+  }
+
   return (
-    <div className={`flex items-center gap-2 ${className}`}>
-      {/* Pipeelo Icon */}
-      <svg
-        className={sizeClasses[size]}
-        viewBox="0 0 40 40"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <circle cx="20" cy="20" r="18" className="fill-primary" />
-        <circle cx="20" cy="20" r="8" className="fill-background" />
-        <circle cx="20" cy="20" r="4" className="fill-primary" />
-      </svg>
-      
-      {/* Pipeelo Text */}
-      <span className={`font-bold tracking-tight text-foreground ${
-        size === "sm" ? "text-lg" : size === "md" ? "text-xl" : "text-2xl"
-      }`}>
-        PIPEELO
-      </span>
-    </div>
+    <img 
+      src={pipeeloLogo} 
+      alt="Pipeelo" 
+      className={`${sizeClasses[size]} ${className}`}
+    />
   );
 };
