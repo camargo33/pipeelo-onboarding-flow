@@ -361,11 +361,45 @@ export default function Onboarding() {
                           const resposta = state.respostas[q.id];
                           if (resposta === undefined || resposta === '') return null;
                           
-                          let displayValue = resposta;
-                          if (Array.isArray(resposta)) {
+                          let displayValue: string = '';
+                          
+                          if (q.tipo === 'checkbox_multiple') {
+                            const selected = resposta?.selected || (Array.isArray(resposta) ? resposta : []);
+                            const labels = selected.map((v: string) => {
+                              const opt = q.opcoes?.find((o: any) => o.value === v);
+                              return opt?.label || v;
+                            });
+                            if (resposta?.outroTexto) {
+                              labels.push(resposta.outroTexto);
+                            }
+                            displayValue = labels.join(', ');
+                          } else if (q.tipo === 'horario_semanal' && typeof resposta === 'object') {
+                            const parts = [];
+                            if (resposta.segunda_sexta && !resposta.segunda_sexta.nao_atende) {
+                              parts.push(`Seg-Sex: ${resposta.segunda_sexta.inicio} às ${resposta.segunda_sexta.fim}`);
+                            }
+                            if (resposta.sabado && !resposta.sabado.nao_atende) {
+                              parts.push(`Sáb: ${resposta.sabado.inicio} às ${resposta.sabado.fim}`);
+                            } else if (resposta.sabado?.nao_atende) {
+                              parts.push('Sáb: Não atende');
+                            }
+                            if (resposta.domingo_feriado && !resposta.domingo_feriado.nao_atende) {
+                              parts.push(`Dom/Feriado: ${resposta.domingo_feriado.inicio} às ${resposta.domingo_feriado.fim}`);
+                            } else if (resposta.domingo_feriado?.nao_atende) {
+                              parts.push('Dom/Feriado: Não atende');
+                            }
+                            displayValue = parts.join(' | ');
+                          } else if (q.tipo === 'url_optional' && resposta === 'NAO_POSSUI') {
+                            displayValue = 'Não possui portal/área do cliente';
+                          } else if (q.tipo === 'select') {
+                            const opt = q.opcoes?.find((o: any) => o.value === resposta);
+                            displayValue = opt?.label || resposta;
+                          } else if (Array.isArray(resposta)) {
                             displayValue = resposta.join(', ');
                           } else if (q.tipo === 'currency') {
                             displayValue = `R$ ${resposta}`;
+                          } else {
+                            displayValue = String(resposta);
                           }
                           
                           return (
