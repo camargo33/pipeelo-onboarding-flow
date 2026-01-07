@@ -379,12 +379,46 @@ export function QuestionRenderer({
         );
 
       case 'info':
+        // Parse numbered steps from text (e.g., "1. Step one 2. Step two")
+        const parseSteps = (text: string) => {
+          const stepRegex = /(\d+)\.\s*([^0-9]+?)(?=\s*\d+\.|$)/g;
+          const steps: { num: string; text: string }[] = [];
+          let match;
+          
+          while ((match = stepRegex.exec(text)) !== null) {
+            steps.push({ num: match[1], text: match[2].trim() });
+          }
+          
+          return steps.length > 1 ? steps : null;
+        };
+        
+        const steps = question.texto ? parseSteps(question.texto) : null;
+        
         return (
-          <div className="bg-muted/50 rounded-lg p-4 border border-border">
-            <div className="flex gap-3">
-              <Info className="h-5 w-5 text-pipeelo-blue shrink-0 mt-0.5" />
-              <p className="text-muted-foreground">{question.texto}</p>
-            </div>
+          <div className="bg-muted/50 rounded-xl p-5 border border-border">
+            {steps ? (
+              <div className="space-y-3">
+                <div className="flex items-center gap-2 mb-4">
+                  <Info className="h-5 w-5 text-pipeelo-blue shrink-0" />
+                  <span className="font-medium text-foreground">Sequência padrão:</span>
+                </div>
+                <ol className="space-y-3">
+                  {steps.map((step, index) => (
+                    <li key={index} className="flex gap-3 items-start">
+                      <span className="flex-shrink-0 w-6 h-6 rounded-full bg-pipeelo-blue/10 text-pipeelo-blue text-sm font-medium flex items-center justify-center">
+                        {step.num}
+                      </span>
+                      <span className="text-muted-foreground leading-relaxed pt-0.5">{step.text}</span>
+                    </li>
+                  ))}
+                </ol>
+              </div>
+            ) : (
+              <div className="flex gap-3">
+                <Info className="h-5 w-5 text-pipeelo-blue shrink-0 mt-0.5" />
+                <p className="text-muted-foreground leading-relaxed">{question.texto}</p>
+              </div>
+            )}
           </div>
         );
 
