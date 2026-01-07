@@ -2,3 +2,6 @@ project_id = "huaukjryiokrgpouzjvz"
 
 [functions.send-onboarding-email]
 verify_jwt = false
+
+[functions.send-webhook-complete]
+verify_jwt = false
