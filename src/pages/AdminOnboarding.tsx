@@ -129,8 +129,7 @@ const AdminOnboarding = () => {
   };
 
   const getOnboardingUrl = (slug: string) => {
-    const baseUrl = window.location.origin;
-    return `${baseUrl}/${slug}`;
+    return `https://onboarding.pipeelo.com/${slug}`;
   };
 
   const copyLink = (slug: string) => {
