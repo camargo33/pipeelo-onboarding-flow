@@ -1241,8 +1241,8 @@
               "tipo": "select",
               "obrigatoria": true,
               "opcoes": [
-                {"value": "ia_resolve", "label": "IA pode processar upgrade"},
-                {"value": "transfere", "label": "Transfere para Comercial"}
+                {"value": "coleta_os_transfere", "label": "Coleta as informações, abre OS e transfere para o comercial"},
+                {"value": "dados_basicos_transfere", "label": "Pega dados básicos e transfere"}
               ]
             },
             {
@@ -1277,10 +1277,28 @@
               ]
             },
             {
+              "id": "taxa_instalacao_info",
+              "pergunta": "Sobre a taxa de instalação",
+              "tipo": "info",
+              "obrigatoria": false,
+              "texto": "O que funciona bem para nossos clientes é dizer que o valor da taxa de instalação será informado pela equipe comercial, pois a maioria das empresas prefere analisar cada caso diretamente com sua equipe."
+            },
+            {
+              "id": "taxa_instalacao_modelo",
+              "pergunta": "Esse modelo funciona para vocês?",
+              "tipo": "select",
+              "obrigatoria": true,
+              "opcoes": [
+                {"value": "sim", "label": "Sim, equipe comercial informa o valor"},
+                {"value": "nao", "label": "Não, prefiro definir regras fixas"}
+              ]
+            },
+            {
               "id": "taxa_instalacao",
               "pergunta": "Existe taxa de instalação?",
               "tipo": "select",
-              "obrigatoria": true,
+              "obrigatoria": false,
+              "condicional": "taxa_instalacao_modelo == 'nao'",
               "opcoes": [
                 {"value": "sim", "label": "Sim, sempre cobra"},
                 {"value": "promocional", "label": "Depende da promoção"},
@@ -1292,7 +1310,7 @@
               "pergunta": "Qual o valor da taxa de instalação?",
               "tipo": "currency",
               "obrigatoria": false,
-              "condicional": "taxa_instalacao == 'sim'",
+              "condicional": "taxa_instalacao_modelo == 'nao' && taxa_instalacao == 'sim'",
               "placeholder": "Ex: 100.00"
             },
             {
@@ -1300,7 +1318,7 @@
               "pergunta": "Quando a taxa de instalação é cobrada?",
               "tipo": "select",
               "obrigatoria": false,
-              "condicional": "taxa_instalacao == 'sim' || taxa_instalacao == 'promocional'",
+              "condicional": "taxa_instalacao_modelo == 'nao' && (taxa_instalacao == 'sim' || taxa_instalacao == 'promocional')",
               "opcoes": [
                 {"value": "antecipado", "label": "Antecipado (antes da instalação)"},
                 {"value": "primeira_fatura", "label": "Na primeira fatura"},
