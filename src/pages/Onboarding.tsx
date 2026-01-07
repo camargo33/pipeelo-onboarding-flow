@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, ArrowRight, Check, Building2, DollarSign, Wrench, TrendingUp } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Check, Building2, DollarSign, Wrench, TrendingUp, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { PipeeloLogo } from '@/components/PipeeloLogo';
@@ -11,6 +11,7 @@ import { DepartmentSelector } from '@/components/onboarding/DepartmentSelector';
 import { useOnboarding } from '@/hooks/useOnboarding';
 import { DepartmentId } from '@/types/onboarding';
 import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 
 type Step = 'empresa' | 'departamento' | 'perguntas' | 'resumo' | 'sucesso';
 
@@ -33,6 +34,8 @@ export default function Onboarding() {
   const { toast } = useToast();
   const [step, setStep] = useState<Step>('empresa');
   const [error, setError] = useState<string>('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [sessionId, setSessionId] = useState<string | null>(null);
   
   const {
     state,
@@ -149,13 +152,94 @@ export default function Onboarding() {
     }
   };
 
-  const handleSubmit = () => {
-    // TODO: Save to database
-    toast({
-      title: "Onboarding enviado!",
-      description: `O departamento ${departamentoData?.nome} foi completado com sucesso.`,
-    });
-    setStep('sucesso');
+  const handleSubmit = async () => {
+    if (!state.departamento || !departamentoData) return;
+    
+    setIsSubmitting(true);
+    
+    try {
+      // 1. Create or get session
+      let currentSessionId = sessionId;
+      
+      if (!currentSessionId) {
+        const { data: newSession, error: sessionError } = await supabase
+          .from('onboarding_sessions')
+          .insert({
+            empresa_nome: state.empresaNome,
+          })
+          .select('id')
+          .single();
+        
+        if (sessionError) throw sessionError;
+        currentSessionId = newSession.id;
+        setSessionId(currentSessionId);
+      }
+      
+      // 2. Save all responses
+      const respostasToInsert = Object.entries(state.respostas).map(([perguntaId, resposta]) => ({
+        session_id: currentSessionId,
+        departamento: state.departamento!,
+        pergunta_id: perguntaId,
+        resposta: resposta,
+      }));
+      
+      const { error: respostasError } = await supabase
+        .from('onboarding_respostas')
+        .upsert(respostasToInsert, { 
+          onConflict: 'session_id,departamento,pergunta_id' 
+        });
+      
+      if (respostasError) throw respostasError;
+      
+      // 3. Update session status for this department
+      const statusField = `status_${state.departamento}` as const;
+      const responsavelField = `responsavel_${state.departamento}` as const;
+      const concluidoField = `concluido_${state.departamento}_at` as const;
+      
+      const { error: updateError } = await supabase
+        .from('onboarding_sessions')
+        .update({
+          [statusField]: 'concluido',
+          [responsavelField]: state.responsavelNome,
+          [concluidoField]: new Date().toISOString(),
+        })
+        .eq('id', currentSessionId);
+      
+      if (updateError) throw updateError;
+      
+      // 4. Send email notification
+      const { error: emailError } = await supabase.functions.invoke('send-onboarding-email', {
+        body: {
+          empresaNome: state.empresaNome,
+          departamento: state.departamento,
+          departamentoNome: departamentoData.nome,
+          responsavelNome: state.responsavelNome,
+          respostas: state.respostas,
+          sessionId: currentSessionId,
+        },
+      });
+      
+      if (emailError) {
+        console.error('Error sending email:', emailError);
+        // Don't throw - email failure shouldn't block success
+      }
+      
+      toast({
+        title: "Onboarding enviado!",
+        description: `O departamento ${departamentoData.nome} foi completado com sucesso.`,
+      });
+      
+      setStep('sucesso');
+    } catch (error: any) {
+      console.error('Error submitting onboarding:', error);
+      toast({
+        title: "Erro ao enviar",
+        description: error.message || "Ocorreu um erro ao salvar as respostas. Tente novamente.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const DeptIcon = state.departamento ? departmentIcons[state.departamento] : null;
@@ -441,9 +525,19 @@ export default function Onboarding() {
                   onClick={handleNext}
                   className="flex-1 bg-pipeelo-green hover:bg-pipeelo-green/90"
                   size="lg"
+                  disabled={isSubmitting}
                 >
-                  <Check className="mr-2 h-4 w-4" />
-                  Confirmar e Enviar
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Enviando...
+                    </>
+                  ) : (
+                    <>
+                      <Check className="mr-2 h-4 w-4" />
+                      Confirmar e Enviar
+                    </>
+                  )}
                 </Button>
               </div>
             </motion.div>
