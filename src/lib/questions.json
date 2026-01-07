@@ -28,7 +28,7 @@
               "pergunta": "Qual o nome oficial da empresa para uso nos atendimentos?",
               "tipo": "text",
               "obrigatoria": true,
-              "placeholder": "Ex: Proxxima Telecom Ltda",
+              "placeholder": "Ex: Pipeelo Telecom Ltda",
               "validacao": "min:3"
             },
             {
