@@ -48,6 +48,22 @@ const PROMPT_MAPPING = {
       { questionId: 'nps_nota_alta_acao', label: 'NPS nota alta (9-10)' },
       { questionId: 'nps_nota_alta_acao_outra', label: 'Outra ação NPS' },
     ],
+    processos_especiais: [
+      { questionId: 'cancelamento_coletar_motivo', label: 'Cancelamento: coletar motivo' },
+      { questionId: 'cancelamento_tentar_reter', label: 'Cancelamento: tentar reter' },
+      { questionId: 'cancelamento_departamento', label: 'Cancelamento: departamento destino' },
+      { questionId: 'mudanca_endereco', label: 'Mudança endereço: departamento' },
+      { questionId: 'mudanca_endereco_taxa', label: 'Mudança endereço: taxa' },
+      { questionId: 'valor_mudanca_endereco', label: 'Mudança endereço: valor' },
+      { questionId: 'troca_titularidade_departamento', label: 'Troca titularidade: departamento' },
+      { questionId: 'troca_titularidade_documentos', label: 'Troca titularidade: dados coletar' },
+      { questionId: 'suspensao_temporaria_departamento', label: 'Suspensão: departamento' },
+      { questionId: 'suspensao_periodo', label: 'Suspensão: período' },
+      { questionId: 'suspensao_cobranca', label: 'Suspensão: cobrança' },
+      { questionId: 'ponto_adicional_departamento', label: 'Ponto adicional: departamento' },
+      { questionId: 'ponto_adicional_taxa', label: 'Ponto adicional: taxa' },
+      { questionId: 'valor_ponto_adicional', label: 'Ponto adicional: valor' },
+    ],
   },
   financeiro: {
     secao_11_empresa: [
@@ -100,14 +116,12 @@ const PROMPT_MAPPING = {
     diagnostico: [
       { questionId: 'sequencia_customizada', label: 'Sequência diagnóstico (CASO 1)' },
       { questionId: 'sequencia_descricao', label: 'Descrição sequência' },
-      { questionId: 'tempo_desligar_roteador', label: 'Tempo desligar roteador (segundos)' },
     ],
     integracoes: [
       { questionId: 'reset_onu_tipo', label: 'Reset ONU' },
       { questionId: 'porcentagem_onus_mapeadas', label: '% ONUs mapeadas' },
-      { questionId: 'sistema_monitoramento', label: 'Sistema monitoramento' },
-      { questionId: 'sistema_erp', label: 'Sistema ERP' },
-      { questionId: 'sistema_viabilidade', label: 'Sistema viabilidade' },
+      { questionId: 'sistema_gerenciamento', label: 'Sistema gerenciamento de redes' },
+      { questionId: 'protocolo_tr069', label: 'Protocolo TR-069 ativo' },
     ],
     alteracoes_remotas: [
       { questionId: 'troca_senha_wifi', label: 'Troca senha WiFi' },
@@ -122,14 +136,7 @@ const PROMPT_MAPPING = {
       { questionId: 'suporte_telefonia_movel', label: 'Telefonia móvel' },
     ],
     casos_especiais: [
-      { questionId: 'mudanca_endereco', label: 'Mudança endereço (CASO 2)' },
-      { questionId: 'mudanca_endereco_taxa', label: 'Taxa mudança' },
-      { questionId: 'valor_mudanca_endereco', label: 'Valor taxa mudança' },
-      { questionId: 'redirecionamento_porta', label: 'Redirecionamento porta (CASO 3)' },
-      { questionId: 'login_senha_app', label: 'Nome app cliente (CASO 4)' },
-      { questionId: 'cancelamento_coletar_motivo', label: 'Cancelamento: coletar motivo' },
-      { questionId: 'cancelamento_tentar_reter', label: 'Cancelamento: tentar reter' },
-      { questionId: 'cancelamento_departamento', label: 'Cancelamento: departamento destino' },
+      { questionId: 'login_senha_app', label: 'Nome app cliente' },
     ],
   },
   vendas: {
