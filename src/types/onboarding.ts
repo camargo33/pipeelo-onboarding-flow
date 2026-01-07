@@ -66,7 +66,7 @@ export interface OnboardingSession {
   empresa_id: string;
   empresa_nome: string;
   ceo_email: string;
-  status: 'em_andamento' | 'completo';
+  status: 'pendente' | 'em_andamento' | 'concluido';
   created_at: string;
   completed_at: string | null;
   

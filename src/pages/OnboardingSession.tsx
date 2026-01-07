@@ -111,7 +111,7 @@ const OnboardingSession = () => {
 
     const info = statusMap[deptId];
     return {
-      completed: info.status === 'completo',
+      completed: info.status === 'concluido',
       responsavel: info.responsavel,
       completedAt: info.completedAt,
     };
@@ -129,10 +129,10 @@ const OnboardingSession = () => {
   const getCompletedCount = () => {
     if (!session) return 0;
     let count = 0;
-    if (session.status_sac_geral === 'completo') count++;
-    if (session.status_financeiro === 'completo') count++;
-    if (session.status_suporte === 'completo') count++;
-    if (session.status_vendas === 'completo') count++;
+    if (session.status_sac_geral === 'concluido') count++;
+    if (session.status_financeiro === 'concluido') count++;
+    if (session.status_suporte === 'concluido') count++;
+    if (session.status_vendas === 'concluido') count++;
     return count;
   };
 
