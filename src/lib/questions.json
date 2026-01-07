@@ -250,15 +250,22 @@
             },
             {
               "id": "nps_nota_alta_acao",
-              "pergunta": "Para notas altas (9-10) no NPS, existe alguma ação especial?",
+              "pergunta": "Para notas altas (9-10) no NPS, você gostaria de solicitar uma avaliação no Google ou alguma outra ação específica?",
               "tipo": "select",
               "obrigatoria": true,
               "opcoes": [
-                {"value": "pedir_indicacao", "label": "Pedir indicação de amigos"},
-                {"value": "pedir_avaliacao_google", "label": "Solicitar avaliação no Google"},
-                {"value": "agradecer", "label": "Apenas agradecer"},
-                {"value": "nada", "label": "Nenhuma ação especial"}
+                {"value": "avaliacao_google", "label": "Sim, gostaria de solicitar avaliação no Google"},
+                {"value": "outra_acao", "label": "Gostaria de outra solicitação"},
+                {"value": "nenhuma", "label": "Nenhuma ação especial"}
               ]
+            },
+            {
+              "id": "nps_nota_alta_acao_outra",
+              "pergunta": "Qual solicitação você gostaria de fazer?",
+              "tipo": "text",
+              "obrigatoria": true,
+              "condicional": "nps_nota_alta_acao == 'outra_acao'",
+              "placeholder": "Descreva a ação desejada..."
             }
           ]
         }
