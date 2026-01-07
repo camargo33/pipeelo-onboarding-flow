@@ -5,7 +5,7 @@
     "tempo_total_estimado": "55-70 minutos",
     "descricao": "Sistema de onboarding completo Pipeelo - 4 departamentos independentes - Versão 2.0",
     "versao": "2.0",
-    "total_perguntas": 144
+    "total_perguntas": 145
   },
   
   "departamentos": {
@@ -385,6 +385,15 @@
                 {"value": "bloqueio_total", "label": "Bloqueio total direto"},
                 {"value": "ambos", "label": "Redução, depois bloqueio se não pagar"}
               ]
+            },
+            {
+              "id": "fluxo_reducao_bloqueio",
+              "pergunta": "Explique como funciona o fluxo de redução e bloqueio:",
+              "tipo": "textarea",
+              "obrigatoria": false,
+              "condicional": "tipo_bloqueio == 'ambos'",
+              "placeholder": "Ex: 'Redução de velocidade com 5 dias de atraso, depois bloqueio total com 10 dias'",
+              "hint": "Descreva os prazos e ações (redução em X dias, bloqueio total em Y dias)"
             },
             {
               "id": "liberacao_confianca",
