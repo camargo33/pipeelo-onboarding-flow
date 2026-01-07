@@ -309,28 +309,6 @@
               "placeholder": "Ex: 1, 7, 18"
             },
             {
-              "id": "unifica_boletos",
-              "pergunta": "Vocês unificam boletos de múltiplos contratos do mesmo cliente?",
-              "tipo": "select",
-              "obrigatoria": true,
-              "opcoes": [
-                {"value": "sim", "label": "Sim, unificamos automaticamente"},
-                {"value": "nao", "label": "Não, cada contrato tem boleto separado"},
-                {"value": "cliente_escolhe", "label": "Cliente pode escolher"}
-              ]
-            },
-            {
-              "id": "segunda_via_boleto",
-              "pergunta": "Como funciona a 2ª via de boleto?",
-              "tipo": "select",
-              "obrigatoria": true,
-              "opcoes": [
-                {"value": "mesmo_codigo", "label": "Mesmo código de barras, sem custo"},
-                {"value": "novo_codigo", "label": "Gera novo código com atualização de juros/multa"},
-                {"value": "taxa", "label": "Cobra taxa para 2ª via"}
-              ]
-            },
-            {
               "id": "emite_carnes",
               "pergunta": "Vocês emitem carnês?",
               "tipo": "select",
