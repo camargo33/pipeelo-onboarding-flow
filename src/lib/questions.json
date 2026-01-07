@@ -49,9 +49,10 @@
             {
               "id": "empresa_portal_cliente",
               "pergunta": "Qual o link do Portal/Central do cliente (área logada)?",
-              "tipo": "url",
+              "tipo": "url_optional",
               "obrigatoria": false,
-              "placeholder": "https://portal.exemplo.com.br"
+              "placeholder": "https://portal.exemplo.com.br",
+              "hint": "Cole o link ou clique no botão se não possuir"
             },
             {
               "id": "empresa_telefones",
@@ -72,9 +73,9 @@
             {
               "id": "horario_atendimento",
               "pergunta": "Qual o horário de atendimento padrão?",
-              "tipo": "text",
+              "tipo": "horario_semanal",
               "obrigatoria": true,
-              "placeholder": "Ex: Segunda a Sexta 8h-18h, Sábado 8h-12h"
+              "hint": "Defina os horários para cada período da semana"
             },
             {
               "id": "tem_plantao",
@@ -102,16 +103,6 @@
               "condicional": "tem_plantao == 'sim'",
               "placeholder": "18:00"
             },
-            {
-              "id": "regiao_fronteira",
-              "pergunta": "Vocês atendem regiões de fronteira com países vizinhos?",
-              "tipo": "select",
-              "obrigatoria": true,
-              "opcoes": [
-                {"value": "sim", "label": "Sim, precisamos de atendimento em espanhol"},
-                {"value": "nao", "label": "Não"}
-              ]
-            }
           ]
         },
 
@@ -145,22 +136,6 @@
               "obrigatoria": false,
               "placeholder": "Ex: 'Bah', 'Uai', gírias locais...",
               "hint": "Opcional - ajuda a IA se conectar melhor com a região"
-            }
-          ]
-        },
-
-        "tom_voz": {
-          "titulo": "Tom de Voz e Estilo de Comunicação",
-          "icone": "💬",
-          "descricao": "Use a ferramenta Pipeelo Voice para definir o tom ideal",
-          "perguntas": [
-            {
-              "id": "tom_voz_link",
-              "pergunta": "Acesse o Pipeelo Voice para definir o tom de comunicação da IA",
-              "tipo": "info_link",
-              "obrigatoria": false,
-              "link": "https://pipeelo-voice.lovable.app",
-              "hint": "Clique no link acima para abrir a ferramenta em outra aba. O resultado será enviado automaticamente para nosso sistema."
             }
           ]
         },
@@ -244,42 +219,15 @@
               ]
             },
             {
-              "id": "mensagem_fora_horario",
-              "pergunta": "Qual mensagem mostrar quando está fora do horário de atendimento?",
-              "tipo": "textarea",
-              "obrigatoria": true,
-              "placeholder": "Ex: 'No momento estamos fora do horário de atendimento. Nosso horário é de segunda a sexta, das 8h às 18h. Sua mensagem será respondida assim que retornarmos.'",
-              "hint": "Esta mensagem será exibida fora do horário comercial"
-            },
-            {
-              "id": "destino_por_horario",
-              "pergunta": "Existe diferença de destino por horário? (ex: depois das 18h vai para plantão)",
+              "id": "clientes_prioritarios",
+              "pergunta": "Os clientes de CNPJ e Link dedicado têm um tratamento diferente? Você gostaria de transferi-los diretamente aos atendentes com prioridade?",
               "tipo": "select",
               "obrigatoria": true,
               "opcoes": [
-                {"value": "sim", "label": "Sim"},
-                {"value": "nao", "label": "Não"}
-              ]
-            },
-            {
-              "id": "destino_por_horario_regras",
-              "pergunta": "Descreva as regras de destino por horário",
-              "tipo": "textarea",
-              "obrigatoria": false,
-              "condicional": "destino_por_horario == 'sim'",
-              "placeholder": "Ex: 'Após 18h e fins de semana: transfere para Plantão. Em horário comercial: transfere para departamento específico'",
-              "hint": "Seja específico sobre horários e destinos"
-            },
-            {
-              "id": "transferencia_imediata",
-              "pergunta": "Em quais situações a IA deve transferir IMEDIATAMENTE para humano?",
-              "tipo": "checkbox_multiple",
-              "obrigatoria": true,
-              "opcoes": [
-                {"value": "cliente_pede", "label": "Cliente pede para falar com atendente"},
-                {"value": "link_dedicado", "label": "Cliente de link dedicado"},
-                {"value": "contrato_cnpj", "label": "Cliente com contrato CNPJ"},
-                {"value": "casos_complexos", "label": "Casos que IA não consegue resolver"}
+                {"value": "sim_ambos", "label": "Sim, transferir CNPJ e Link Dedicado com prioridade"},
+                {"value": "apenas_cnpj", "label": "Apenas clientes CNPJ"},
+                {"value": "apenas_link", "label": "Apenas Link Dedicado"},
+                {"value": "nao", "label": "Não, tratamento igual para todos"}
               ]
             }
           ]

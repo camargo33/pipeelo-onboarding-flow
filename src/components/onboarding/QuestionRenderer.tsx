@@ -5,14 +5,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
-import { ExternalLink, Info } from 'lucide-react';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { ExternalLink, Info, X } from 'lucide-react';
 
 interface QuestionRendererProps {
   question: Question;
@@ -22,6 +15,23 @@ interface QuestionRendererProps {
   error?: string;
 }
 
+interface HorarioSemanal {
+  segunda_sexta: { inicio: string; fim: string; nao_atende: boolean };
+  sabado: { inicio: string; fim: string; nao_atende: boolean };
+  domingo_feriado: { inicio: string; fim: string; nao_atende: boolean };
+}
+
+interface CheckboxMultipleValue {
+  selected: string[];
+  outroTexto?: string;
+}
+
+const defaultHorario: HorarioSemanal = {
+  segunda_sexta: { inicio: '08:00', fim: '18:00', nao_atende: false },
+  sabado: { inicio: '08:00', fim: '12:00', nao_atende: false },
+  domingo_feriado: { inicio: '', fim: '', nao_atende: true }
+};
+
 export function QuestionRenderer({ 
   question, 
   value, 
@@ -30,9 +40,26 @@ export function QuestionRenderer({
   error 
 }: QuestionRendererProps) {
   const [localValue, setLocalValue] = useState(value ?? '');
+  const [naoTemPortal, setNaoTemPortal] = useState(value === 'NAO_POSSUI');
 
   useEffect(() => {
-    setLocalValue(value ?? (question.tipo === 'checkbox_multiple' ? [] : ''));
+    if (question.tipo === 'checkbox_multiple') {
+      // Migrar valor antigo (array) para novo formato (objeto)
+      if (Array.isArray(value)) {
+        setLocalValue({ selected: value, outroTexto: '' });
+      } else if (value && typeof value === 'object' && 'selected' in value) {
+        setLocalValue(value);
+      } else {
+        setLocalValue({ selected: [], outroTexto: '' });
+      }
+    } else if (question.tipo === 'horario_semanal') {
+      setLocalValue(value && typeof value === 'object' ? value : defaultHorario);
+    } else if (question.tipo === 'url_optional') {
+      setNaoTemPortal(value === 'NAO_POSSUI');
+      setLocalValue(value ?? '');
+    } else {
+      setLocalValue(value ?? '');
+    }
   }, [value, question.id, question.tipo]);
 
   const handleChange = (newValue: any) => {
@@ -118,6 +145,46 @@ export function QuestionRenderer({
           />
         );
 
+      case 'url_optional':
+        return (
+          <div className="space-y-3">
+            {!naoTemPortal && (
+              <Input
+                type="url"
+                value={localValue === 'NAO_POSSUI' ? '' : localValue}
+                onChange={(e) => handleChange(e.target.value)}
+                onKeyPress={handleKeyPress}
+                placeholder={question.placeholder || 'https://'}
+                className="text-lg py-6"
+                autoFocus
+              />
+            )}
+            <Button
+              type="button"
+              variant={naoTemPortal ? "default" : "outline"}
+              className={`w-full justify-center py-3 h-auto ${
+                naoTemPortal 
+                  ? 'bg-pipeelo-purple hover:bg-pipeelo-purple/90 text-white' 
+                  : 'border-dashed'
+              }`}
+              onClick={() => {
+                const newState = !naoTemPortal;
+                setNaoTemPortal(newState);
+                handleChange(newState ? 'NAO_POSSUI' : '');
+              }}
+            >
+              {naoTemPortal ? (
+                <>
+                  <X className="h-4 w-4 mr-2" />
+                  Não possuo portal/área do cliente
+                </>
+              ) : (
+                'Não possuo portal/área do cliente'
+              )}
+            </Button>
+          </div>
+        );
+
       case 'time':
         return (
           <Input
@@ -128,6 +195,118 @@ export function QuestionRenderer({
             className="text-lg py-6 w-40"
             autoFocus
           />
+        );
+
+      case 'horario_semanal':
+        const horario: HorarioSemanal = localValue && typeof localValue === 'object' 
+          ? localValue 
+          : defaultHorario;
+
+        const updateHorario = (
+          periodo: keyof HorarioSemanal, 
+          field: 'inicio' | 'fim' | 'nao_atende', 
+          fieldValue: string | boolean
+        ) => {
+          const newHorario = {
+            ...horario,
+            [periodo]: {
+              ...horario[periodo],
+              [field]: fieldValue
+            }
+          };
+          handleChange(newHorario);
+        };
+
+        return (
+          <div className="space-y-4">
+            {/* Segunda a Sexta */}
+            <div className="p-4 border rounded-lg bg-card">
+              <Label className="font-medium text-base">Segunda a Sexta</Label>
+              <div className="flex gap-3 items-center mt-3">
+                <Input
+                  type="time"
+                  value={horario.segunda_sexta.inicio}
+                  onChange={(e) => updateHorario('segunda_sexta', 'inicio', e.target.value)}
+                  className="w-32"
+                />
+                <span className="text-muted-foreground">às</span>
+                <Input
+                  type="time"
+                  value={horario.segunda_sexta.fim}
+                  onChange={(e) => updateHorario('segunda_sexta', 'fim', e.target.value)}
+                  className="w-32"
+                />
+              </div>
+            </div>
+
+            {/* Sábados */}
+            <div className={`p-4 border rounded-lg bg-card ${horario.sabado.nao_atende ? 'opacity-60' : ''}`}>
+              <div className="flex justify-between items-center">
+                <Label className="font-medium text-base">Sábados</Label>
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="sabado-nao-atende"
+                    checked={horario.sabado.nao_atende}
+                    onCheckedChange={(checked) => updateHorario('sabado', 'nao_atende', !!checked)}
+                  />
+                  <Label htmlFor="sabado-nao-atende" className="text-sm cursor-pointer">
+                    Não atende
+                  </Label>
+                </div>
+              </div>
+              {!horario.sabado.nao_atende && (
+                <div className="flex gap-3 items-center mt-3">
+                  <Input
+                    type="time"
+                    value={horario.sabado.inicio}
+                    onChange={(e) => updateHorario('sabado', 'inicio', e.target.value)}
+                    className="w-32"
+                  />
+                  <span className="text-muted-foreground">às</span>
+                  <Input
+                    type="time"
+                    value={horario.sabado.fim}
+                    onChange={(e) => updateHorario('sabado', 'fim', e.target.value)}
+                    className="w-32"
+                  />
+                </div>
+              )}
+            </div>
+
+            {/* Domingos e Feriados */}
+            <div className={`p-4 border rounded-lg bg-card ${horario.domingo_feriado.nao_atende ? 'opacity-60' : ''}`}>
+              <div className="flex justify-between items-center">
+                <Label className="font-medium text-base">Domingos e Feriados</Label>
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="domingo-nao-atende"
+                    checked={horario.domingo_feriado.nao_atende}
+                    onCheckedChange={(checked) => updateHorario('domingo_feriado', 'nao_atende', !!checked)}
+                  />
+                  <Label htmlFor="domingo-nao-atende" className="text-sm cursor-pointer">
+                    Não atende
+                  </Label>
+                </div>
+              </div>
+              {!horario.domingo_feriado.nao_atende && (
+                <div className="flex gap-3 items-center mt-3">
+                  <Input
+                    type="time"
+                    value={horario.domingo_feriado.inicio}
+                    onChange={(e) => updateHorario('domingo_feriado', 'inicio', e.target.value)}
+                    className="w-32"
+                  />
+                  <span className="text-muted-foreground">às</span>
+                  <Input
+                    type="time"
+                    value={horario.domingo_feriado.fim}
+                    onChange={(e) => updateHorario('domingo_feriado', 'fim', e.target.value)}
+                    className="w-32"
+                  />
+                </div>
+              )}
+            </div>
+          </div>
         );
 
       case 'select':
@@ -154,7 +333,15 @@ export function QuestionRenderer({
         );
 
       case 'checkbox_multiple':
-        const selectedValues = Array.isArray(localValue) ? localValue : [];
+        const checkboxValue: CheckboxMultipleValue = 
+          localValue && typeof localValue === 'object' && 'selected' in localValue
+            ? localValue
+            : { selected: Array.isArray(localValue) ? localValue : [], outroTexto: '' };
+        
+        const selectedValues = checkboxValue.selected;
+        const hasOutroOption = question.opcoes?.some(opt => opt.value === 'outro');
+        const outroSelected = selectedValues.includes('outro');
+
         return (
           <div className="space-y-3">
             {question.opcoes?.map((option: QuestionOption) => (
@@ -163,9 +350,14 @@ export function QuestionRenderer({
                   id={`${question.id}-${option.value}`}
                   checked={selectedValues.includes(option.value)}
                   onCheckedChange={(checked) => {
-                    const newValue = checked
+                    const newSelected = checked
                       ? [...selectedValues, option.value]
                       : selectedValues.filter((v: string) => v !== option.value);
+                    
+                    const newValue: CheckboxMultipleValue = {
+                      selected: newSelected,
+                      outroTexto: option.value === 'outro' && !checked ? '' : checkboxValue.outroTexto
+                    };
                     handleChange(newValue);
                   }}
                   className="h-5 w-5"
@@ -178,6 +370,26 @@ export function QuestionRenderer({
                 </Label>
               </div>
             ))}
+            
+            {/* Campo de texto para "Outro" */}
+            {hasOutroOption && outroSelected && (
+              <div className="ml-8 mt-2">
+                <Input
+                  type="text"
+                  value={checkboxValue.outroTexto || ''}
+                  onChange={(e) => {
+                    const newValue: CheckboxMultipleValue = {
+                      ...checkboxValue,
+                      outroTexto: e.target.value
+                    };
+                    handleChange(newValue);
+                  }}
+                  placeholder="Especifique qual..."
+                  className="text-base"
+                  autoFocus
+                />
+              </div>
+            )}
           </div>
         );
 
