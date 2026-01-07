@@ -14,7 +14,104 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      onboarding_respostas: {
+        Row: {
+          created_at: string
+          departamento: string
+          id: string
+          pergunta_id: string
+          resposta: Json | null
+          session_id: string
+          tipo_pergunta: string | null
+        }
+        Insert: {
+          created_at?: string
+          departamento: string
+          id?: string
+          pergunta_id: string
+          resposta?: Json | null
+          session_id: string
+          tipo_pergunta?: string | null
+        }
+        Update: {
+          created_at?: string
+          departamento?: string
+          id?: string
+          pergunta_id?: string
+          resposta?: Json | null
+          session_id?: string
+          tipo_pergunta?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "onboarding_respostas_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "onboarding_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      onboarding_sessions: {
+        Row: {
+          ceo_email: string | null
+          concluido_financeiro_at: string | null
+          concluido_sac_geral_at: string | null
+          concluido_suporte_at: string | null
+          concluido_vendas_at: string | null
+          created_at: string
+          empresa_nome: string
+          id: string
+          responsavel_financeiro: string | null
+          responsavel_sac_geral: string | null
+          responsavel_suporte: string | null
+          responsavel_vendas: string | null
+          status_financeiro: string | null
+          status_sac_geral: string | null
+          status_suporte: string | null
+          status_vendas: string | null
+          updated_at: string
+        }
+        Insert: {
+          ceo_email?: string | null
+          concluido_financeiro_at?: string | null
+          concluido_sac_geral_at?: string | null
+          concluido_suporte_at?: string | null
+          concluido_vendas_at?: string | null
+          created_at?: string
+          empresa_nome: string
+          id?: string
+          responsavel_financeiro?: string | null
+          responsavel_sac_geral?: string | null
+          responsavel_suporte?: string | null
+          responsavel_vendas?: string | null
+          status_financeiro?: string | null
+          status_sac_geral?: string | null
+          status_suporte?: string | null
+          status_vendas?: string | null
+          updated_at?: string
+        }
+        Update: {
+          ceo_email?: string | null
+          concluido_financeiro_at?: string | null
+          concluido_sac_geral_at?: string | null
+          concluido_suporte_at?: string | null
+          concluido_vendas_at?: string | null
+          created_at?: string
+          empresa_nome?: string
+          id?: string
+          responsavel_financeiro?: string | null
+          responsavel_sac_geral?: string | null
+          responsavel_suporte?: string | null
+          responsavel_vendas?: string | null
+          status_financeiro?: string | null
+          status_sac_geral?: string | null
+          status_suporte?: string | null
+          status_vendas?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
