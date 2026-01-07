@@ -4,7 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { toast } from 'sonner';
-import { Building2, DollarSign, Wrench, TrendingUp, Check, Clock, ArrowRight, AlertCircle } from 'lucide-react';
+import { Building2, DollarSign, Wrench, TrendingUp, Check, Clock, ArrowRight, AlertCircle, Info, Users, MessageSquare } from 'lucide-react';
 import { PipeeloLogo } from '@/components/PipeeloLogo';
 import { motion } from 'framer-motion';
 import { DepartmentId } from '@/types/onboarding';
@@ -30,6 +30,9 @@ interface SessionData {
 const departmentConfig: Record<DepartmentId, {
   icon: typeof Building2;
   label: string;
+  description: string;
+  suggestedPerson: string;
+  estimatedTime: string;
   color: string;
   bgColor: string;
   borderColor: string;
@@ -37,6 +40,9 @@ const departmentConfig: Record<DepartmentId, {
   sac_geral: {
     icon: Building2,
     label: 'SAC / Geral',
+    description: 'Informações gerais da empresa, processos e identidade',
+    suggestedPerson: 'Gestor ou Sócio',
+    estimatedTime: '~15 min',
     color: 'text-purple-400',
     bgColor: 'bg-purple-500/10',
     borderColor: 'border-purple-500/30',
@@ -44,6 +50,9 @@ const departmentConfig: Record<DepartmentId, {
   financeiro: {
     icon: DollarSign,
     label: 'Financeiro',
+    description: 'Cobrança, pagamentos e regras financeiras',
+    suggestedPerson: 'Responsável Financeiro',
+    estimatedTime: '~10 min',
     color: 'text-green-400',
     bgColor: 'bg-green-500/10',
     borderColor: 'border-green-500/30',
@@ -51,6 +60,9 @@ const departmentConfig: Record<DepartmentId, {
   suporte: {
     icon: Wrench,
     label: 'Suporte Técnico',
+    description: 'Diagnósticos técnicos e gestão de rede',
+    suggestedPerson: 'Técnico ou NOC',
+    estimatedTime: '~10 min',
     color: 'text-blue-400',
     bgColor: 'bg-blue-500/10',
     borderColor: 'border-blue-500/30',
@@ -58,6 +70,9 @@ const departmentConfig: Record<DepartmentId, {
   vendas: {
     icon: TrendingUp,
     label: 'Vendas',
+    description: 'Planos, qualificação e processo comercial',
+    suggestedPerson: 'Gerente Comercial',
+    estimatedTime: '~10 min',
     color: 'text-amber-400',
     bgColor: 'bg-amber-500/10',
     borderColor: 'border-amber-500/30',
@@ -166,26 +181,80 @@ const OnboardingSession = () => {
       {/* Header */}
       <header className="border-b border-border/40 bg-card/50 backdrop-blur-sm">
         <div className="container mx-auto px-6 py-4 flex items-center justify-center">
-          <PipeeloLogo className="h-8" />
+          <PipeeloLogo size="lg" />
         </div>
       </header>
 
-      <main className="container mx-auto px-6 py-8 max-w-2xl">
+      <main className="container mx-auto px-6 py-8 max-w-3xl">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
-          {/* Company header */}
+          {/* Welcome Section */}
           <div className="text-center mb-8">
-            <h1 className="text-2xl font-bold text-foreground mb-2">
-              Onboarding - {session.empresa_nome}
+            <h1 className="text-2xl md:text-3xl font-bold text-foreground mb-2">
+              Bem-vindo ao Onboarding Pipeelo
             </h1>
+            <p className="text-lg text-primary font-medium mb-1">
+              {session.empresa_nome}
+            </p>
             <p className="text-muted-foreground">
               {allCompleted 
-                ? '🎉 Todos os departamentos foram preenchidos!' 
-                : `${completedCount}/4 departamentos concluídos`}
+                ? '🎉 Parabéns! Todos os departamentos foram preenchidos!' 
+                : `Progresso: ${completedCount}/4 departamentos concluídos`}
             </p>
+          </div>
+
+          {/* Info Cards */}
+          {!allCompleted && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              className="mb-8"
+            >
+              <Card className="bg-primary/5 border-primary/20">
+                <CardContent className="p-5">
+                  <div className="flex gap-4">
+                    <Info className="w-6 h-6 text-primary shrink-0 mt-0.5" />
+                    <div className="space-y-3">
+                      <h3 className="font-semibold text-foreground">Como funciona o onboarding?</h3>
+                      <div className="space-y-2 text-sm text-muted-foreground">
+                        <div className="flex items-start gap-2">
+                          <Users className="w-4 h-4 text-primary shrink-0 mt-0.5" />
+                          <p><strong>Cada departamento pode ser preenchido por uma pessoa diferente.</strong> Encaminhe este link para os responsáveis de cada área.</p>
+                        </div>
+                        <div className="flex items-start gap-2">
+                          <Clock className="w-4 h-4 text-primary shrink-0 mt-0.5" />
+                          <p><strong>Tempo total estimado: ~45 minutos</strong> (dividido entre os 4 departamentos).</p>
+                        </div>
+                        <div className="flex items-start gap-2">
+                          <MessageSquare className="w-4 h-4 text-primary shrink-0 mt-0.5" />
+                          <p>As respostas são usadas para <strong>configurar o atendimento automatizado</strong> da sua empresa na Pipeelo.</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
+          )}
+
+          {/* Progress Bar */}
+          <div className="mb-6">
+            <div className="flex justify-between text-sm text-muted-foreground mb-2">
+              <span>Progresso geral</span>
+              <span>{Math.round((completedCount / 4) * 100)}%</span>
+            </div>
+            <div className="h-2 bg-muted rounded-full overflow-hidden">
+              <motion.div
+                className="h-full bg-primary rounded-full"
+                initial={{ width: 0 }}
+                animate={{ width: `${(completedCount / 4) * 100}%` }}
+                transition={{ duration: 0.5, delay: 0.3 }}
+              />
+            </div>
           </div>
 
           {/* Department cards */}
@@ -200,33 +269,35 @@ const OnboardingSession = () => {
                   key={deptId}
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: index * 0.1 }}
+                  transition={{ delay: 0.3 + index * 0.1 }}
                 >
                   <Card 
                     className={`${config.bgColor} ${config.borderColor} border transition-all ${
                       status.completed 
-                        ? 'opacity-80' 
-                        : 'hover:scale-[1.02] cursor-pointer'
+                        ? 'opacity-75' 
+                        : 'hover:scale-[1.01] hover:shadow-lg cursor-pointer'
                     }`}
                     onClick={() => !status.completed && startDepartment(deptId)}
                   >
                     <CardContent className="p-5">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-4">
-                          <div className={`p-3 rounded-full ${config.bgColor}`}>
+                      <div className="flex items-start justify-between gap-4">
+                        <div className="flex items-start gap-4">
+                          <div className={`p-3 rounded-full ${config.bgColor} shrink-0`}>
                             <Icon className={`w-6 h-6 ${config.color}`} />
                           </div>
-                          <div>
+                          <div className="min-w-0">
                             <h3 className="font-semibold text-foreground">{config.label}</h3>
+                            <p className="text-sm text-muted-foreground mb-2">{config.description}</p>
+                            
                             {status.completed ? (
                               <div className="text-sm text-muted-foreground">
-                                <span className="text-green-400">✓ Preenchido</span>
+                                <span className="text-green-400 font-medium">✓ Concluído</span>
                                 {status.responsavel && (
                                   <span> por {status.responsavel}</span>
                                 )}
                                 {status.completedAt && (
-                                  <span className="block">
-                                    em {new Date(status.completedAt).toLocaleDateString('pt-BR', {
+                                  <span className="block text-xs mt-1">
+                                    {new Date(status.completedAt).toLocaleDateString('pt-BR', {
                                       day: '2-digit',
                                       month: '2-digit',
                                       year: 'numeric',
@@ -237,19 +308,24 @@ const OnboardingSession = () => {
                                 )}
                               </div>
                             ) : (
-                              <p className="text-sm text-muted-foreground flex items-center gap-1">
-                                <Clock className="w-3 h-3" /> Pendente
-                              </p>
+                              <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
+                                <span className="flex items-center gap-1">
+                                  <Users className="w-3 h-3" /> {config.suggestedPerson}
+                                </span>
+                                <span className="flex items-center gap-1">
+                                  <Clock className="w-3 h-3" /> {config.estimatedTime}
+                                </span>
+                              </div>
                             )}
                           </div>
                         </div>
 
                         {status.completed ? (
-                          <div className="p-2 rounded-full bg-green-500/20">
+                          <div className="p-2 rounded-full bg-green-500/20 shrink-0">
                             <Check className="w-5 h-5 text-green-400" />
                           </div>
                         ) : (
-                          <Button variant="ghost" size="sm" className={config.color}>
+                          <Button variant="ghost" size="sm" className={`${config.color} shrink-0`}>
                             Preencher <ArrowRight className="w-4 h-4 ml-1" />
                           </Button>
                         )}
@@ -275,12 +351,22 @@ const OnboardingSession = () => {
                     Onboarding Completo!
                   </h3>
                   <p className="text-muted-foreground">
-                    Obrigado por preencher todas as informações. Nossa equipe entrará em contato em breve.
+                    Obrigado por preencher todas as informações. Nossa equipe entrará em contato em breve para finalizar a configuração do seu atendimento.
                   </p>
                 </CardContent>
               </Card>
             </motion.div>
           )}
+
+          {/* Footer info */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.7 }}
+            className="mt-8 text-center text-sm text-muted-foreground"
+          >
+            <p>Dúvidas? Entre em contato pelo WhatsApp: <a href="https://wa.me/5511999999999" className="text-primary hover:underline">(11) 99999-9999</a></p>
+          </motion.div>
         </motion.div>
       </main>
     </div>
