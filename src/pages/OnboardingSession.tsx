@@ -4,7 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { toast } from 'sonner';
-import { Building2, DollarSign, Wrench, TrendingUp, Check, Clock, ArrowRight, AlertCircle, Info, Users, MessageSquare } from 'lucide-react';
+import { Building2, DollarSign, Wrench, TrendingUp, Check, Clock, ArrowRight, AlertCircle, Info, Users, MessageSquare, Pencil } from 'lucide-react';
 import { PipeeloLogo } from '@/components/PipeeloLogo';
 import { motion } from 'framer-motion';
 import { DepartmentId } from '@/types/onboarding';
@@ -321,8 +321,24 @@ const OnboardingSession = () => {
                         </div>
 
                         {status.completed ? (
-                          <div className="p-2 rounded-full bg-green-500/20 shrink-0">
-                            <Check className="w-5 h-5 text-green-400" />
+                          <div className="flex items-center gap-2 shrink-0">
+                            {!allCompleted && (
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="text-amber-500 hover:text-amber-600 hover:bg-amber-500/10"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  navigate(`/${slug}/${deptId}`);
+                                }}
+                              >
+                                <Pencil className="w-4 h-4 mr-1" />
+                                Editar
+                              </Button>
+                            )}
+                            <div className="p-2 rounded-full bg-green-500/20">
+                              <Check className="w-5 h-5 text-green-400" />
+                            </div>
                           </div>
                         ) : (
                           <Button variant="ghost" size="sm" className={`${config.color} shrink-0`}>
@@ -365,7 +381,7 @@ const OnboardingSession = () => {
             transition={{ delay: 0.7 }}
             className="mt-8 text-center text-sm text-muted-foreground"
           >
-            <p>Dúvidas? Entre em contato pelo WhatsApp: <a href="https://wa.me/5511999999999" className="text-primary hover:underline">(11) 99999-9999</a></p>
+            <p>Dúvidas? Entre em contato através do <span className="text-primary font-medium">grupo do WhatsApp da Pipeelo</span></p>
           </motion.div>
         </motion.div>
       </main>

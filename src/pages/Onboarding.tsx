@@ -91,12 +91,18 @@ export default function Onboarding() {
         return;
       }
 
-      // Check if department already completed
+      // Check if department already completed - allow editing if not all departments are complete
       const statusField = `status_${urlDepartamento}` as keyof typeof session;
-      if (session[statusField] === 'concluido') {
+      const allComplete = 
+        session.status_sac_geral === 'concluido' &&
+        session.status_financeiro === 'concluido' &&
+        session.status_suporte === 'concluido' &&
+        session.status_vendas === 'concluido';
+      
+      if (session[statusField] === 'concluido' && allComplete) {
         toast({
-          title: 'Departamento já preenchido',
-          description: 'Este departamento já foi respondido.',
+          title: 'Onboarding finalizado',
+          description: 'Não é possível editar após todos os departamentos serem finalizados.',
           variant: 'destructive',
         });
         navigate(`/${slug}`);
@@ -107,6 +113,22 @@ export default function Onboarding() {
       setEmpresaNomeState(session.empresa_nome);
       setEmpresaNome(session.empresa_nome);
       setDepartamento(urlDepartamento as DepartmentId);
+
+      // Load existing responses if editing
+      if (session[statusField] === 'concluido') {
+        const { data: existingResponses } = await supabase
+          .from('onboarding_respostas')
+          .select('pergunta_id, resposta')
+          .eq('session_id', session.id)
+          .eq('departamento', urlDepartamento);
+
+        if (existingResponses && existingResponses.length > 0) {
+          existingResponses.forEach((resp) => {
+            setResposta(resp.pergunta_id, resp.resposta);
+          });
+        }
+      }
+
       setLoading(false);
     };
 
