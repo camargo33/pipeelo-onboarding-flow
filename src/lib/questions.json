@@ -171,6 +171,96 @@
               "placeholder": "Ex: RH, Jurídico..."
             },
             {
+              "id": "atividades_atendimento_geral",
+              "pergunta": "Descreva todas as atividades realizadas pelo Atendimento Geral/SAC:",
+              "tipo": "textarea",
+              "obrigatoria": true,
+              "condicional": "departamentos_lista includes 'atendimento_geral'",
+              "placeholder": "Ex: Atende reclamações, faz troca de titularidade, responde dúvidas sobre faturas, agenda visitas técnicas...",
+              "hint": "Seja detalhado, isso ajudará a IA a entender quando transferir para este departamento"
+            },
+            {
+              "id": "atividades_financeiro",
+              "pergunta": "Descreva todas as atividades realizadas pelo Financeiro:",
+              "tipo": "textarea",
+              "obrigatoria": true,
+              "condicional": "departamentos_lista includes 'financeiro'",
+              "placeholder": "Ex: Emite segundas vias, negocia débitos, faz estornos, atualiza dados bancários...",
+              "hint": "Seja detalhado, isso ajudará a IA a entender quando transferir para este departamento"
+            },
+            {
+              "id": "atividades_suporte",
+              "pergunta": "Descreva todas as atividades realizadas pelo Suporte Técnico:",
+              "tipo": "textarea",
+              "obrigatoria": true,
+              "condicional": "departamentos_lista includes 'suporte'",
+              "placeholder": "Ex: Resolve problemas de conexão, faz diagnóstico remoto, agenda visitas técnicas, configura roteadores...",
+              "hint": "Seja detalhado, isso ajudará a IA a entender quando transferir para este departamento"
+            },
+            {
+              "id": "atividades_vendas",
+              "pergunta": "Descreva todas as atividades realizadas pelo Vendas/Comercial:",
+              "tipo": "textarea",
+              "obrigatoria": true,
+              "condicional": "departamentos_lista includes 'vendas'",
+              "placeholder": "Ex: Apresenta planos, negocia preços, faz upgrade/downgrade, agenda instalações...",
+              "hint": "Seja detalhado, isso ajudará a IA a entender quando transferir para este departamento"
+            },
+            {
+              "id": "atividades_cobranca",
+              "pergunta": "Descreva todas as atividades realizadas pela Cobrança:",
+              "tipo": "textarea",
+              "obrigatoria": true,
+              "condicional": "departamentos_lista includes 'cobranca'",
+              "placeholder": "Ex: Liga para clientes inadimplentes, negocia parcelamentos, envia notificações de corte...",
+              "hint": "Seja detalhado, isso ajudará a IA a entender quando transferir para este departamento"
+            },
+            {
+              "id": "atividades_retencao",
+              "pergunta": "Descreva todas as atividades realizadas pela Retenção:",
+              "tipo": "textarea",
+              "obrigatoria": true,
+              "condicional": "departamentos_lista includes 'retencao'",
+              "placeholder": "Ex: Oferece descontos para clientes que querem cancelar, apresenta novos planos, resolve insatisfações...",
+              "hint": "Seja detalhado, isso ajudará a IA a entender quando transferir para este departamento"
+            },
+            {
+              "id": "atividades_cancelamento",
+              "pergunta": "Descreva todas as atividades realizadas pelo Cancelamento:",
+              "tipo": "textarea",
+              "obrigatoria": true,
+              "condicional": "departamentos_lista includes 'cancelamento'",
+              "placeholder": "Ex: Processa pedidos de cancelamento, agenda retirada de equipamentos, calcula multas...",
+              "hint": "Seja detalhado, isso ajudará a IA a entender quando transferir para este departamento"
+            },
+            {
+              "id": "atividades_noc",
+              "pergunta": "Descreva todas as atividades realizadas pelo NOC:",
+              "tipo": "textarea",
+              "obrigatoria": true,
+              "condicional": "departamentos_lista includes 'noc'",
+              "placeholder": "Ex: Monitora a rede 24/7, identifica quedas massivas, coordena manutenções programadas...",
+              "hint": "Seja detalhado, isso ajudará a IA a entender quando transferir para este departamento"
+            },
+            {
+              "id": "atividades_administrativo",
+              "pergunta": "Descreva todas as atividades realizadas pelo Administrativo:",
+              "tipo": "textarea",
+              "obrigatoria": true,
+              "condicional": "departamentos_lista includes 'administrativo'",
+              "placeholder": "Ex: Gerencia contratos, cuida de documentação, responde solicitações formais...",
+              "hint": "Seja detalhado, isso ajudará a IA a entender quando transferir para este departamento"
+            },
+            {
+              "id": "atividades_outro",
+              "pergunta": "Descreva todas as atividades realizadas por este departamento:",
+              "tipo": "textarea",
+              "obrigatoria": true,
+              "condicional": "departamentos_lista includes 'outro'",
+              "placeholder": "Descreva em detalhes o que este departamento faz...",
+              "hint": "Seja detalhado, isso ajudará a IA a entender quando transferir para este departamento"
+            },
+            {
               "id": "atendimento_geral_atribuicoes",
               "pergunta": "O que o Atendimento Geral/SAC resolve?",
               "tipo": "checkbox_multiple",
