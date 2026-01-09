@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
-import { Copy, Plus, Building2, ExternalLink, Check, Clock, RefreshCw, Trash2, Loader2, LogOut, Pencil } from 'lucide-react';
+import { Copy, Plus, Building2, ExternalLink, Check, Clock, RefreshCw, Trash2, Loader2, LogOut } from 'lucide-react';
 import { PipeeloLogo } from '@/components/PipeeloLogo';
 import { AdminLogin } from '@/components/AdminLogin';
 import {
@@ -359,17 +359,6 @@ const AdminOnboarding = () => {
                           <Copy className="w-4 h-4 mr-2" />
                           Copiar Link
                         </Button>
-                        {!allCompleted && (
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => window.open(`${getOnboardingUrl(session.slug)}/editar`, '_blank')}
-                            className="text-amber-600 border-amber-600/30 hover:bg-amber-600/10"
-                          >
-                            <Pencil className="w-4 h-4 mr-2" />
-                            Editar
-                          </Button>
-                        )}
                         <Button
                           variant="ghost"
                           size="sm"
