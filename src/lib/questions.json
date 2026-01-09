@@ -95,14 +95,6 @@
               "condicional": "tem_plantao == 'sim'",
               "placeholder": "Ex: Após 18h e fins de semana"
             },
-            {
-              "id": "horario_aciona_plantao",
-              "pergunta": "A partir de qual horário aciona o plantão?",
-              "tipo": "time",
-              "obrigatoria": false,
-              "condicional": "tem_plantao == 'sim'",
-              "placeholder": "18:00"
-            }
           ]
         },
 
@@ -259,30 +251,6 @@
               "condicional": "departamentos_lista includes 'outro'",
               "placeholder": "Descreva em detalhes o que este departamento faz...",
               "hint": "Seja detalhado, isso ajudará a IA a entender quando transferir para este departamento"
-            },
-            {
-              "id": "atendimento_geral_atribuicoes",
-              "pergunta": "O que o Atendimento Geral/SAC resolve?",
-              "tipo": "checkbox_multiple",
-              "obrigatoria": true,
-              "opcoes": [
-                {"value": "reclamacoes", "label": "Reclamações"},
-                {"value": "troca_titularidade", "label": "Troca de Titularidade"},
-                {"value": "suspensao_temporaria", "label": "Suspensão Temporária"},
-                {"value": "duvidas_gerais", "label": "Dúvidas Gerais"},
-                {"value": "outro", "label": "Outro"}
-              ]
-            },
-            {
-              "id": "retencao_existe",
-              "pergunta": "Existe departamento específico de Retenção?",
-              "tipo": "select",
-              "obrigatoria": true,
-              "opcoes": [
-                {"value": "sim", "label": "Sim, temos departamento de Retenção"},
-                {"value": "nao_comercial", "label": "Não, vai para Comercial/Vendas"},
-                {"value": "nao_sac", "label": "Não, vai para SAC"}
-              ]
             }
           ]
         },
@@ -291,23 +259,6 @@
           "titulo": "Fluxo de Transferências para Humanos",
           "icone": "🔄",
           "perguntas": [
-            {
-              "id": "departamentos_destino",
-              "pergunta": "Quais departamentos devem existir como destino de transferência da IA?",
-              "tipo": "checkbox_multiple",
-              "obrigatoria": true,
-              "hint": "Marque todos os departamentos que podem receber transferências da IA",
-              "opcoes": [
-                {"value": "suporte", "label": "Suporte Técnico"},
-                {"value": "financeiro", "label": "Financeiro"},
-                {"value": "comercial", "label": "Comercial/Vendas"},
-                {"value": "cobranca", "label": "Cobrança"},
-                {"value": "retencao", "label": "Retenção"},
-                {"value": "plantao", "label": "Plantão"},
-                {"value": "suporte_plantonista", "label": "Suporte Plantonista"},
-                {"value": "general", "label": "SAC/Geral"}
-              ]
-            },
             {
               "id": "clientes_prioritarios",
               "pergunta": "Os clientes de CNPJ e Link dedicado têm um tratamento diferente? Você gostaria de transferi-los diretamente aos atendentes com prioridade?",
@@ -388,14 +339,10 @@
             {
               "id": "cancelamento_departamento",
               "pergunta": "Para qual departamento transferir pedidos de cancelamento?",
-              "tipo": "select",
+              "tipo": "textarea",
               "obrigatoria": true,
-              "opcoes": [
-                {"value": "retencao", "label": "Retenção"},
-                {"value": "comercial", "label": "Comercial/Vendas"},
-                {"value": "sac", "label": "SAC/Geral"},
-                {"value": "financeiro", "label": "Financeiro"}
-              ]
+              "placeholder": "Ex: Retenção, Comercial, SAC/Geral...",
+              "hint": "Descreva o departamento ou fluxo de transferência"
             },
             {
               "id": "mudanca_endereco",
