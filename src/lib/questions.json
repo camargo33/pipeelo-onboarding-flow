@@ -812,12 +812,13 @@
           "perguntas": [
             {
               "id": "reset_onu_tipo",
-              "pergunta": "Como é feito o reset remoto de ONU?",
+              "pergunta": "Como vocês fazem o reset remoto de ONU?",
               "tipo": "select",
               "obrigatoria": true,
               "opcoes": [
-                {"value": "dentro_erp", "label": "Dentro do ERP"},
-                {"value": "manual", "label": "Manual (precisa descrever processo)"}
+                {"value": "integrado_erp", "label": "Integrado no ERP"},
+                {"value": "sistema_gerenciamento", "label": "Sistema de gerenciamento de rede (OLT Cloud, Smart OLT, etc.)"},
+                {"value": "manual", "label": "Processo manual (descrever na próxima etapa)"}
               ]
             },
             {
@@ -831,11 +832,11 @@
             },
             {
               "id": "porcentagem_onus_mapeadas",
-              "pergunta": "Qual a porcentagem de ONUs que estão mapeadas em seu ERP aptas a serem resetadas?",
+              "pergunta": "Qual a porcentagem de ONUs aptas a receber suporte N1 automático?",
               "tipo": "text",
               "obrigatoria": true,
               "placeholder": "Ex: 80%, Todas, Apenas 50%",
-              "hint": "Isso nos ajuda a entender a cobertura da automação"
+              "hint": "Isso ajuda a estimar a cobertura da automação no seu parque de clientes"
             },
             {
               "id": "sistema_gerenciamento",
@@ -845,12 +846,10 @@
               "opcoes": [
                 {"value": "olt_cloud", "label": "OLT Cloud"},
                 {"value": "smart_olt", "label": "Smart OLT"},
-                {"value": "anlix", "label": "Anlix"},
                 {"value": "int6", "label": "INT6"},
                 {"value": "ixc_acs", "label": "IXC ACS"},
-                {"value": "unm", "label": "UNM"},
-                {"value": "outro", "label": "Outro"},
-                {"value": "nenhum", "label": "Não temos sistema de gerenciamento de redes"}
+                {"value": "outro", "label": "Outro sistema"},
+                {"value": "nenhum", "label": "Não usamos sistema de gerenciamento de redes"}
               ]
             },
             {
@@ -863,12 +862,13 @@
             },
             {
               "id": "protocolo_tr069",
-              "pergunta": "Vocês possuem protocolo TR-069 ativo?",
+              "pergunta": "Vocês têm o protocolo TR-069 ativo?",
               "tipo": "select",
               "obrigatoria": true,
               "opcoes": [
                 {"value": "sim", "label": "Sim"},
-                {"value": "nao", "label": "Não"}
+                {"value": "nao", "label": "Não"},
+                {"value": "contratando", "label": "Estamos contratando"}
               ]
             }
           ]
@@ -942,13 +942,13 @@
             },
             {
               "id": "verificar_dispositivos",
-              "pergunta": "A IA pode verificar quantos dispositivos estão conectados?",
+              "pergunta": "A IA pode verificar quantos dispositivos estão conectados na rede do cliente?",
               "tipo": "select",
               "obrigatoria": true,
               "opcoes": [
-                {"value": "sim_mostrar", "label": "Sim, e pode mostrar ao cliente"},
-                {"value": "sim_interno", "label": "Sim, mas não mostrar ao cliente"},
-                {"value": "nao", "label": "Não temos esta funcionalidade"}
+                {"value": "sim_mostrar", "label": "Sim, e informar ao cliente"},
+                {"value": "sim_interno", "label": "Sim, mas apenas para análise interna"},
+                {"value": "nao", "label": "Prefiro não informar o cliente sobre isso"}
               ]
             }
           ]
@@ -1077,12 +1077,12 @@
             },
             {
               "id": "followup_suporte_transferir_minutos",
-              "pergunta": "Após quantos minutos sem resposta a IA deve transferir para atendimento humano?",
+              "pergunta": "Após quantos minutos sem resposta do cliente a IA deve transferir para atendente humano?",
               "tipo": "number",
               "obrigatoria": false,
               "condicional": "followup_suporte_ativo == 'sim'",
               "placeholder": "Ex: 30",
-              "hint": "Caso o cliente não responda após o follow-up"
+              "hint": "Tempo de espera após o primeiro follow-up antes de transferir para humano"
             }
           ]
         }
