@@ -3,9 +3,9 @@
     "total_departamentos": 4,
     "ordem_sugerida": ["sac_geral", "financeiro", "suporte", "vendas"],
     "tempo_total_estimado": "55-70 minutos",
-    "descricao": "Sistema de onboarding completo Pipeelo - 4 departamentos independentes - Versão 2.0",
-    "versao": "2.0",
-    "total_perguntas": 145
+    "descricao": "Sistema de onboarding completo Pipeelo - 4 departamentos independentes - Versão 2.1",
+    "versao": "2.1",
+    "total_perguntas": 138
   },
   
   "departamentos": {
@@ -418,75 +418,6 @@
               "hint": "A IA pode informar ao cliente"
             }
           ]
-        },
-
-        "integracoes_tecnicas": {
-          "titulo": "Integrações Técnicas",
-          "icone": "🔗",
-          "perguntas": [
-            {
-              "id": "sistema_viabilidade",
-              "pergunta": "Qual sistema vocês usam para consultar viabilidade no endereço do cliente?",
-              "tipo": "select",
-              "obrigatoria": true,
-              "opcoes": [
-                {"value": "geogrid", "label": "GeoGrid"},
-                {"value": "ozmaps", "label": "OZMaps"},
-                {"value": "integrado_erp", "label": "Integrado ao ERP"},
-                {"value": "outro", "label": "Outro sistema"}
-              ]
-            },
-            {
-              "id": "sistema_viabilidade_outro",
-              "pergunta": "Qual sistema de viabilidade?",
-              "tipo": "text",
-              "obrigatoria": false,
-              "condicional": "sistema_viabilidade == 'outro'",
-              "placeholder": "Nome do sistema"
-            },
-            {
-              "id": "ferramenta_pagamentos",
-              "pergunta": "Qual sistema vocês usam para processar pagamentos?",
-              "tipo": "select",
-              "obrigatoria": true,
-              "opcoes": [
-                {"value": "gateway_externo", "label": "Gateway externo (7AZ, Asaas, Mercado Pago, etc.)"},
-                {"value": "gateway_erp", "label": "Gateway integrado no ERP"},
-                {"value": "outro", "label": "Outro sistema"}
-              ]
-            },
-            {
-              "id": "ferramenta_pagamentos_outro",
-              "pergunta": "Qual ferramenta de pagamentos vocês usam?",
-              "tipo": "text",
-              "obrigatoria": false,
-              "condicional": "ferramenta_pagamentos == 'outro'",
-              "placeholder": "Nome da ferramenta"
-            },
-            {
-              "id": "rede_documentada",
-              "pergunta": "A rede está bem documentada ou boa parte não consta no sistema?",
-              "tipo": "select",
-              "obrigatoria": true,
-              "opcoes": [
-                {"value": "bem_documentada", "label": "Bem documentada (>80% mapeado)"},
-                {"value": "parcialmente", "label": "Parcialmente documentada (40-80%)"},
-                {"value": "pouco_documentada", "label": "Pouco documentada (<40%)"}
-              ]
-            },
-            {
-              "id": "usar_base_conhecimento_ceps",
-              "pergunta": "Podemos colocar os CEPs e endereços em base de conhecimento para que a IA tenha contexto?",
-              "tipo": "select",
-              "obrigatoria": false,
-              "condicional": "rede_documentada == 'pouco_documentada'",
-              "hint": "Você nos fornecerá lista de CEPs/ruas atendidas e a IA usará como referência",
-              "opcoes": [
-                {"value": "sim", "label": "Sim"},
-                {"value": "nao", "label": "Não"}
-              ]
-            }
-          ]
         }
 
       }
@@ -664,6 +595,14 @@
                 {"value": "sim", "label": "Sim"},
                 {"value": "nao", "label": "Não"}
               ]
+            },
+            {
+              "id": "faturas_transfere_cobranca",
+              "pergunta": "A partir de quantas faturas em atraso deve transferir para Cobrança/Financeiro?",
+              "tipo": "number",
+              "obrigatoria": true,
+              "placeholder": "Ex: 2",
+              "hint": "Número de faturas vencidas para escalar para humano"
             }
           ]
         },
@@ -715,21 +654,6 @@
               "obrigatoria": false,
               "placeholder": "Ex: 'Taxa de ponto adicional: R$ 80,00 | Taxa de mudança de endereço: R$ 50,00'",
               "hint": "Descreva taxa e valor, separe por linha"
-            }
-          ]
-        },
-
-        "negociacao_debitos": {
-          "titulo": "Negociação de Débitos",
-          "icone": "🤝",
-          "perguntas": [
-            {
-              "id": "faturas_transfere_cobranca",
-              "pergunta": "A partir de quantas faturas em atraso deve transferir para Cobrança/Financeiro?",
-              "tipo": "number",
-              "obrigatoria": true,
-              "placeholder": "Ex: 2",
-              "hint": "Número de faturas vencidas para escalar para humano"
             }
           ]
         },
@@ -869,6 +793,29 @@
                 {"value": "sim", "label": "Sim"},
                 {"value": "nao", "label": "Não"},
                 {"value": "contratando", "label": "Estamos contratando"}
+              ]
+            },
+            {
+              "id": "rede_documentada",
+              "pergunta": "A rede está bem documentada ou boa parte não consta no sistema?",
+              "tipo": "select",
+              "obrigatoria": true,
+              "opcoes": [
+                {"value": "bem_documentada", "label": "Bem documentada (>80% mapeado)"},
+                {"value": "parcialmente", "label": "Parcialmente documentada (40-80%)"},
+                {"value": "pouco_documentada", "label": "Pouco documentada (<40%)"}
+              ]
+            },
+            {
+              "id": "usar_base_conhecimento_ceps",
+              "pergunta": "Podemos colocar os CEPs e endereços em base de conhecimento para que a IA tenha contexto?",
+              "tipo": "select",
+              "obrigatoria": false,
+              "condicional": "rede_documentada == 'pouco_documentada'",
+              "hint": "Você nos fornecerá lista de CEPs/ruas atendidas e a IA usará como referência",
+              "opcoes": [
+                {"value": "sim", "label": "Sim"},
+                {"value": "nao", "label": "Não"}
               ]
             }
           ]
@@ -1193,6 +1140,45 @@
           "icone": "📝",
           "perguntas": [
             {
+              "id": "sistema_viabilidade",
+              "pergunta": "Qual sistema vocês usam para consultar viabilidade no endereço do cliente?",
+              "tipo": "select",
+              "obrigatoria": true,
+              "opcoes": [
+                {"value": "geogrid", "label": "GeoGrid"},
+                {"value": "ozmaps", "label": "OZMaps"},
+                {"value": "integrado_erp", "label": "Integrado ao ERP"},
+                {"value": "outro", "label": "Outro sistema"}
+              ]
+            },
+            {
+              "id": "sistema_viabilidade_outro",
+              "pergunta": "Qual sistema de viabilidade?",
+              "tipo": "text",
+              "obrigatoria": false,
+              "condicional": "sistema_viabilidade == 'outro'",
+              "placeholder": "Nome do sistema"
+            },
+            {
+              "id": "ferramenta_pagamentos",
+              "pergunta": "Qual sistema vocês usam para processar pagamentos?",
+              "tipo": "select",
+              "obrigatoria": true,
+              "opcoes": [
+                {"value": "gateway_externo", "label": "Gateway externo (7AZ, Asaas, Mercado Pago, etc.)"},
+                {"value": "gateway_erp", "label": "Gateway integrado no ERP"},
+                {"value": "outro", "label": "Outro sistema"}
+              ]
+            },
+            {
+              "id": "ferramenta_pagamentos_outro",
+              "pergunta": "Qual ferramenta de pagamentos vocês usam?",
+              "tipo": "text",
+              "obrigatoria": false,
+              "condicional": "ferramenta_pagamentos == 'outro'",
+              "placeholder": "Nome da ferramenta"
+            },
+            {
               "id": "ia_faz_pre_cadastro",
               "pergunta": "Qual o nível de pré-cadastro que a IA deve fazer?",
               "tipo": "select",
@@ -1358,12 +1344,12 @@
             },
             {
               "id": "followup_vendas_transferir_minutos",
-              "pergunta": "Após quantos minutos sem resposta a IA deve transferir para o Financeiro?",
+              "pergunta": "Após quantos minutos sem resposta a IA deve transferir para atendente comercial?",
               "tipo": "number",
               "obrigatoria": false,
               "condicional": "followup_vendas_ativo == 'sim'",
               "placeholder": "Ex: 30",
-              "hint": "Caso o cliente não responda após o follow-up"
+              "hint": "Tempo de espera após o follow-up antes de transferir para humano"
             }
           ]
         }

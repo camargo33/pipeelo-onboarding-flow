@@ -164,6 +164,37 @@ export function useOnboarding() {
 
 function evaluateConditional(condicional: string, respostas: Record<string, any>): boolean {
   try {
+    // Handle "&&" pattern first (needs to be checked before other patterns)
+    if (condicional.includes(' && ')) {
+      // Split by && but preserve content inside parentheses
+      const parts: string[] = [];
+      let current = '';
+      let parenDepth = 0;
+      
+      for (let i = 0; i < condicional.length; i++) {
+        const char = condicional[i];
+        if (char === '(') parenDepth++;
+        if (char === ')') parenDepth--;
+        
+        if (parenDepth === 0 && condicional.slice(i, i + 4) === ' && ') {
+          parts.push(current.trim());
+          current = '';
+          i += 3; // Skip ' && '
+        } else {
+          current += char;
+        }
+      }
+      parts.push(current.trim());
+      
+      return parts.every(part => {
+        // Remove outer parentheses if present
+        const cleanPart = part.startsWith('(') && part.endsWith(')') 
+          ? part.slice(1, -1) 
+          : part;
+        return evaluateConditional(cleanPart, respostas);
+      });
+    }
+
     // Handle "includes" pattern: "departamentos_lista includes 'outro'"
     if (condicional.includes(' includes ')) {
       const [campo, valorRaw] = condicional.split(' includes ');
