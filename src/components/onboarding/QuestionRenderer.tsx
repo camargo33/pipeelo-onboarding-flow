@@ -5,7 +5,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
-import { TimePicker } from '@/components/ui/time-picker';
+import { ClockTimePicker } from '@/components/ui/clock-time-picker';
 import { ExternalLink, Info, X } from 'lucide-react';
 
 interface QuestionRendererProps {
@@ -188,7 +188,7 @@ export function QuestionRenderer({
 
       case 'time':
         return (
-          <TimePicker
+          <ClockTimePicker
             value={localValue}
             onChange={handleChange}
           />
@@ -220,12 +220,12 @@ export function QuestionRenderer({
             <div className="p-4 border rounded-lg bg-card">
               <Label className="font-medium text-base">Segunda a Sexta</Label>
               <div className="flex gap-3 items-center mt-3">
-                <TimePicker
+                <ClockTimePicker
                   value={horario.segunda_sexta.inicio}
                   onChange={(val) => updateHorario('segunda_sexta', 'inicio', val)}
                 />
                 <span className="text-muted-foreground">às</span>
-                <TimePicker
+                <ClockTimePicker
                   value={horario.segunda_sexta.fim}
                   onChange={(val) => updateHorario('segunda_sexta', 'fim', val)}
                 />
@@ -249,12 +249,12 @@ export function QuestionRenderer({
               </div>
               {!horario.sabado.nao_atende && (
                 <div className="flex gap-3 items-center mt-3">
-                  <TimePicker
+                  <ClockTimePicker
                     value={horario.sabado.inicio}
                     onChange={(val) => updateHorario('sabado', 'inicio', val)}
                   />
                   <span className="text-muted-foreground">às</span>
-                  <TimePicker
+                  <ClockTimePicker
                     value={horario.sabado.fim}
                     onChange={(val) => updateHorario('sabado', 'fim', val)}
                   />
@@ -279,12 +279,12 @@ export function QuestionRenderer({
               </div>
               {!horario.domingo_feriado.nao_atende && (
                 <div className="flex gap-3 items-center mt-3">
-                  <TimePicker
+                  <ClockTimePicker
                     value={horario.domingo_feriado.inicio}
                     onChange={(val) => updateHorario('domingo_feriado', 'inicio', val)}
                   />
                   <span className="text-muted-foreground">às</span>
-                  <TimePicker
+                  <ClockTimePicker
                     value={horario.domingo_feriado.fim}
                     onChange={(val) => updateHorario('domingo_feriado', 'fim', val)}
                   />
