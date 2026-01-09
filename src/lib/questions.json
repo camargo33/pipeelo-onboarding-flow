@@ -1147,17 +1147,6 @@
               ]
             },
             {
-              "id": "combos_disponiveis",
-              "pergunta": "Vocês oferecem combos/pacotes?",
-              "tipo": "select",
-              "obrigatoria": true,
-              "opcoes": [
-                {"value": "sim", "label": "Sim, temos combos pré-definidos"},
-                {"value": "personalizado", "label": "Sim, mas personalizado por cliente"},
-                {"value": "nao", "label": "Não, apenas produtos individuais"}
-              ]
-            },
-            {
               "id": "diferenciais_concorrencia",
               "pergunta": "Quais os principais diferenciais vs concorrência?",
               "tipo": "textarea",
@@ -1184,16 +1173,16 @@
             },
             {
               "id": "perguntas_lista",
-              "pergunta": "Quais perguntas fazer para qualificar?",
+              "pergunta": "Quais perguntas a IA deve fazer para qualificar o lead?",
               "tipo": "checkbox_multiple",
               "obrigatoria": false,
               "condicional": "perguntas_qualificacao == 'sim'",
               "opcoes": [
-                {"value": "dispositivos", "label": "Quantos dispositivos conectados?"},
-                {"value": "pessoas", "label": "Quantas pessoas usam internet?"},
-                {"value": "tipo_imovel", "label": "Casa térrea ou sobrado?"},
-                {"value": "home_office", "label": "Usa para home office?"},
-                {"value": "streaming", "label": "Assiste streaming/jogos online?"}
+                {"value": "dispositivos", "label": "Quantos dispositivos conectam na rede?"},
+                {"value": "pessoas", "label": "Quantas pessoas usam a internet?"},
+                {"value": "tipo_imovel", "label": "A residência é térrea ou sobrado?"},
+                {"value": "home_office", "label": "Usa internet para home office?"},
+                {"value": "streaming", "label": "Assiste streaming ou joga online?"}
               ]
             }
           ]
@@ -1205,13 +1194,13 @@
           "perguntas": [
             {
               "id": "ia_faz_pre_cadastro",
-              "pergunta": "A IA faz pré-cadastro completo ou apenas qualificação básica?",
+              "pergunta": "Qual o nível de pré-cadastro que a IA deve fazer?",
               "tipo": "select",
               "obrigatoria": true,
               "opcoes": [
-                {"value": "completo", "label": "Pré-cadastro completo"},
-                {"value": "basico", "label": "Apenas qualificação básica"},
-                {"value": "transfere", "label": "Transfere para Vendas fazer"}
+                {"value": "completo", "label": "Pré-cadastro completo (nome, CPF, endereço, contato, etc.)"},
+                {"value": "basico", "label": "Apenas qualificação básica (interesse, perfil de uso)"},
+                {"value": "transfere", "label": "Transferir para equipe de vendas"}
               ]
             },
             {
@@ -1234,12 +1223,13 @@
             },
             {
               "id": "solicitar_foto_documentos",
-              "pergunta": "A IA pode solicitar foto dos documentos?",
+              "pergunta": "A IA pode solicitar foto dos documentos para preencher a OS automaticamente?",
+              "subtitulo": "CPF, RG e comprovante de residência para agilizar o cadastro",
               "tipo": "select",
               "obrigatoria": true,
               "opcoes": [
-                {"value": "sim", "label": "Sim, pode solicitar"},
-                {"value": "nao", "label": "Não, deixa para depois"}
+                {"value": "sim", "label": "Sim, solicitar documentos"},
+                {"value": "nao", "label": "Não, coletar depois"}
               ]
             }
           ]
@@ -1251,23 +1241,23 @@
           "perguntas": [
             {
               "id": "upgrade_plano",
-              "pergunta": "Cliente existente que quer fazer upgrade de plano:",
+              "pergunta": "O que a IA faz quando um cliente existente quer fazer upgrade de plano?",
               "tipo": "select",
               "obrigatoria": true,
               "opcoes": [
-                {"value": "coleta_os_transfere", "label": "Coleta as informações, abre OS e transfere para o comercial"},
-                {"value": "dados_basicos_transfere", "label": "Pega dados básicos e transfere"}
+                {"value": "coleta_os_transfere", "label": "Coletar informações, abrir OS e transferir para comercial"},
+                {"value": "dados_basicos_transfere", "label": "Coletar dados básicos e transferir (sem abrir OS)"}
               ]
             },
             {
               "id": "segundo_ponto",
-              "pergunta": "Cliente existente quer segundo ponto em outro endereço:",
+              "pergunta": "O que fazer quando um cliente existente quer um segundo ponto em outro endereço?",
               "tipo": "select",
               "obrigatoria": true,
               "opcoes": [
-                {"value": "novo_contrato", "label": "Trata como nova venda"},
-                {"value": "vinculado", "label": "Vincula ao contrato existente"},
-                {"value": "transfere", "label": "Transfere para Comercial decidir"}
+                {"value": "novo_contrato", "label": "Tratar como nova venda (novo contrato)"},
+                {"value": "vinculado", "label": "Vincular ao contrato existente (mesmo cliente, segundo endereço)"},
+                {"value": "transfere", "label": "Transferir para equipe comercial decidir"}
               ]
             }
           ]
@@ -1295,7 +1285,7 @@
               "pergunta": "Sobre a taxa de instalação",
               "tipo": "info",
               "obrigatoria": false,
-              "texto": "O que funciona bem para nossos clientes é dizer que o valor da taxa de instalação será informado pela equipe comercial, pois a maioria das empresas prefere analisar cada caso diretamente com sua equipe."
+              "texto": "A IA informará que o valor da taxa de instalação será confirmado pela equipe comercial durante o atendimento, já que cada caso pode ter condições específicas."
             },
             {
               "id": "taxa_instalacao_modelo",
