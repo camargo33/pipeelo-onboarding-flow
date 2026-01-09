@@ -94,7 +94,7 @@
               "obrigatoria": false,
               "condicional": "tem_plantao == 'sim'",
               "placeholder": "Ex: Após 18h e fins de semana"
-            },
+            }
           ]
         },
 
