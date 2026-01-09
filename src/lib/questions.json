@@ -616,35 +616,36 @@
             },
             {
               "id": "liberacao_confianca",
-              "pergunta": "Vocês oferecem liberação em confiança? (Cliente diz que já pagou e a IA libera temporariamente por X dias)",
+              "pergunta": "Vocês oferecem liberação em confiança quando o cliente confirma pagamento?",
               "tipo": "select",
               "obrigatoria": true,
+              "hint": "A IA liberaria o serviço temporariamente por X dias até confirmar o pagamento no sistema",
               "opcoes": [
-                {"value": "sim", "label": "Sim"},
-                {"value": "nao", "label": "Não"}
+                {"value": "sim", "label": "Sim, liberar em confiança"},
+                {"value": "nao", "label": "Não, aguardar confirmação do pagamento"}
               ]
             },
             {
               "id": "dias_liberacao_confianca",
-              "pergunta": "Por quantos dias permite liberação em confiança?",
+              "pergunta": "Por quantos dias a IA pode liberar o serviço em confiança?",
               "tipo": "number",
               "obrigatoria": false,
               "condicional": "liberacao_confianca == 'sim'",
               "placeholder": "Ex: 3",
-              "hint": "Dias concedidos para pagamento após desbloqueio"
+              "hint": "Prazo que o cliente tem para confirmar o pagamento antes de bloquear novamente"
             },
             {
               "id": "limite_dias_sem_confianca",
-              "pergunta": "A partir de quantos dias de atraso NÃO pode fazer desbloqueio em confiança?",
+              "pergunta": "A partir de quantos dias de atraso a IA NÃO pode desbloquear em confiança?",
               "tipo": "number",
               "obrigatoria": false,
               "condicional": "liberacao_confianca == 'sim'",
               "placeholder": "Ex: 30",
-              "hint": "Acima deste prazo, só desbloqueia com pagamento confirmado"
+              "hint": "Acima deste prazo, só desbloqueia com pagamento confirmado no sistema"
             },
             {
               "id": "liberacao_todos_servicos",
-              "pergunta": "Liberação em confiança vale para todos os serviços ou só internet?",
+              "pergunta": "Quais serviços podem ser liberados em confiança?",
               "tipo": "select",
               "obrigatoria": false,
               "condicional": "liberacao_confianca == 'sim'",
@@ -655,10 +656,10 @@
             },
             {
               "id": "promessa_pagamento",
-              "pergunta": "Vocês trabalham com promessa de pagamento? (Cliente informa que pagará após o vencimento e a IA mantém o contrato ativo via API)",
+              "pergunta": "Vocês trabalham com promessa de pagamento?",
               "tipo": "select",
               "obrigatoria": true,
-              "hint": "Cliente agenda data para pagar e sistema mantém ativo até a data prometida",
+              "hint": "Cliente informa quando vai pagar e a IA mantém o serviço ativo via API até a data prometida",
               "opcoes": [
                 {"value": "sim", "label": "Sim"},
                 {"value": "nao", "label": "Não"}
@@ -723,25 +724,6 @@
           "icone": "🤝",
           "perguntas": [
             {
-              "id": "oferece_negociacao",
-              "pergunta": "Vocês oferecem negociação para débitos em atraso?",
-              "tipo": "select",
-              "obrigatoria": true,
-              "opcoes": [
-                {"value": "sim", "label": "Sim"},
-                {"value": "nao", "label": "Não"}
-              ]
-            },
-            {
-              "id": "negociacao_condicoes",
-              "pergunta": "Quais condições de negociação vocês oferecem?",
-              "tipo": "textarea",
-              "obrigatoria": false,
-              "condicional": "oferece_negociacao == 'sim'",
-              "placeholder": "Ex: 'Desconto de 20% para pagamento à vista | Parcelamento em até 3x sem juros | Parcelamento em até 6x com juros de 2% ao mês'",
-              "hint": "Descreva todas as condições possíveis"
-            },
-            {
               "id": "faturas_transfere_cobranca",
               "pergunta": "A partir de quantas faturas em atraso deve transferir para Cobrança/Financeiro?",
               "tipo": "number",
@@ -774,17 +756,6 @@
               "opcoes": [
                 {"value": "coletar_transferir", "label": "Coletar comprovantes e transferir"},
                 {"value": "transferir_direto", "label": "Transferir direto para Financeiro"}
-              ]
-            },
-            {
-              "id": "comprovante_enviado",
-              "pergunta": "Quando cliente envia comprovante de pagamento, a IA pode liberar conexão?",
-              "tipo": "select",
-              "obrigatoria": true,
-              "opcoes": [
-                {"value": "sim", "label": "Sim, pode liberar imediatamente"},
-                {"value": "validar_primeiro", "label": "Apenas após validação humana"},
-                {"value": "transferir", "label": "Transferir para Financeiro validar"}
               ]
             }
           ]
