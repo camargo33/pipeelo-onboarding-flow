@@ -155,14 +155,6 @@
               ]
             },
             {
-              "id": "departamentos_outros",
-              "pergunta": "Quais outros departamentos?",
-              "tipo": "text",
-              "obrigatoria": false,
-              "condicional": "departamentos_lista includes 'outro'",
-              "placeholder": "Ex: RH, Jurídico..."
-            },
-            {
               "id": "atividades_atendimento_geral",
               "pergunta": "Descreva todas as atividades realizadas pelo Atendimento Geral/SAC:",
               "tipo": "textarea",
@@ -242,6 +234,14 @@
               "condicional": "departamentos_lista includes 'administrativo'",
               "placeholder": "Ex: Gerencia contratos, cuida de documentação, responde solicitações formais...",
               "hint": "Seja detalhado, isso ajudará a IA a entender quando transferir para este departamento"
+            },
+            {
+              "id": "departamentos_outros",
+              "pergunta": "Quais outros departamentos?",
+              "tipo": "text",
+              "obrigatoria": true,
+              "condicional": "departamentos_lista includes 'outro'",
+              "placeholder": "Ex: RH, Jurídico..."
             },
             {
               "id": "atividades_outro",
