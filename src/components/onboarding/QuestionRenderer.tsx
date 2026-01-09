@@ -30,7 +30,7 @@ interface CheckboxMultipleValue {
 const defaultHorario: HorarioSemanal = {
   segunda_sexta: { inicio: '08:00', fim: '18:00', nao_atende: false },
   sabado: { inicio: '08:00', fim: '12:00', nao_atende: false },
-  domingo_feriado: { inicio: '', fim: '', nao_atende: true }
+  domingo_feriado: { inicio: '08:00', fim: '12:00', nao_atende: false }
 };
 
 export function QuestionRenderer({ 
