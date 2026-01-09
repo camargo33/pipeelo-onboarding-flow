@@ -1094,6 +1094,42 @@
               "hint": "Liste as perguntas que a IA deve fazer antes de transferir"
             }
           ]
+        },
+
+        "follow_up": {
+          "titulo": "Follow-up de Atendimentos",
+          "icone": "🔄",
+          "perguntas": [
+            {
+              "id": "followup_suporte_ativo",
+              "pergunta": "Vocês querem que a IA faça follow-up quando o cliente parar de responder durante o suporte?",
+              "tipo": "select",
+              "obrigatoria": true,
+              "hint": "Ex: Se o cliente foi reiniciar a ONU e não retornou, a IA pode perguntar se resolveu",
+              "opcoes": [
+                {"value": "sim", "label": "Sim, ativar follow-up"},
+                {"value": "nao", "label": "Não, apenas aguardar"}
+              ]
+            },
+            {
+              "id": "followup_suporte_minutos",
+              "pergunta": "Após quantos minutos de inatividade a IA deve enviar mensagem de reengajamento?",
+              "tipo": "number",
+              "obrigatoria": false,
+              "condicional": "followup_suporte_ativo == 'sim'",
+              "placeholder": "Ex: 5",
+              "hint": "A IA perguntará se o problema foi resolvido ou se precisa de mais ajuda"
+            },
+            {
+              "id": "followup_suporte_transferir_minutos",
+              "pergunta": "Após quantos minutos sem resposta a IA deve transferir para atendimento humano?",
+              "tipo": "number",
+              "obrigatoria": false,
+              "condicional": "followup_suporte_ativo == 'sim'",
+              "placeholder": "Ex: 30",
+              "hint": "Caso o cliente não responda após o follow-up"
+            }
+          ]
         }
 
       }
@@ -1347,6 +1383,42 @@
                 {"value": "primeira_fatura", "label": "Na primeira fatura"},
                 {"value": "separado", "label": "Boleto separado"}
               ]
+            }
+          ]
+        },
+
+        "follow_up": {
+          "titulo": "Follow-up de Leads",
+          "icone": "🔄",
+          "perguntas": [
+            {
+              "id": "followup_vendas_ativo",
+              "pergunta": "Vocês querem que a IA faça follow-up quando o lead parar de responder?",
+              "tipo": "select",
+              "obrigatoria": true,
+              "hint": "Quando o cliente para de responder, a IA pode enviar uma mensagem de reengajamento",
+              "opcoes": [
+                {"value": "sim", "label": "Sim, ativar follow-up"},
+                {"value": "nao", "label": "Não, apenas aguardar"}
+              ]
+            },
+            {
+              "id": "followup_vendas_minutos",
+              "pergunta": "Após quantos minutos de inatividade a IA deve enviar mensagem de reengajamento?",
+              "tipo": "number",
+              "obrigatoria": false,
+              "condicional": "followup_vendas_ativo == 'sim'",
+              "placeholder": "Ex: 5",
+              "hint": "A IA fará um resumo da conversa e enviará uma mensagem amigável"
+            },
+            {
+              "id": "followup_vendas_transferir_minutos",
+              "pergunta": "Após quantos minutos sem resposta a IA deve transferir para o Financeiro?",
+              "tipo": "number",
+              "obrigatoria": false,
+              "condicional": "followup_vendas_ativo == 'sim'",
+              "placeholder": "Ex: 30",
+              "hint": "Caso o cliente não responda após o follow-up"
             }
           ]
         }
