@@ -441,47 +441,6 @@
           "icone": "🔗",
           "perguntas": [
             {
-              "id": "sistema_erp",
-              "pergunta": "Qual sistema de gestão/ERP vocês usam?",
-              "tipo": "select",
-              "obrigatoria": true,
-              "opcoes": [
-                {"value": "mk_solutions", "label": "MK Solutions"},
-                {"value": "ixcsoft", "label": "IXCSoft"},
-                {"value": "rbxsoft", "label": "RBXSoft"},
-                {"value": "voalle", "label": "Voalle"},
-                {"value": "sgp", "label": "SGP"},
-                {"value": "hubsoft", "label": "Hubsoft"},
-                {"value": "integrator", "label": "Integrator"},
-                {"value": "conesul", "label": "Conesul"},
-                {"value": "outro", "label": "Outro"}
-              ]
-            },
-            {
-              "id": "aviso_mk_solutions",
-              "pergunta": "A API do MK Solutions possui endpoints especiais que são pagos, como remover a redução de velocidade e consulta de viabilidade. Você terá que verificar com a MK se esses recursos estão disponíveis no seu plano.",
-              "tipo": "info",
-              "condicional": "sistema_erp == 'mk_solutions'"
-            },
-            {
-              "id": "sistema_erp_outro",
-              "pergunta": "Qual ERP vocês usam?",
-              "tipo": "text",
-              "obrigatoria": false,
-              "condicional": "sistema_erp == 'outro'",
-              "placeholder": "Nome do sistema"
-            },
-            {
-              "id": "erp_tem_api",
-              "pergunta": "Vocês têm acesso à API do sistema?",
-              "tipo": "select",
-              "obrigatoria": true,
-              "opcoes": [
-                {"value": "sim", "label": "Sim, temos API ativa"},
-                {"value": "nao", "label": "Não temos ou não sabemos"}
-              ]
-            },
-            {
               "id": "ferramenta_pagamentos",
               "pergunta": "Com relação aos pagamentos, vocês usam alguma ferramenta externa, como 7AZ, ou usam um gateway de pagamento integrado diretamente no ERP?",
               "tipo": "select",
