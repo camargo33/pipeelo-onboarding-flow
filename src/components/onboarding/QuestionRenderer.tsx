@@ -54,8 +54,12 @@ export function QuestionRenderer({
         setLocalValue({ selected: [], outroTexto: '' });
       }
     } else if (question.tipo === 'horario_semanal') {
-      setLocalValue(value && typeof value === 'object' ? value : defaultHorario);
-    } else if (question.tipo === 'url_optional') {
+      const horarioValue = value && typeof value === 'object' ? value : defaultHorario;
+      setLocalValue(horarioValue);
+      // Auto-save default value if not already set
+      if (!value || typeof value !== 'object') {
+        onChange(defaultHorario);
+      }
       setNaoTemPortal(value === 'NAO_POSSUI');
       setLocalValue(value ?? '');
     } else {
