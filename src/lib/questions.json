@@ -261,14 +261,14 @@
           "perguntas": [
             {
               "id": "clientes_prioritarios",
-              "pergunta": "Os clientes de CNPJ e Link dedicado têm um tratamento diferente? Você gostaria de transferi-los diretamente aos atendentes com prioridade?",
+              "pergunta": "Clientes CNPJ e Link Dedicado devem ser transferidos para atendentes humanos com prioridade?",
               "tipo": "select",
               "obrigatoria": true,
               "opcoes": [
-                {"value": "sim_ambos", "label": "Sim, transferir CNPJ e Link Dedicado com prioridade"},
-                {"value": "apenas_cnpj", "label": "Apenas clientes CNPJ"},
-                {"value": "apenas_link", "label": "Apenas Link Dedicado"},
-                {"value": "nao", "label": "Não, tratamento igual para todos"}
+                {"value": "sim_ambos", "label": "Sim, priorizar CNPJ e Link Dedicado"},
+                {"value": "apenas_cnpj", "label": "Priorizar apenas clientes CNPJ"},
+                {"value": "apenas_link", "label": "Priorizar apenas clientes Link Dedicado"},
+                {"value": "nao", "label": "Não, todos na mesma fila"}
               ]
             }
           ]
@@ -280,24 +280,24 @@
           "perguntas": [
             {
               "id": "nps_nota_baixa_acao",
-              "pergunta": "Quando cliente dá nota baixa (0-3) no NPS, o que fazer?",
+              "pergunta": "O que fazer quando o cliente dá nota baixa (0-3) no NPS?",
               "tipo": "select",
               "obrigatoria": true,
               "opcoes": [
-                {"value": "transferir_sucesso", "label": "Transferir para o departamento Sucesso do Cliente"},
-                {"value": "transferir_geral", "label": "Transferir para categoria Geral"},
-                {"value": "coletar_motivo", "label": "Apenas coletar o motivo da insatisfação"}
+                {"value": "transferir_sucesso", "label": "Transferir para equipe de Sucesso do Cliente"},
+                {"value": "transferir_geral", "label": "Transferir para atendimento humano geral"},
+                {"value": "coletar_motivo", "label": "Apenas registrar o motivo da insatisfação"}
               ]
             },
             {
               "id": "nps_nota_alta_acao",
-              "pergunta": "Para notas altas (9-10) no NPS, você gostaria de solicitar uma avaliação no Google ou alguma outra ação específica?",
+              "pergunta": "O que fazer quando o cliente dá nota alta (9-10) no NPS?",
               "tipo": "select",
               "obrigatoria": true,
               "opcoes": [
-                {"value": "avaliacao_google", "label": "Sim, gostaria de solicitar avaliação no Google"},
-                {"value": "outra_acao", "label": "Gostaria de outra solicitação"},
-                {"value": "nenhuma", "label": "Nenhuma ação especial"}
+                {"value": "avaliacao_google", "label": "Solicitar avaliação no Google"},
+                {"value": "outra_acao", "label": "Solicitar outra ação específica (indicação, case, testemunho, etc.)"},
+                {"value": "nenhuma", "label": "Apenas agradecer, sem solicitar nada"}
               ]
             },
             {
@@ -343,59 +343,6 @@
               "obrigatoria": true,
               "placeholder": "Ex: Retenção, Comercial, SAC/Geral...",
               "hint": "Descreva o departamento ou fluxo de transferência"
-            },
-            {
-              "id": "mudanca_endereco",
-              "pergunta": "Para mudança de endereço, a IA coleta dados básicos e transfere para qual departamento?",
-              "tipo": "select",
-              "obrigatoria": true,
-              "opcoes": [
-                {"value": "suporte", "label": "Suporte Técnico"},
-                {"value": "comercial", "label": "Comercial/Vendas"},
-                {"value": "sac", "label": "SAC/Geral"}
-              ]
-            },
-            {
-              "id": "mudanca_endereco_taxa",
-              "pergunta": "Há taxa para mudança de endereço?",
-              "tipo": "select",
-              "obrigatoria": true,
-              "opcoes": [
-                {"value": "sim", "label": "Sim"},
-                {"value": "nao", "label": "Não"},
-                {"value": "depende", "label": "Depende da distância/situação"}
-              ]
-            },
-            {
-              "id": "valor_mudanca_endereco",
-              "pergunta": "Qual o valor da taxa de mudança de endereço?",
-              "tipo": "currency",
-              "obrigatoria": false,
-              "condicional": "mudanca_endereco_taxa == 'sim'",
-              "placeholder": "Ex: 50.00"
-            },
-            {
-              "id": "troca_titularidade_departamento",
-              "pergunta": "Para troca de titularidade, a IA coleta dados básicos e transfere para qual departamento?",
-              "tipo": "select",
-              "obrigatoria": true,
-              "opcoes": [
-                {"value": "sac", "label": "SAC/Geral"},
-                {"value": "administrativo", "label": "Administrativo"},
-                {"value": "financeiro", "label": "Financeiro"}
-              ]
-            },
-            {
-              "id": "troca_titularidade_documentos",
-              "pergunta": "Quais dados básicos a IA deve coletar do novo titular?",
-              "tipo": "checkbox_multiple",
-              "obrigatoria": true,
-              "opcoes": [
-                {"value": "nome_completo", "label": "Nome completo"},
-                {"value": "cpf", "label": "CPF"},
-                {"value": "telefone", "label": "Telefone"},
-                {"value": "email", "label": "Email"}
-              ]
             },
             {
               "id": "suspensao_temporaria_departamento",
@@ -478,34 +425,15 @@
           "icone": "🔗",
           "perguntas": [
             {
-              "id": "ferramenta_pagamentos",
-              "pergunta": "Com relação aos pagamentos, vocês usam alguma ferramenta externa, como 7AZ, ou usam um gateway de pagamento integrado diretamente no ERP?",
-              "tipo": "select",
-              "obrigatoria": true,
-              "opcoes": [
-                {"value": "7az", "label": "7AZ"},
-                {"value": "gateway_erp", "label": "Gateway integrado no ERP"},
-                {"value": "outro", "label": "Outra ferramenta"}
-              ]
-            },
-            {
-              "id": "ferramenta_pagamentos_outro",
-              "pergunta": "Qual ferramenta de pagamentos vocês usam?",
-              "tipo": "text",
-              "obrigatoria": false,
-              "condicional": "ferramenta_pagamentos == 'outro'",
-              "placeholder": "Nome da ferramenta"
-            },
-            {
               "id": "sistema_viabilidade",
-              "pergunta": "Em qual sistema vocês consultam se tem viabilidade no endereço do cliente?",
+              "pergunta": "Qual sistema vocês usam para consultar viabilidade no endereço do cliente?",
               "tipo": "select",
               "obrigatoria": true,
               "opcoes": [
                 {"value": "geogrid", "label": "GeoGrid"},
                 {"value": "ozmaps", "label": "OZMaps"},
-                {"value": "outro", "label": "Outro"},
-                {"value": "nenhum", "label": "Não temos"}
+                {"value": "integrado_erp", "label": "Integrado ao ERP"},
+                {"value": "outro", "label": "Outro sistema"}
               ]
             },
             {
@@ -515,6 +443,25 @@
               "obrigatoria": false,
               "condicional": "sistema_viabilidade == 'outro'",
               "placeholder": "Nome do sistema"
+            },
+            {
+              "id": "ferramenta_pagamentos",
+              "pergunta": "Qual sistema vocês usam para processar pagamentos?",
+              "tipo": "select",
+              "obrigatoria": true,
+              "opcoes": [
+                {"value": "gateway_externo", "label": "Gateway externo (7AZ, Asaas, Mercado Pago, etc.)"},
+                {"value": "gateway_erp", "label": "Gateway integrado no ERP"},
+                {"value": "outro", "label": "Outro sistema"}
+              ]
+            },
+            {
+              "id": "ferramenta_pagamentos_outro",
+              "pergunta": "Qual ferramenta de pagamentos vocês usam?",
+              "tipo": "text",
+              "obrigatoria": false,
+              "condicional": "ferramenta_pagamentos == 'outro'",
+              "placeholder": "Nome da ferramenta"
             },
             {
               "id": "rede_documentada",
