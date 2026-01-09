@@ -169,6 +169,12 @@ function evaluateConditional(condicional: string, respostas: Record<string, any>
       const [campo, valorRaw] = condicional.split(' includes ');
       const valor = valorRaw.replace(/'/g, '').trim();
       const resposta = respostas[campo.trim()];
+      
+      // Handle checkbox_multiple that stores { selected: [], outroTexto: '' }
+      if (resposta && typeof resposta === 'object' && 'selected' in resposta) {
+        return Array.isArray(resposta.selected) && resposta.selected.includes(valor);
+      }
+      
       if (Array.isArray(resposta)) {
         return resposta.includes(valor);
       }
