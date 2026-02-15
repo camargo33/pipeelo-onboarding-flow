@@ -322,8 +322,7 @@ const OnboardingSession = () => {
 
                         {status.completed ? (
                           <div className="flex items-center gap-2 shrink-0">
-                            {!allCompleted && (
-                              <Button
+                            <Button
                                 variant="ghost"
                                 size="sm"
                                 className="text-amber-500 hover:text-amber-600 hover:bg-amber-500/10"
@@ -335,7 +334,6 @@ const OnboardingSession = () => {
                                 <Pencil className="w-4 h-4 mr-1" />
                                 Editar
                               </Button>
-                            )}
                             <div className="p-2 rounded-full bg-green-500/20">
                               <Check className="w-5 h-5 text-green-400" />
                             </div>
