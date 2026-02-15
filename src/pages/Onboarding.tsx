@@ -91,23 +91,8 @@ export default function Onboarding() {
         return;
       }
 
-      // Check if department already completed - allow editing if not all departments are complete
+      // Check if department already completed - allow editing always
       const statusField = `status_${urlDepartamento}` as keyof typeof session;
-      const allComplete = 
-        session.status_sac_geral === 'concluido' &&
-        session.status_financeiro === 'concluido' &&
-        session.status_suporte === 'concluido' &&
-        session.status_vendas === 'concluido';
-      
-      if (session[statusField] === 'concluido' && allComplete) {
-        toast({
-          title: 'Onboarding finalizado',
-          description: 'Não é possível editar após todos os departamentos serem finalizados.',
-          variant: 'destructive',
-        });
-        navigate(`/${slug}`);
-        return;
-      }
 
       setSessionId(session.id);
       setEmpresaNomeState(session.empresa_nome);
