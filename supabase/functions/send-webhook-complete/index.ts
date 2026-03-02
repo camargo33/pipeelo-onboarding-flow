@@ -170,7 +170,7 @@ serve(async (req: Request): Promise<Response> => {
     console.log("Sending webhook payload:", JSON.stringify(payload, null, 2));
 
     // Send to external API (use testWebhookUrl for testing, otherwise use production URL)
-    const targetUrl = testWebhookUrl || "http://admin.pipeelo.com/api/clients/onboarding/create";
+    const targetUrl = testWebhookUrl || "https://admin.pipeelo.com/api/clients/onboarding/create";
     const apiToken = Deno.env.get("PIPEELO_ADMIN_API_TOKEN");
     
     // Only require token for production URL
