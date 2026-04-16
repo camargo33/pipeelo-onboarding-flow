@@ -238,7 +238,16 @@ export default function Onboarding() {
       
       if (updateError) throw updateError;
 
-      // Check if all departments are complete and send webhook
+      // SUCESSO: dados salvos no banco. Mostrar tela de sucesso imediatamente.
+      toast({
+        title: "Respostas salvas!",
+        description: `O departamento ${departamentoData.nome} foi salvo com sucesso. Você pode editar a qualquer momento.`,
+      });
+      setStep('sucesso');
+      setIsSubmitting(false);
+
+      // Disparar integrações em background (não bloqueiam o usuário, falhas são silenciosas)
+      // 1. Webhook para admin Pipeelo (se todos departamentos concluídos)
       if (
         updatedSession &&
         updatedSession.status_sac_geral === 'concluido' &&
@@ -246,48 +255,36 @@ export default function Onboarding() {
         updatedSession.status_suporte === 'concluido' &&
         updatedSession.status_vendas === 'concluido'
       ) {
-        console.log('All departments complete, sending webhook...');
-        const { error: webhookError } = await supabase.functions.invoke('send-webhook-complete', {
-          body: { sessionId },
+        supabase.functions
+          .invoke('send-webhook-complete', { body: { sessionId } })
+          .then(({ error }) => {
+            if (error) console.error('Erro no webhook (não bloqueante):', error);
+            else console.log('Webhook enviado com sucesso');
+          });
+      }
+
+      // 2. E-mail de notificação (opcional, não bloqueia)
+      supabase.functions
+        .invoke('send-onboarding-email', {
+          body: {
+            empresaNome,
+            departamento: state.departamento,
+            departamentoNome: departamentoData.nome,
+            responsavelNome: state.responsavelNome,
+            respostas: state.respostas,
+            sessionId,
+          },
+        })
+        .then(({ error }) => {
+          if (error) console.error('Erro no envio de e-mail (não bloqueante):', error);
         });
-        
-        if (webhookError) {
-          console.error('Error sending webhook:', webhookError);
-        } else {
-          console.log('Webhook sent successfully');
-        }
-      }
-      
-      // 3. Send email notification
-      const { error: emailError } = await supabase.functions.invoke('send-onboarding-email', {
-        body: {
-          empresaNome: empresaNome,
-          departamento: state.departamento,
-          departamentoNome: departamentoData.nome,
-          responsavelNome: state.responsavelNome,
-          respostas: state.respostas,
-          sessionId: sessionId,
-        },
-      });
-      
-      if (emailError) {
-        console.error('Error sending email:', emailError);
-      }
-      
-      toast({
-        title: "Onboarding enviado!",
-        description: `O departamento ${departamentoData.nome} foi completado com sucesso.`,
-      });
-      
-      setStep('sucesso');
     } catch (error: any) {
-      console.error('Error submitting onboarding:', error);
+      console.error('Erro ao salvar onboarding:', error);
       toast({
-        title: "Erro ao enviar",
-        description: error.message || "Ocorreu um erro ao salvar as respostas. Tente novamente.",
+        title: "Erro ao salvar",
+        description: error.message || "Não foi possível salvar as respostas. Tente novamente.",
         variant: "destructive",
       });
-    } finally {
       setIsSubmitting(false);
     }
   };
