@@ -1,17 +1,21 @@
 // Onboarding Types
-export type QuestionType = 
-  | 'text' 
-  | 'textarea' 
-  | 'number' 
-  | 'currency' 
-  | 'url' 
+export type QuestionType =
+  | 'text'
+  | 'textarea'
+  | 'number'
+  | 'currency'
+  | 'url'
   | 'url_optional'
-  | 'time' 
+  | 'time'
   | 'horario_semanal'
-  | 'select' 
-  | 'checkbox_multiple' 
-  | 'info' 
-  | 'info_link';
+  | 'select'
+  | 'checkbox_multiple'
+  | 'info'
+  | 'info_link'
+  | 'cnpj'
+  | 'cpf'
+  | 'email'
+  | 'phone';
 
 export interface QuestionOption {
   value: string;
@@ -69,19 +73,32 @@ export interface OnboardingSession {
   status: 'pendente' | 'em_andamento' | 'concluido';
   created_at: string;
   completed_at: string | null;
-  
+
+  // Vínculo com tenant Pipeelo criado via admin-pipeelo API
+  tenant_id: string | null;
+  pipeelo_token: string | null;
+  cnpj: string | null;
+  razao_social: string | null;
+  whatsapp_business: string | null;
+  admin_email: string | null;
+  tipo_empresa: string | null;
+
+  identificacao_completo: boolean;
+  identificacao_respondido_por: string | null;
+  identificacao_respondido_em: string | null;
+
   sac_geral_completo: boolean;
   sac_geral_respondido_por: string | null;
   sac_geral_respondido_em: string | null;
-  
+
   financeiro_completo: boolean;
   financeiro_respondido_por: string | null;
   financeiro_respondido_em: string | null;
-  
+
   suporte_completo: boolean;
   suporte_respondido_por: string | null;
   suporte_respondido_em: string | null;
-  
+
   vendas_completo: boolean;
   vendas_respondido_por: string | null;
   vendas_respondido_em: string | null;
@@ -100,9 +117,10 @@ export interface OnboardingResposta {
   obrigatoria: boolean;
 }
 
-export type DepartmentId = 'sac_geral' | 'financeiro' | 'suporte' | 'vendas';
+export type DepartmentId = 'identificacao' | 'sac_geral' | 'financeiro' | 'suporte' | 'vendas';
 
 export const DEPARTMENT_COLORS: Record<DepartmentId, string> = {
+  identificacao: 'slate-600',
   sac_geral: 'pipeelo-purple',
   financeiro: 'pipeelo-green',
   suporte: 'pipeelo-blue',
@@ -110,8 +128,17 @@ export const DEPARTMENT_COLORS: Record<DepartmentId, string> = {
 };
 
 export const DEPARTMENT_ICONS: Record<DepartmentId, string> = {
+  identificacao: 'IdCard',
   sac_geral: 'Building2',
   financeiro: 'DollarSign',
   suporte: 'Wrench',
   vendas: 'TrendingUp'
 };
+
+export const DEPARTMENT_ORDER: DepartmentId[] = [
+  'identificacao',
+  'sac_geral',
+  'financeiro',
+  'suporte',
+  'vendas',
+];

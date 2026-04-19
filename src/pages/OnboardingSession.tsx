@@ -4,23 +4,27 @@ import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { toast } from 'sonner';
-import { Building2, DollarSign, Wrench, TrendingUp, Check, Clock, ArrowRight, AlertCircle, Info, Users, MessageSquare, Pencil } from 'lucide-react';
+import { Building2, DollarSign, Wrench, TrendingUp, Check, Clock, ArrowRight, AlertCircle, Info, Users, MessageSquare, Pencil, IdCard, Lock } from 'lucide-react';
 import { PipeeloLogo } from '@/components/PipeeloLogo';
 import { motion } from 'framer-motion';
-import { DepartmentId } from '@/types/onboarding';
+import { DepartmentId, DEPARTMENT_ORDER } from '@/types/onboarding';
 
 interface SessionData {
   id: string;
   empresa_nome: string;
   slug: string;
+  tenant_id: string | null;
+  status_identificacao: string | null;
   status_sac_geral: string | null;
   status_financeiro: string | null;
   status_suporte: string | null;
   status_vendas: string | null;
+  responsavel_identificacao: string | null;
   responsavel_sac_geral: string | null;
   responsavel_financeiro: string | null;
   responsavel_suporte: string | null;
   responsavel_vendas: string | null;
+  concluido_identificacao_at: string | null;
   concluido_sac_geral_at: string | null;
   concluido_financeiro_at: string | null;
   concluido_suporte_at: string | null;
@@ -36,7 +40,19 @@ const departmentConfig: Record<DepartmentId, {
   color: string;
   bgColor: string;
   borderColor: string;
+  bloqueante?: boolean;
 }> = {
+  identificacao: {
+    icon: IdCard,
+    label: 'Identificação',
+    description: 'Dados cadastrais que criam seu tenant Pipeelo. Preencha primeiro.',
+    suggestedPerson: 'CEO ou sócio-administrador',
+    estimatedTime: '~5 min',
+    color: 'text-slate-300',
+    bgColor: 'bg-slate-500/10',
+    borderColor: 'border-slate-500/30',
+    bloqueante: true,
+  },
   sac_geral: {
     icon: Building2,
     label: 'SAC / Geral',
@@ -118,6 +134,7 @@ const OnboardingSession = () => {
     if (!session) return { completed: false, responsavel: null, completedAt: null };
     
     const statusMap: Record<DepartmentId, { status: string | null; responsavel: string | null; completedAt: string | null }> = {
+      identificacao: { status: session.status_identificacao, responsavel: session.responsavel_identificacao, completedAt: session.concluido_identificacao_at },
       sac_geral: { status: session.status_sac_geral, responsavel: session.responsavel_sac_geral, completedAt: session.concluido_sac_geral_at },
       financeiro: { status: session.status_financeiro, responsavel: session.responsavel_financeiro, completedAt: session.concluido_financeiro_at },
       suporte: { status: session.status_suporte, responsavel: session.responsavel_suporte, completedAt: session.concluido_suporte_at },
@@ -132,10 +149,16 @@ const OnboardingSession = () => {
     };
   };
 
+  const isIdentificacaoCompleta = () => session?.status_identificacao === 'concluido';
+
   const startDepartment = (deptId: DepartmentId) => {
     const status = getDepartmentStatus(deptId);
     if (status.completed) {
       toast.error('Este departamento já foi preenchido');
+      return;
+    }
+    if (deptId !== 'identificacao' && !isIdentificacaoCompleta()) {
+      toast.error('Preencha primeiro o departamento "Identificação" — ele cria o tenant na Pipeelo');
       return;
     }
     navigate(`/${slug}/${deptId}`);
@@ -144,6 +167,7 @@ const OnboardingSession = () => {
   const getCompletedCount = () => {
     if (!session) return 0;
     let count = 0;
+    if (session.status_identificacao === 'concluido') count++;
     if (session.status_sac_geral === 'concluido') count++;
     if (session.status_financeiro === 'concluido') count++;
     if (session.status_suporte === 'concluido') count++;

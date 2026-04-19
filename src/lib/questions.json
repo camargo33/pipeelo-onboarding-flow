@@ -1,15 +1,138 @@
 {
   "onboarding_structure": {
-    "total_departamentos": 4,
-    "ordem_sugerida": ["sac_geral", "financeiro", "suporte", "vendas"],
-    "tempo_total_estimado": "55-70 minutos",
-    "descricao": "Sistema de onboarding completo Pipeelo - 4 departamentos independentes - Versão 2.1",
-    "versao": "2.1",
-    "total_perguntas": 138
+    "total_departamentos": 5,
+    "ordem_sugerida": ["identificacao", "sac_geral", "financeiro", "suporte", "vendas"],
+    "tempo_total_estimado": "60-80 minutos",
+    "descricao": "Sistema de onboarding Pipeelo v3.0 - 5 departamentos, primeiro (identificacao) é bloqueante e cria o tenant no admin-pipeelo",
+    "versao": "3.0",
+    "total_perguntas": 148
   },
-  
+
   "departamentos": {
-    
+
+    "identificacao": {
+      "nome": "Identificação da Empresa",
+      "slug": "identificacao",
+      "responsavel_sugerido": "CEO ou sócio-administrador",
+      "tempo_estimado": "5 minutos",
+      "descricao": "Dados cadastrais que criam o tenant no admin-pipeelo. Deve ser preenchido primeiro para destravar os outros departamentos.",
+      "ordem_execucao": 0,
+      "bloqueante": true,
+      "secoes": {
+
+        "cadastro": {
+          "titulo": "Cadastro da Empresa",
+          "icone": "🪪",
+          "descricao": "Dados usados para criar seu tenant Pipeelo. Verificamos se já existe por CNPJ antes de criar.",
+          "perguntas": [
+            {
+              "id": "cnpj",
+              "pergunta": "Qual o CNPJ da empresa?",
+              "tipo": "cnpj",
+              "obrigatoria": true,
+              "placeholder": "00.000.000/0000-00",
+              "hint": "Usado como chave única — se já houver onboarding para este CNPJ, será retomado."
+            },
+            {
+              "id": "razao_social",
+              "pergunta": "Razão social (nome registrado na Receita)",
+              "tipo": "text",
+              "obrigatoria": true,
+              "placeholder": "Ex: Pipeelo Telecom Ltda",
+              "validacao": "min:3"
+            },
+            {
+              "id": "nome_fantasia",
+              "pergunta": "Nome fantasia (como os clientes conhecem a empresa)",
+              "tipo": "text",
+              "obrigatoria": true,
+              "placeholder": "Ex: Pipeelo"
+            },
+            {
+              "id": "tipo_empresa",
+              "pergunta": "Que tipo de empresa é?",
+              "tipo": "select",
+              "obrigatoria": true,
+              "opcoes": [
+                {"value": "isp", "label": "ISP — Provedor de Internet"},
+                {"value": "tv_assinatura", "label": "TV por assinatura"},
+                {"value": "telefonia", "label": "Telefonia"},
+                {"value": "seguranca", "label": "Segurança Patrimonial"},
+                {"value": "outro", "label": "Outro"}
+              ]
+            },
+            {
+              "id": "anatel",
+              "pergunta": "Número da licença ANATEL (SCM) — se aplicável",
+              "tipo": "text",
+              "obrigatoria": false,
+              "placeholder": "Ex: 53500.000000/2020",
+              "hint": "Obrigatório para ISPs licenciados. Pode deixar em branco se não houver."
+            },
+            {
+              "id": "numero_assinantes",
+              "pergunta": "Quantos assinantes/clientes ativos vocês têm hoje?",
+              "tipo": "select",
+              "obrigatoria": true,
+              "opcoes": [
+                {"value": "<1k", "label": "Menos de 1.000"},
+                {"value": "1k-5k", "label": "Entre 1.000 e 5.000"},
+                {"value": "5k-15k", "label": "Entre 5.000 e 15.000"},
+                {"value": "15k-50k", "label": "Entre 15.000 e 50.000"},
+                {"value": "50k+", "label": "Mais de 50.000"}
+              ]
+            }
+          ]
+        },
+
+        "responsavel": {
+          "titulo": "Responsável Legal",
+          "icone": "🧑‍💼",
+          "descricao": "Pessoa que assina contratos pela empresa.",
+          "perguntas": [
+            {
+              "id": "responsavel_nome",
+              "pergunta": "Nome completo do responsável legal",
+              "tipo": "text",
+              "obrigatoria": true,
+              "placeholder": "Ex: Felipe Camargo",
+              "validacao": "min:5"
+            },
+            {
+              "id": "responsavel_cpf",
+              "pergunta": "CPF do responsável legal",
+              "tipo": "cpf",
+              "obrigatoria": true,
+              "placeholder": "000.000.000-00"
+            }
+          ]
+        },
+
+        "acesso": {
+          "titulo": "Acesso ao Painel Pipeelo",
+          "icone": "🔑",
+          "descricao": "Usado para criar o login admin principal e enviar credenciais.",
+          "perguntas": [
+            {
+              "id": "admin_email",
+              "pergunta": "Email principal do administrador (login no painel Pipeelo)",
+              "tipo": "email",
+              "obrigatoria": true,
+              "placeholder": "admin@suaempresa.com.br"
+            },
+            {
+              "id": "whatsapp_business",
+              "pergunta": "Número oficial do WhatsApp Business (atendimento)",
+              "tipo": "phone",
+              "obrigatoria": true,
+              "placeholder": "(00) 00000-0000",
+              "hint": "Número onde seus clientes conversam com a IA."
+            }
+          ]
+        }
+      }
+    },
+
     "sac_geral": {
       "nome": "SAC/Geral",
       "slug": "sac_geral",

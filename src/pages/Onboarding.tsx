@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, ArrowRight, Check, Building2, DollarSign, Wrench, TrendingUp, Loader2 } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Check, Building2, DollarSign, Wrench, TrendingUp, Loader2, IdCard } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { PipeeloLogo } from '@/components/PipeeloLogo';
@@ -14,14 +14,16 @@ import { supabase } from '@/integrations/supabase/client';
 
 type Step = 'perguntas' | 'resumo' | 'sucesso';
 
-const departmentIcons = {
+const departmentIcons: Record<DepartmentId, typeof Building2> = {
+  identificacao: IdCard,
   sac_geral: Building2,
   financeiro: DollarSign,
   suporte: Wrench,
   vendas: TrendingUp
 };
 
-const departmentColors = {
+const departmentColors: Record<DepartmentId, string> = {
+  identificacao: 'bg-slate-600',
   sac_geral: 'bg-pipeelo-purple',
   financeiro: 'bg-pipeelo-green',
   suporte: 'bg-pipeelo-blue',
@@ -246,38 +248,61 @@ export default function Onboarding() {
       setStep('sucesso');
       setIsSubmitting(false);
 
-      // Disparar integrações em background (não bloqueiam o usuário, falhas são silenciosas)
-      // 1. Webhook para admin Pipeelo (se todos departamentos concluídos)
+      // Disparar integrações em background (Vercel Functions)
+      const postJson = (path: string, body: unknown) =>
+        fetch(path, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body),
+        })
+          .then((r) => r.json())
+          .catch((err) => console.error(`${path} failed (non-blocking):`, err));
+
+      // 1. Se for Identificação → provisionar tenant no admin-pipeelo
+      if (state.departamento === 'identificacao') {
+        const r = state.respostas;
+        postJson('/api/provision-tenant', {
+          sessionId,
+          cnpj: r.cnpj,
+          razao_social: r.razao_social,
+          nome_fantasia: r.nome_fantasia,
+          responsavel_nome: r.responsavel_nome,
+          responsavel_cpf: r.responsavel_cpf,
+          admin_email: r.admin_email,
+          whatsapp_business: r.whatsapp_business,
+          anatel: r.anatel,
+          tipo_empresa: r.tipo_empresa,
+          numero_assinantes: r.numero_assinantes,
+        });
+      } else {
+        // 2. Outros deptos → sync parcial (categorias, office-hours)
+        postJson('/api/sync-department', {
+          sessionId,
+          departamento: state.departamento,
+        });
+      }
+
+      // 3. Webhook final se TUDO concluído
       if (
         updatedSession &&
+        updatedSession.status_identificacao === 'concluido' &&
         updatedSession.status_sac_geral === 'concluido' &&
         updatedSession.status_financeiro === 'concluido' &&
         updatedSession.status_suporte === 'concluido' &&
         updatedSession.status_vendas === 'concluido'
       ) {
-        supabase.functions
-          .invoke('send-webhook-complete', { body: { sessionId } })
-          .then(({ error }) => {
-            if (error) console.error('Erro no webhook (não bloqueante):', error);
-            else console.log('Webhook enviado com sucesso');
-          });
+        postJson('/api/complete-onboarding', { sessionId });
       }
 
-      // 2. E-mail de notificação (opcional, não bloqueia)
-      supabase.functions
-        .invoke('send-onboarding-email', {
-          body: {
-            empresaNome,
-            departamento: state.departamento,
-            departamentoNome: departamentoData.nome,
-            responsavelNome: state.responsavelNome,
-            respostas: state.respostas,
-            sessionId,
-          },
-        })
-        .then(({ error }) => {
-          if (error) console.error('Erro no envio de e-mail (não bloqueante):', error);
-        });
+      // 4. Email de notificação
+      postJson('/api/send-email', {
+        empresaNome,
+        departamento: state.departamento,
+        departamentoNome: departamentoData.nome,
+        responsavelNome: state.responsavelNome,
+        respostas: state.respostas,
+        sessionId,
+      });
     } catch (error: any) {
       console.error('Erro ao salvar onboarding:', error);
       toast({

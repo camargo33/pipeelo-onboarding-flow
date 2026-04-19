@@ -94,6 +94,90 @@ export function QuestionRenderer({
           />
         );
 
+      case 'email':
+        return (
+          <Input
+            type="email"
+            value={localValue}
+            onChange={(e) => handleChange(e.target.value.trim())}
+            onKeyPress={handleKeyPress}
+            placeholder={question.placeholder}
+            className="text-lg py-6"
+            autoFocus
+          />
+        );
+
+      case 'cnpj': {
+        const maskCnpj = (v: string) => {
+          const d = v.replace(/\D/g, '').slice(0, 14);
+          return d
+            .replace(/^(\d{2})(\d)/, '$1.$2')
+            .replace(/^(\d{2})\.(\d{3})(\d)/, '$1.$2.$3')
+            .replace(/\.(\d{3})(\d)/, '.$1/$2')
+            .replace(/(\d{4})(\d)/, '$1-$2');
+        };
+        return (
+          <Input
+            type="text"
+            inputMode="numeric"
+            value={maskCnpj(localValue || '')}
+            onChange={(e) => handleChange(maskCnpj(e.target.value))}
+            onKeyPress={handleKeyPress}
+            placeholder={question.placeholder || '00.000.000/0000-00'}
+            className="text-lg py-6 font-mono"
+            autoFocus
+          />
+        );
+      }
+
+      case 'cpf': {
+        const maskCpf = (v: string) => {
+          const d = v.replace(/\D/g, '').slice(0, 11);
+          return d
+            .replace(/(\d{3})(\d)/, '$1.$2')
+            .replace(/(\d{3})\.(\d{3})(\d)/, '$1.$2.$3')
+            .replace(/\.(\d{3})(\d)/, '.$1-$2');
+        };
+        return (
+          <Input
+            type="text"
+            inputMode="numeric"
+            value={maskCpf(localValue || '')}
+            onChange={(e) => handleChange(maskCpf(e.target.value))}
+            onKeyPress={handleKeyPress}
+            placeholder={question.placeholder || '000.000.000-00'}
+            className="text-lg py-6 font-mono"
+            autoFocus
+          />
+        );
+      }
+
+      case 'phone': {
+        const maskPhone = (v: string) => {
+          const d = v.replace(/\D/g, '').slice(0, 11);
+          if (d.length <= 10) {
+            return d
+              .replace(/(\d{2})(\d)/, '($1) $2')
+              .replace(/(\d{4})(\d)/, '$1-$2');
+          }
+          return d
+            .replace(/(\d{2})(\d)/, '($1) $2')
+            .replace(/(\d{5})(\d)/, '$1-$2');
+        };
+        return (
+          <Input
+            type="tel"
+            inputMode="tel"
+            value={maskPhone(localValue || '')}
+            onChange={(e) => handleChange(maskPhone(e.target.value))}
+            onKeyPress={handleKeyPress}
+            placeholder={question.placeholder || '(00) 00000-0000'}
+            className="text-lg py-6 font-mono"
+            autoFocus
+          />
+        );
+      }
+
       case 'textarea':
         return (
           <Textarea
