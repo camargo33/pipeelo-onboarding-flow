@@ -4,8 +4,8 @@
     "ordem_sugerida": ["identificacao", "sac_geral", "financeiro", "suporte", "vendas"],
     "tempo_total_estimado": "60-80 minutos",
     "descricao": "Sistema de onboarding Pipeelo v3.0 - 5 departamentos, primeiro (identificacao) é bloqueante e cria o tenant no admin-pipeelo",
-    "versao": "3.0",
-    "total_perguntas": 148
+    "versao": "3.0.1",
+    "total_perguntas": 129
   },
 
   "departamentos": {
@@ -1164,22 +1164,148 @@
       "nome": "Vendas/Comercial",
       "slug": "vendas",
       "responsavel_sugerido": "Gerente Comercial ou Coordenador de Vendas",
-      "tempo_estimado": "10-15 minutos",
-      "descricao": "Processos de vendas, produtos e instalação",
+      "tempo_estimado": "15-20 minutos",
+      "descricao": "Portfólio de planos, método de vendas, recomendação por perfil e instalação. A IA usa TUDO isso direto no atendimento — quanto mais completo, menos humano precisa intervir.",
       "ordem_execucao": 4,
       "secoes": {
-        
-        "portfolio_produtos": {
-          "titulo": "Portfólio de Produtos",
+
+        "portfolio_planos": {
+          "titulo": "Portfólio de Planos",
           "icone": "📦",
+          "descricao": "Os planos que a IA vai recomendar e fechar. Precisa ser completo — sem isso a IA não consegue vender.",
           "perguntas": [
             {
-              "id": "envio_catalogo_separado",
-              "pergunta": "IMPORTANTE: Catálogo de planos e promoções",
-              "tipo": "info",
-              "obrigatoria": false,
-              "texto": "O catálogo completo de planos e promoções será sempre fornecido via arquivo na plataforma. A IA buscará informações de planos, preços, velocidades e promoções diretamente desse arquivo. Você não precisa listar essas informações aqui durante o onboarding."
+              "id": "tabela_planos",
+              "pergunta": "Liste TODOS os planos ativos (um por linha, separe colunas por |)",
+              "tipo": "textarea",
+              "obrigatoria": true,
+              "placeholder": "Nome | Velocidade | Simétrico? | Preço | Inclusos | Público\nConnect 500 | 500Mbps | Sim | R$ 99 | TV, Skeelo | 1-2 pessoas\nSuper 600 | 600Mbps | Sim | R$ 117 | TV, Skeelo | 2-3 pessoas\nHiper 700 | 700Mbps | Sim | R$ 144 | TV, Skeelo, Watch | 3-4 pessoas\nUltra 800 | 800Mbps | Sim | R$ 189 | TV, Skeelo, Watch, Mesh | 4+ pessoas",
+              "hint": "Uma linha por plano. Colunas: Nome | Velocidade | Simétrico? (Sim/Não) | Preço | Serviços inclusos (separe por vírgula) | Público-alvo. Inclua planos residenciais E empresariais."
             },
+            {
+              "id": "plano_campeao",
+              "pergunta": "Qual é o plano CAMPEÃO (mais vendido / melhor custo-benefício)?",
+              "tipo": "text",
+              "obrigatoria": true,
+              "placeholder": "Ex: Super 600",
+              "hint": "A IA vai destacar esse plano quando o perfil do cliente permitir."
+            },
+            {
+              "id": "diferenciais_concorrencia",
+              "pergunta": "Quais os principais diferenciais da empresa vs concorrência?",
+              "tipo": "textarea",
+              "obrigatoria": true,
+              "placeholder": "Ex: Fibra 100% simétrica | Suporte local humano | Estrutura própria (não terceirizada) | Instalação em 24h | Serviços agregados inclusos",
+              "hint": "Use | para separar. A IA usa como argumentos de venda."
+            },
+            {
+              "id": "tem_planos_empresariais",
+              "pergunta": "Vocês têm planos empresariais distintos dos residenciais?",
+              "tipo": "select",
+              "obrigatoria": true,
+              "opcoes": [
+                {"value": "sim", "label": "Sim, portfólio empresarial separado"},
+                {"value": "mesmos", "label": "Usamos os mesmos planos para ambos"},
+                {"value": "nao", "label": "Não atendemos empresas"}
+              ]
+            },
+            {
+              "id": "caracteristicas_empresariais",
+              "pergunta": "Quais características diferenciam o empresarial?",
+              "tipo": "checkbox_multiple",
+              "obrigatoria": true,
+              "condicional": "tem_planos_empresariais == 'sim'",
+              "opcoes": [
+                {"value": "ip_fixo", "label": "IP fixo incluído"},
+                {"value": "sla_4h", "label": "SLA de atendimento até 4h"},
+                {"value": "upload_simetrico", "label": "Upload 100% simétrico"},
+                {"value": "suporte_prioritario", "label": "Suporte prioritário"},
+                {"value": "instalacao_gratis", "label": "Instalação gratuita"},
+                {"value": "ponto_adicional", "label": "Ponto cabeado adicional"}
+              ]
+            }
+          ]
+        },
+
+        "metodo_vendas": {
+          "titulo": "Método de Vendas",
+          "icone": "🎯",
+          "descricao": "Como a IA conduz o lead do primeiro 'oi' até o fechamento.",
+          "perguntas": [
+            {
+              "id": "metodo_vendas",
+              "pergunta": "Qual método de vendas a IA deve usar?",
+              "tipo": "select",
+              "obrigatoria": true,
+              "opcoes": [
+                {"value": "def", "label": "DEF — Descobrir, Engajar, Fechar (consultivo)"},
+                {"value": "spin", "label": "SPIN — Situação, Problema, Implicação, Necessidade"},
+                {"value": "direto", "label": "Direto — mostrar planos e fechar rápido"},
+                {"value": "customizado", "label": "Customizado (descreva abaixo)"}
+              ],
+              "hint": "DEF é o mais usado por provedores Pipeelo e funciona bem com IA."
+            },
+            {
+              "id": "metodo_customizado_descricao",
+              "pergunta": "Descreva seu método customizado",
+              "tipo": "textarea",
+              "obrigatoria": true,
+              "condicional": "metodo_vendas == 'customizado'",
+              "placeholder": "Explique o passo a passo que a IA deve seguir no atendimento de vendas."
+            },
+            {
+              "id": "perguntas_qualificacao_lista",
+              "pergunta": "Quais perguntas a IA deve fazer para qualificar o lead?",
+              "tipo": "checkbox_multiple",
+              "obrigatoria": true,
+              "opcoes": [
+                {"value": "pessoas", "label": "Quantas pessoas moram no imóvel?"},
+                {"value": "dispositivos", "label": "Quantos dispositivos se conectam simultaneamente?"},
+                {"value": "tipo_imovel", "label": "Casa pequena, média, sobrado ou apartamento?"},
+                {"value": "uso_principal", "label": "Qual uso principal (streaming, games, home office)?"},
+                {"value": "provedor_atual", "label": "Usa qual provedor hoje e por quê quer trocar?"},
+                {"value": "origem", "label": "Como conheceu a empresa?"}
+              ],
+              "hint": "Uma pergunta por vez — nunca várias na mesma mensagem."
+            },
+            {
+              "id": "recomendacao_perfil_1_2",
+              "pergunta": "Plano recomendado para 1-2 pessoas / poucos dispositivos / casa pequena",
+              "tipo": "text",
+              "obrigatoria": true,
+              "placeholder": "Ex: Connect 500",
+              "hint": "Use o nome exato do plano listado acima."
+            },
+            {
+              "id": "recomendacao_perfil_3_4",
+              "pergunta": "Plano recomendado para 3-4 pessoas / casa média / streaming",
+              "tipo": "text",
+              "obrigatoria": true,
+              "placeholder": "Ex: Super 600"
+            },
+            {
+              "id": "recomendacao_perfil_5mais",
+              "pergunta": "Plano recomendado para 5+ pessoas / sobrado / muitos dispositivos",
+              "tipo": "text",
+              "obrigatoria": true,
+              "placeholder": "Ex: Ultra 800 Mesh"
+            },
+            {
+              "id": "objecoes_comuns",
+              "pergunta": "Quais objeções mais comuns e como a IA deve responder?",
+              "tipo": "textarea",
+              "obrigatoria": false,
+              "placeholder": "Ex:\nEstá caro → reforçar valor agregado e oferecer plano imediatamente abaixo\nPreciso pensar → oferecer reserva sem compromisso por 48h, pedir CPF/email\nJá tenho [concorrente] → perguntar o que funciona/não funciona hoje",
+              "hint": "Uma linha por objeção, formato: [Objeção] → [Resposta]. Fica opcional, mas ajuda muito."
+            }
+          ]
+        },
+
+        "politicas_comerciais": {
+          "titulo": "Políticas Comerciais",
+          "icone": "📋",
+          "descricao": "Regras não negociáveis: fidelidade, cancelamento, tags de origem.",
+          "perguntas": [
             {
               "id": "tem_fidelidade",
               "pergunta": "Vocês trabalham com período de fidelidade?",
@@ -1187,159 +1313,61 @@
               "obrigatoria": true,
               "opcoes": [
                 {"value": "sim", "label": "Sim"},
-                {"value": "nao", "label": "Não"}
+                {"value": "nao", "label": "Não, sem fidelidade"}
               ]
             },
             {
               "id": "periodo_fidelidade",
-              "pergunta": "Qual o período de fidelidade?",
+              "pergunta": "Qual o período de fidelidade padrão?",
               "tipo": "select",
               "obrigatoria": true,
               "condicional": "tem_fidelidade == 'sim'",
               "opcoes": [
+                {"value": "6", "label": "6 meses"},
                 {"value": "12", "label": "12 meses"},
+                {"value": "18", "label": "18 meses"},
                 {"value": "24", "label": "24 meses"},
                 {"value": "variavel", "label": "Varia por plano"}
               ]
             },
             {
-              "id": "produtos_adicionais",
-              "pergunta": "Quais produtos adicionais vocês oferecem além de internet?",
-              "tipo": "checkbox_multiple",
-              "obrigatoria": true,
-              "opcoes": [
-                {"value": "tv", "label": "TV por assinatura"},
-                {"value": "telefonia_fixa", "label": "Telefonia fixa"},
-                {"value": "telefonia_movel", "label": "Telefonia móvel"},
-                {"value": "wifi_mesh", "label": "WiFi Mesh"},
-                {"value": "seguranca", "label": "Segurança (alarme, câmeras)"},
-                {"value": "nenhum", "label": "Apenas internet"}
-              ]
-            },
-            {
-              "id": "diferenciais_concorrencia",
-              "pergunta": "Quais os principais diferenciais vs concorrência?",
+              "id": "multa_rescisoria",
+              "pergunta": "Como é calculada a multa rescisória por quebra de fidelidade?",
               "tipo": "textarea",
               "obrigatoria": true,
-              "placeholder": "Ex: 'Fibra óptica 100% até a casa | Suporte 24/7 | Instalação em 24h | Sem fidelidade'",
-              "hint": "A IA usará estes argumentos de venda"
-            }
-          ]
-        },
-
-        "qualificacao_lead": {
-          "titulo": "Qualificação do Lead",
-          "icone": "🎯",
-          "perguntas": [
+              "condicional": "tem_fidelidade == 'sim'",
+              "placeholder": "Ex: Multa proporcional aos meses restantes do contrato — mensalidade × meses restantes × 50%",
+              "hint": "A IA informa esse cálculo quando o cliente pergunta sobre cancelamento."
+            },
             {
-              "id": "perguntas_qualificacao",
-              "pergunta": "A IA deve fazer perguntas de qualificação para recomendar plano ideal?",
+              "id": "cancelamento_fluxo",
+              "pergunta": "Quando o cliente pede cancelamento, o que a IA faz?",
               "tipo": "select",
               "obrigatoria": true,
               "opcoes": [
-                {"value": "sim", "label": "Sim, fazer diagnóstico de necessidade"},
-                {"value": "nao", "label": "Não, apenas mostrar todos os planos"}
+                {"value": "retencao", "label": "Transfere para retenção (comercial) após coletar motivo"},
+                {"value": "financeiro", "label": "Transfere para financeiro"},
+                {"value": "humano_direto", "label": "Transfere para atendente humano sem triagem"}
               ]
             },
             {
-              "id": "perguntas_lista",
-              "pergunta": "Quais perguntas a IA deve fazer para qualificar o lead?",
+              "id": "tags_origem_lead",
+              "pergunta": "Quais tags de origem de lead vocês usam?",
               "tipo": "checkbox_multiple",
               "obrigatoria": true,
-              "condicional": "perguntas_qualificacao == 'sim'",
               "opcoes": [
-                {"value": "dispositivos", "label": "Quantos dispositivos conectam na rede?"},
-                {"value": "pessoas", "label": "Quantas pessoas usam a internet?"},
-                {"value": "tipo_imovel", "label": "A residência é térrea ou sobrado?"},
-                {"value": "home_office", "label": "Usa internet para home office?"},
-                {"value": "streaming", "label": "Assiste streaming ou joga online?"}
-              ]
-            }
-          ]
-        },
-
-        "processo_pre_cadastro": {
-          "titulo": "Processo de Pré-Cadastro",
-          "icone": "📝",
-          "perguntas": [
-            {
-              "id": "sistema_viabilidade",
-              "pergunta": "Qual sistema vocês usam para consultar viabilidade no endereço do cliente?",
-              "tipo": "select",
-              "obrigatoria": true,
-              "opcoes": [
-                {"value": "geogrid", "label": "GeoGrid"},
-                {"value": "ozmaps", "label": "OZMaps"},
-                {"value": "integrado_erp", "label": "Integrado ao ERP"},
-                {"value": "outro", "label": "Outro sistema"}
-              ]
-            },
-            {
-              "id": "sistema_viabilidade_outro",
-              "pergunta": "Qual sistema de viabilidade?",
-              "tipo": "text",
-              "obrigatoria": true,
-              "condicional": "sistema_viabilidade == 'outro'",
-              "placeholder": "Nome do sistema"
-            },
-            {
-              "id": "ferramenta_pagamentos",
-              "pergunta": "Qual sistema vocês usam para processar pagamentos?",
-              "tipo": "select",
-              "obrigatoria": true,
-              "opcoes": [
-                {"value": "gateway_externo", "label": "Gateway externo (7AZ, Asaas, Mercado Pago, etc.)"},
-                {"value": "gateway_erp", "label": "Gateway integrado no ERP"},
-                {"value": "outro", "label": "Outro sistema"}
-              ]
-            },
-            {
-              "id": "ferramenta_pagamentos_outro",
-              "pergunta": "Qual ferramenta de pagamentos vocês usam?",
-              "tipo": "text",
-              "obrigatoria": true,
-              "condicional": "ferramenta_pagamentos == 'outro'",
-              "placeholder": "Nome da ferramenta"
-            },
-            {
-              "id": "ia_faz_pre_cadastro",
-              "pergunta": "Qual o nível de pré-cadastro que a IA deve fazer?",
-              "tipo": "select",
-              "obrigatoria": true,
-              "opcoes": [
-                {"value": "completo", "label": "Pré-cadastro completo (nome, CPF, endereço, contato, etc.)"},
-                {"value": "basico", "label": "Apenas qualificação básica (interesse, perfil de uso)"},
-                {"value": "transfere", "label": "Transferir para equipe de vendas"}
-              ]
-            },
-            {
-              "id": "dados_pre_cadastro",
-              "pergunta": "Quais dados coletar para pré-cadastro?",
-              "tipo": "checkbox_multiple",
-              "obrigatoria": true,
-              "condicional": "ia_faz_pre_cadastro == 'completo'",
-              "opcoes": [
-                {"value": "nome_completo", "label": "Nome completo"},
-                {"value": "cpf", "label": "CPF"},
-                {"value": "rg", "label": "RG"},
-                {"value": "telefone", "label": "Telefone para contato"},
-                {"value": "email", "label": "Email"},
-                {"value": "endereco_completo", "label": "Endereço completo"},
-                {"value": "cep", "label": "CEP"},
-                {"value": "ponto_referencia", "label": "Ponto de referência"},
-                {"value": "data_nascimento", "label": "Data de nascimento"}
-              ]
-            },
-            {
-              "id": "solicitar_foto_documentos",
-              "pergunta": "A IA pode solicitar foto dos documentos para preencher a OS automaticamente?",
-              "subtitulo": "CPF, RG e comprovante de residência para agilizar o cadastro",
-              "tipo": "select",
-              "obrigatoria": true,
-              "opcoes": [
-                {"value": "sim", "label": "Sim, solicitar documentos"},
-                {"value": "nao", "label": "Não, coletar depois"}
-              ]
+                {"value": "instagram", "label": "Instagram"},
+                {"value": "facebook", "label": "Facebook"},
+                {"value": "google", "label": "Google Ads / Search"},
+                {"value": "indicacao", "label": "Indicação de cliente"},
+                {"value": "visita_presencial", "label": "Visita presencial"},
+                {"value": "inbound", "label": "Inbound orgânico"},
+                {"value": "mql", "label": "MQL (marketing qualificado)"},
+                {"value": "sql", "label": "SQL (vendas qualificado)"},
+                {"value": "sem_cobertura", "label": "Sem cobertura (registrar interesse)"},
+                {"value": "chatbot", "label": "Chatbot anterior"}
+              ],
+              "hint": "A IA marca essas tags automaticamente no atendimento."
             }
           ]
         },
@@ -1350,23 +1378,35 @@
           "perguntas": [
             {
               "id": "upgrade_plano",
-              "pergunta": "O que a IA faz quando um cliente existente quer fazer upgrade de plano?",
+              "pergunta": "Quando cliente existente quer upgrade de plano, o que a IA faz?",
               "tipo": "select",
               "obrigatoria": true,
               "opcoes": [
-                {"value": "coleta_os_transfere", "label": "Coletar informações, abrir OS e transferir para comercial"},
-                {"value": "dados_basicos_transfere", "label": "Coletar dados básicos e transferir (sem abrir OS)"}
+                {"value": "executa_direto", "label": "Executa o upgrade no sistema (se integração ERP permite)"},
+                {"value": "coleta_os_transfere", "label": "Coleta informações, abre OS e transfere"},
+                {"value": "dados_basicos_transfere", "label": "Coleta dados básicos e transfere (sem abrir OS)"}
               ]
             },
             {
               "id": "segundo_ponto",
-              "pergunta": "O que fazer quando um cliente existente quer um segundo ponto em outro endereço?",
+              "pergunta": "Quando cliente existente quer um segundo ponto em outro endereço?",
               "tipo": "select",
               "obrigatoria": true,
               "opcoes": [
-                {"value": "novo_contrato", "label": "Tratar como nova venda (novo contrato)"},
-                {"value": "vinculado", "label": "Vincular ao contrato existente (mesmo cliente, segundo endereço)"},
-                {"value": "transfere", "label": "Transferir para equipe comercial decidir"}
+                {"value": "novo_contrato", "label": "Novo contrato (nova venda)"},
+                {"value": "vinculado_desconto", "label": "Vinculado ao contrato, com desconto"},
+                {"value": "vinculado_sem_desconto", "label": "Vinculado ao contrato, sem desconto"},
+                {"value": "transfere", "label": "Transferir para comercial decidir"}
+              ]
+            },
+            {
+              "id": "mudanca_endereco_fluxo",
+              "pergunta": "Cliente quer mudar o serviço de endereço — como a IA procede?",
+              "tipo": "select",
+              "obrigatoria": true,
+              "opcoes": [
+                {"value": "verifica_viabilidade", "label": "Verifica viabilidade no novo endereço, se ok transfere pra comercial"},
+                {"value": "transfere_direto", "label": "Transfere direto sem verificar viabilidade"}
               ]
             }
           ]
@@ -1378,7 +1418,7 @@
           "perguntas": [
             {
               "id": "tempo_instalacao",
-              "pergunta": "Qual o tempo médio de instalação após venda aprovada?",
+              "pergunta": "Prazo padrão de instalação após venda aprovada",
               "tipo": "select",
               "obrigatoria": true,
               "opcoes": [
@@ -1390,89 +1430,101 @@
               ]
             },
             {
-              "id": "taxa_instalacao_info",
-              "pergunta": "Sobre a taxa de instalação",
-              "tipo": "info",
-              "obrigatoria": false,
-              "texto": "A IA informará que o valor da taxa de instalação será confirmado pela equipe comercial durante o atendimento, já que cada caso pode ter condições específicas."
-            },
-            {
               "id": "taxa_instalacao_modelo",
-              "pergunta": "Esse modelo funciona para vocês?",
+              "pergunta": "Como vocês tratam a taxa de instalação?",
               "tipo": "select",
               "obrigatoria": true,
               "opcoes": [
-                {"value": "sim", "label": "Sim, equipe comercial informa o valor"},
-                {"value": "nao", "label": "Não, prefiro definir regras fixas"}
+                {"value": "gratuita_todos", "label": "Instalação gratuita para todos os planos"},
+                {"value": "gratuita_planos_superiores", "label": "Gratuita a partir de um plano específico"},
+                {"value": "valor_fixo", "label": "Valor fixo para todos"},
+                {"value": "variavel_negociavel", "label": "Valor variável — equipe comercial informa no atendimento"}
               ]
             },
             {
-              "id": "taxa_instalacao",
-              "pergunta": "Existe taxa de instalação?",
-              "tipo": "select",
+              "id": "plano_minimo_instalacao_gratis",
+              "pergunta": "A partir de qual plano a instalação é gratuita?",
+              "tipo": "text",
               "obrigatoria": true,
-              "condicional": "taxa_instalacao_modelo == 'nao'",
-              "opcoes": [
-                {"value": "sim", "label": "Sim, sempre cobra"},
-                {"value": "promocional", "label": "Depende da promoção"},
-                {"value": "nao", "label": "Não, instalação gratuita"}
-              ]
+              "condicional": "taxa_instalacao_modelo == 'gratuita_planos_superiores'",
+              "placeholder": "Ex: Super 600"
             },
             {
               "id": "valor_taxa_instalacao",
-              "pergunta": "Qual o valor da taxa de instalação?",
+              "pergunta": "Valor da taxa de instalação",
               "tipo": "currency",
               "obrigatoria": true,
-              "condicional": "taxa_instalacao_modelo == 'nao' && taxa_instalacao == 'sim'",
-              "placeholder": "Ex: 100.00"
+              "condicional": "taxa_instalacao_modelo == 'valor_fixo' || taxa_instalacao_modelo == 'gratuita_planos_superiores'",
+              "placeholder": "Ex: 100.00",
+              "hint": "Para planos que NÃO têm a instalação gratuita."
             },
             {
               "id": "quando_cobrada_instalacao",
-              "pergunta": "Quando a taxa de instalação é cobrada?",
+              "pergunta": "Quando a taxa é cobrada?",
               "tipo": "select",
               "obrigatoria": true,
-              "condicional": "taxa_instalacao_modelo == 'nao' && (taxa_instalacao == 'sim' || taxa_instalacao == 'promocional')",
+              "condicional": "taxa_instalacao_modelo == 'valor_fixo' || taxa_instalacao_modelo == 'gratuita_planos_superiores'",
               "opcoes": [
                 {"value": "antecipado", "label": "Antecipado (antes da instalação)"},
-                {"value": "primeira_fatura", "label": "Na primeira fatura"},
+                {"value": "primeira_fatura", "label": "Diluída na primeira fatura"},
+                {"value": "parcelada", "label": "Parcelada nas primeiras faturas"},
                 {"value": "separado", "label": "Boleto separado"}
+              ]
+            },
+            {
+              "id": "agendamento_instalacao",
+              "pergunta": "Quem agenda a instalação?",
+              "tipo": "select",
+              "obrigatoria": true,
+              "opcoes": [
+                {"value": "comercial_humano", "label": "Equipe comercial humana (IA não agenda)"},
+                {"value": "ia_preenche_os", "label": "IA coleta dados, abre OS, comercial confirma horário"},
+                {"value": "tecnico_liga", "label": "Técnico liga pra combinar direto"}
+              ]
+            },
+            {
+              "id": "janela_agendamento",
+              "pergunta": "Vocês trabalham com janelas de horário para instalação?",
+              "tipo": "select",
+              "obrigatoria": true,
+              "opcoes": [
+                {"value": "periodo", "label": "Período (manhã/tarde)"},
+                {"value": "hora_marcada", "label": "Hora marcada exata"},
+                {"value": "fila", "label": "Por ordem de chegada, sem compromisso de horário"}
               ]
             }
           ]
         },
 
         "follow_up": {
-          "titulo": "Follow-up de Leads",
+          "titulo": "Follow-up de Leads Inativos",
           "icone": "🔄",
           "perguntas": [
             {
               "id": "followup_vendas_ativo",
-              "pergunta": "Vocês querem que a IA faça follow-up quando o lead parar de responder?",
+              "pergunta": "A IA deve fazer follow-up quando o lead parar de responder?",
               "tipo": "select",
               "obrigatoria": true,
-              "hint": "Quando o cliente para de responder, a IA pode enviar uma mensagem de reengajamento",
               "opcoes": [
-                {"value": "sim", "label": "Sim, ativar follow-up"},
+                {"value": "sim", "label": "Sim, mensagem de reengajamento"},
                 {"value": "nao", "label": "Não, apenas aguardar"}
               ]
             },
             {
               "id": "followup_vendas_minutos",
-              "pergunta": "Após quantos minutos de inatividade a IA deve enviar mensagem de reengajamento?",
+              "pergunta": "Após quantos minutos de inatividade enviar reengajamento?",
               "tipo": "number",
               "obrigatoria": true,
               "condicional": "followup_vendas_ativo == 'sim'",
-              "placeholder": "Ex: 5",
-              "hint": "A IA fará um resumo da conversa e enviará uma mensagem amigável"
+              "placeholder": "Ex: 5"
             },
             {
               "id": "followup_vendas_transferir_minutos",
-              "pergunta": "Após quantos minutos sem resposta a IA deve transferir para atendente comercial?",
+              "pergunta": "Após quantos minutos sem resposta transferir para humano?",
               "tipo": "number",
               "obrigatoria": true,
               "condicional": "followup_vendas_ativo == 'sim'",
-              "placeholder": "Ex: 30",
-              "hint": "Tempo de espera após o follow-up antes de transferir para humano"
+              "placeholder": "Ex: 30"
             }
           ]
         }
