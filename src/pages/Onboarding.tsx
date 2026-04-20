@@ -71,7 +71,7 @@ export default function Onboarding() {
       }
 
       // Validate department
-      const validDepts: DepartmentId[] = ['sac_geral', 'financeiro', 'suporte', 'vendas'];
+      const validDepts: DepartmentId[] = ['identificacao', 'sac_geral', 'financeiro', 'suporte', 'vendas'];
       if (!validDepts.includes(urlDepartamento as DepartmentId)) {
         navigate('/');
         return;
