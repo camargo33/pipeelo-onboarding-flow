@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { requireSupabase } from "./_lib/supabase";
+import { requireSupabase } from "./_lib/supabase.js";
 
 function expandHorarioSemanal(horario: Record<string, unknown> | null | undefined) {
   if (!horario || typeof horario !== "object") return horario;

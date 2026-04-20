@@ -1,6 +1,6 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { adminApi } from "./_lib/admin-pipeelo";
-import { requireSupabase } from "./_lib/supabase";
+import { adminApi } from "./_lib/admin-pipeelo.js";
+import { requireSupabase } from "./_lib/supabase.js";
 
 interface ProvisionRequest {
   sessionId: string;
