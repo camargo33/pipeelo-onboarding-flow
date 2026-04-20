@@ -4,8 +4,8 @@
     "ordem_sugerida": ["identificacao", "sac_geral", "financeiro", "suporte", "vendas"],
     "tempo_total_estimado": "60-80 minutos",
     "descricao": "Sistema de onboarding Pipeelo v3.0 - 5 departamentos, primeiro (identificacao) é bloqueante e cria o tenant no admin-pipeelo",
-    "versao": "3.0.1",
-    "total_perguntas": 129
+    "versao": "3.1.0",
+    "total_perguntas": 141
   },
 
   "departamentos": {
@@ -194,6 +194,29 @@
               "hint": "Se tiver múltiplos, separe por linha"
             },
             {
+              "id": "empresa_instagram",
+              "pergunta": "Instagram oficial da empresa (@handle)",
+              "tipo": "text",
+              "obrigatoria": true,
+              "placeholder": "@suaempresa",
+              "hint": "A IA direciona clientes pra acompanhar novidades e promoções."
+            },
+            {
+              "id": "empresa_facebook",
+              "pergunta": "Facebook / Fanpage (URL)",
+              "tipo": "url_optional",
+              "obrigatoria": false,
+              "placeholder": "https://facebook.com/suaempresa"
+            },
+            {
+              "id": "empresa_google_maps",
+              "pergunta": "Link do perfil no Google Maps / Google Business",
+              "tipo": "url_optional",
+              "obrigatoria": false,
+              "placeholder": "https://maps.app.goo.gl/...",
+              "hint": "Usado quando a IA pede avaliação 5⭐ em NPS alto."
+            },
+            {
               "id": "horario_atendimento",
               "pergunta": "Qual o horário de atendimento padrão?",
               "tipo": "horario_semanal",
@@ -222,8 +245,9 @@
         },
 
         "identidade_ia": {
-          "titulo": "Identidade da IA",
+          "titulo": "Identidade e Tom de Voz da IA",
           "icone": "🤖",
+          "descricao": "Como a IA se apresenta e conversa com os clientes.",
           "perguntas": [
             {
               "id": "nome_ia_customizado",
@@ -241,16 +265,60 @@
               "tipo": "text",
               "obrigatoria": false,
               "condicional": "nome_ia_customizado == 'sim'",
-              "placeholder": "Ex: Eva, Laila, Ana, Clara...",
-              "hint": "Pode deixar em branco agora e definir depois (até 7 dias)"
+              "placeholder": "Ex: Nick, Eva, Laila, Aninha, Clara...",
+              "hint": "Pode deixar em branco agora e definir depois (até 7 dias)."
+            },
+            {
+              "id": "genero_ia",
+              "pergunta": "Gênero da IA (afeta como ela se refere a si mesma)",
+              "tipo": "select",
+              "obrigatoria": true,
+              "condicional": "nome_ia_customizado == 'sim'",
+              "opcoes": [
+                {"value": "feminino", "label": "Feminino (ex: Ana, Clara, Eva)"},
+                {"value": "masculino", "label": "Masculino (ex: Nick, Bento, Zeca)"},
+                {"value": "neutro", "label": "Neutro / sem gênero"}
+              ]
+            },
+            {
+              "id": "tom_voz",
+              "pergunta": "Qual o tom de voz da IA?",
+              "tipo": "select",
+              "obrigatoria": true,
+              "hint": "Define o estilo de todas as mensagens.",
+              "opcoes": [
+                {"value": "simpatico_proximo", "label": "Simpático e próximo — humano, consultivo, usa 'você' (usado por SEA, Ciabrasnet)"},
+                {"value": "formal_profissional", "label": "Formal e profissional — 'o senhor/a senhora', mais corporativo"},
+                {"value": "descontraido_jovem", "label": "Descontraído e jovem — informal, gírias leves, emoji ocasional"},
+                {"value": "direto_pratico", "label": "Direto e prático — sem firula, respostas curtas e objetivas"}
+              ]
+            },
+            {
+              "id": "uso_emoji",
+              "pergunta": "A IA pode usar emojis?",
+              "tipo": "select",
+              "obrigatoria": true,
+              "opcoes": [
+                {"value": "sim_moderado", "label": "Sim, com moderação (1-2 por mensagem em momentos apropriados)"},
+                {"value": "sim_raro", "label": "Sim, mas só em saudações/despedidas"},
+                {"value": "nao", "label": "Não, zero emoji"}
+              ]
             },
             {
               "id": "regionalismo",
-              "pergunta": "Existe algum regionalismo ou forma específica de tratamento que devemos usar?",
+              "pergunta": "Existe algum regionalismo ou forma específica de tratamento que a IA deve usar?",
               "tipo": "textarea",
               "obrigatoria": false,
-              "placeholder": "Ex: 'Bah', 'Uai', gírias locais...",
-              "hint": "Opcional - ajuda a IA se conectar melhor com a região"
+              "placeholder": "Ex: 'Bah', 'Uai', 'Oxe', 'Meu rei', gírias locais usadas pelo time de atendimento...",
+              "hint": "Opcional — ajuda a IA soar local."
+            },
+            {
+              "id": "frases_proibidas",
+              "pergunta": "Existem palavras ou frases que a IA NÃO deve usar?",
+              "tipo": "textarea",
+              "obrigatoria": false,
+              "placeholder": "Ex: Evitar 'infelizmente', 'não podemos', 'política da empresa'. Preferir alternativas positivas.",
+              "hint": "Opcional — útil pra garantir tom consistente."
             }
           ]
         },
