@@ -551,19 +551,46 @@
       "slug": "financeiro",
       "responsavel_sugerido": "Diretor Financeiro ou Gerente Administrativo",
       "tempo_estimado": "15-20 minutos",
-      "descricao": "Processos financeiros, cobrança, bloqueios e negociações",
+      "descricao": "Gateway, formas de pagamento, políticas de bloqueio, taxas e negociação com inadimplentes.",
       "ordem_execucao": 2,
       "secoes": {
-        
-        "processos_financeiros": {
-          "titulo": "Processos Financeiros",
+
+        "gateway_e_cobranca": {
+          "titulo": "Gateway e Geração de Cobranças",
           "icone": "💰",
+          "descricao": "Qual plataforma processa os pagamentos. A IA precisa saber pra orientar o cliente corretamente.",
           "perguntas": [
             {
+              "id": "gateway_pagamento",
+              "pergunta": "Qual gateway de pagamento vocês usam?",
+              "tipo": "select",
+              "obrigatoria": true,
+              "opcoes": [
+                {"value": "asaas", "label": "Asaas"},
+                {"value": "pjbank", "label": "PJBank"},
+                {"value": "gerencianet", "label": "Gerencianet / Efí"},
+                {"value": "7az", "label": "7AZ"},
+                {"value": "mercado_pago", "label": "Mercado Pago"},
+                {"value": "iugu", "label": "Iugu"},
+                {"value": "boleto_proprio", "label": "Boleto próprio (banco)"},
+                {"value": "integrado_erp", "label": "Integrado ao ERP"},
+                {"value": "outro", "label": "Outro"}
+              ]
+            },
+            {
+              "id": "gateway_outro",
+              "pergunta": "Qual gateway?",
+              "tipo": "text",
+              "obrigatoria": true,
+              "condicional": "gateway_pagamento == 'outro'",
+              "placeholder": "Nome do gateway"
+            },
+            {
               "id": "vencimentos_disponiveis",
-              "pergunta": "Qual(is) dia(s) de vencimento disponíveis?",
+              "pergunta": "Quais dias de vencimento estão disponíveis para os clientes?",
               "tipo": "checkbox_multiple",
               "obrigatoria": true,
+              "hint": "A IA só permite mudar pra um desses dias.",
               "opcoes": [
                 {"value": "5", "label": "Dia 5"},
                 {"value": "10", "label": "Dia 10"},
@@ -579,17 +606,7 @@
               "tipo": "text",
               "obrigatoria": true,
               "condicional": "vencimentos_disponiveis includes 'outro'",
-              "placeholder": "Ex: 1, 7, 18"
-            },
-            {
-              "id": "emite_carnes",
-              "pergunta": "Vocês emitem carnês?",
-              "tipo": "select",
-              "obrigatoria": true,
-              "opcoes": [
-                {"value": "sim", "label": "Sim"},
-                {"value": "nao", "label": "Não"}
-              ]
+              "placeholder": "Ex: 1, 7, 18 (separe por vírgula)"
             }
           ]
         },
@@ -600,38 +617,56 @@
           "perguntas": [
             {
               "id": "formas_pagamento_disponiveis",
-              "pergunta": "Quais formas de pagamento vocês aceitam?",
+              "pergunta": "Formas de pagamento aceitas",
               "tipo": "checkbox_multiple",
               "obrigatoria": true,
               "opcoes": [
                 {"value": "boleto", "label": "Boleto Bancário"},
                 {"value": "pix", "label": "PIX"},
-                {"value": "cartao_credito", "label": "Cartão de Crédito"},
+                {"value": "cartao_credito", "label": "Cartão de Crédito recorrente"},
+                {"value": "cartao_debito_avulso", "label": "Cartão / débito avulso"},
                 {"value": "debito_conta", "label": "Débito em Conta"},
+                {"value": "carne", "label": "Carnê impresso"},
                 {"value": "dinheiro", "label": "Dinheiro (presencial)"}
               ]
             },
             {
-              "id": "salvar_preferencia_pagamento",
-              "pergunta": "A IA deve salvar a preferência de pagamento do cliente?",
+              "id": "metodo_pagamento_padrao",
+              "pergunta": "Se cliente não especificar, qual método oferecer primeiro?",
               "tipo": "select",
               "obrigatoria": true,
-              "hint": "Quando a preferência é salva, isso agiliza o atendimento e faz com que o cliente receba o boleto com menos trocas de mensagens",
               "opcoes": [
-                {"value": "sim", "label": "Sim, salvar preferência"},
+                {"value": "pix", "label": "PIX (recomendado — mais rápido)"},
+                {"value": "boleto", "label": "Boleto"},
+                {"value": "perguntar", "label": "Sempre perguntar o preferido"}
+              ]
+            },
+            {
+              "id": "salvar_preferencia_pagamento",
+              "pergunta": "A IA salva a preferência de pagamento do cliente?",
+              "tipo": "select",
+              "obrigatoria": true,
+              "hint": "Quando salva, reduz trocas de mensagem em atendimentos futuros.",
+              "opcoes": [
+                {"value": "sim", "label": "Sim, salvar"},
                 {"value": "nao", "label": "Não, perguntar sempre"}
               ]
             },
             {
-              "id": "metodo_pagamento_padrao",
-              "pergunta": "Se cliente não informar método preferido, qual usar como padrão?",
-              "tipo": "select",
+              "id": "multa_juros_atraso",
+              "pergunta": "Multa e juros por atraso (valor / %)",
+              "tipo": "text",
               "obrigatoria": true,
-              "opcoes": [
-                {"value": "pix", "label": "PIX (recomendado)"},
-                {"value": "boleto", "label": "Boleto"},
-                {"value": "perguntar", "label": "Sempre perguntar"}
-              ]
+              "placeholder": "Ex: 2% de multa + 0,033% de juros ao dia",
+              "hint": "A IA informa ao cliente ao emitir segunda via de boleto em atraso."
+            },
+            {
+              "id": "dias_negativacao",
+              "pergunta": "Após quantos dias de atraso vocês negativam (SPC/Serasa)?",
+              "tipo": "number",
+              "obrigatoria": true,
+              "placeholder": "Ex: 60",
+              "hint": "A IA usa como alerta final antes da transferência pra cobrança."
             }
           ]
         },
@@ -731,25 +766,27 @@
         },
 
         "taxas_cobrancas": {
-          "titulo": "Taxas e Cobranças",
+          "titulo": "Taxas",
           "icone": "💵",
+          "descricao": "Todos os valores que a IA pode informar ao cliente.",
           "perguntas": [
             {
               "id": "taxa_religacao",
-              "pergunta": "Existe taxa de religação?",
+              "pergunta": "Existe taxa de religação após bloqueio?",
               "tipo": "select",
               "obrigatoria": true,
               "opcoes": [
-                {"value": "sim", "label": "Sim"},
-                {"value": "nao", "label": "Não"}
+                {"value": "sim", "label": "Sim, sempre cobra"},
+                {"value": "condicional", "label": "Depende do tempo de bloqueio"},
+                {"value": "nao", "label": "Não cobra"}
               ]
             },
             {
               "id": "valor_taxa_religacao",
-              "pergunta": "Qual o valor da taxa de religação?",
+              "pergunta": "Valor da taxa de religação",
               "tipo": "currency",
               "obrigatoria": true,
-              "condicional": "taxa_religacao == 'sim'",
+              "condicional": "taxa_religacao == 'sim' || taxa_religacao == 'condicional'",
               "placeholder": "Ex: 50.00"
             },
             {
@@ -764,7 +801,7 @@
             },
             {
               "id": "valor_taxa_titularidade",
-              "pergunta": "Qual o valor da taxa de troca de titularidade?",
+              "pergunta": "Valor da taxa de troca de titularidade",
               "tipo": "currency",
               "obrigatoria": true,
               "condicional": "taxa_troca_titularidade == 'sim'",
@@ -772,37 +809,60 @@
             },
             {
               "id": "outras_taxas",
-              "pergunta": "Existem outras taxas que a IA deve informar ao cliente?",
+              "pergunta": "Outras taxas que a IA pode informar (opcional)",
               "tipo": "textarea",
               "obrigatoria": false,
-              "placeholder": "Ex: 'Taxa de ponto adicional: R$ 80,00 | Taxa de mudança de endereço: R$ 50,00'",
-              "hint": "Descreva taxa e valor, separe por linha"
+              "placeholder": "Ex:\nPonto adicional: R$ 80,00\nMudança de endereço: R$ 50,00\nSegunda via física do boleto: R$ 5,00",
+              "hint": "Um por linha, formato: [Nome da taxa]: R$ valor"
             }
           ]
         },
 
-        "casos_especiais_financeiro": {
+        "casos_especiais": {
           "titulo": "Casos Especiais",
           "icone": "⚠️",
+          "descricao": "Situações que a IA NÃO resolve sozinha — sempre transfere, com ou sem coleta prévia.",
           "perguntas": [
             {
               "id": "cobranca_incorreta",
-              "pergunta": "Quando cliente relata cobrança incorreta, a IA deve:",
+              "pergunta": "Cliente relata cobrança incorreta — o que a IA faz?",
               "tipo": "select",
               "obrigatoria": true,
               "opcoes": [
-                {"value": "coletar_transferir", "label": "Coletar dados e transferir para Financeiro"},
-                {"value": "transferir_direto", "label": "Transferir direto para Financeiro"}
+                {"value": "coletar_transferir", "label": "Coleta dados do boleto e transfere pro Financeiro"},
+                {"value": "transferir_direto", "label": "Transfere direto sem triagem"}
               ]
             },
             {
               "id": "pagamento_duplicado",
-              "pergunta": "Quando cliente relata pagamento duplicado, a IA deve:",
+              "pergunta": "Cliente relata pagamento duplicado — o que a IA faz?",
               "tipo": "select",
               "obrigatoria": true,
               "opcoes": [
-                {"value": "coletar_transferir", "label": "Coletar comprovantes e transferir"},
-                {"value": "transferir_direto", "label": "Transferir direto para Financeiro"}
+                {"value": "coletar_transferir", "label": "Pede comprovantes e transfere"},
+                {"value": "transferir_direto", "label": "Transfere direto sem triagem"}
+              ]
+            },
+            {
+              "id": "comprovante_enviado",
+              "pergunta": "Cliente envia comprovante de pagamento — o que a IA faz?",
+              "tipo": "select",
+              "obrigatoria": true,
+              "opcoes": [
+                {"value": "verifica_sistema", "label": "Verifica no sistema e confirma; se não achou, transfere"},
+                {"value": "transfere_anexo", "label": "Encaminha direto pro Financeiro com o anexo"},
+                {"value": "libera_confianca", "label": "Libera em confiança e o Financeiro confirma depois"}
+              ]
+            },
+            {
+              "id": "negociacao_divida",
+              "pergunta": "Cliente pede parcelamento / negociação de dívida — o que a IA faz?",
+              "tipo": "select",
+              "obrigatoria": true,
+              "opcoes": [
+                {"value": "transfere_sempre", "label": "Transfere sempre pra Financeiro humano"},
+                {"value": "oferece_parcelas_fixas", "label": "Oferece parcelamento padrão (ex: 2x, 3x) conforme valor"},
+                {"value": "oferece_promessa", "label": "Oferece promessa de pagamento com desbloqueio por X dias"}
               ]
             }
           ]
