@@ -74,42 +74,49 @@
   }
 
   .dark {
-    --background: 220 20% 8%;
-    --foreground: 210 20% 96%;
+    /* Pipeelo IDV 2026 — Forest Floor */
+    --background: 166 100% 3%;
+    --foreground: 168 15% 92%;
 
-    --card: 220 20% 12%;
-    --card-foreground: 210 20% 96%;
+    --card: 166 60% 6%;
+    --card-foreground: 168 15% 92%;
 
-    --popover: 220 20% 12%;
-    --popover-foreground: 210 20% 96%;
+    --popover: 166 60% 6%;
+    --popover-foreground: 168 15% 92%;
 
-    --primary: 168 99% 42%;
+    --primary: 168 82% 32%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 262 64% 52%;
+    --secondary: 168 82% 32%;
     --secondary-foreground: 0 0% 100%;
 
-    --muted: 220 20% 18%;
-    --muted-foreground: 220 10% 60%;
+    --muted: 166 30% 12%;
+    --muted-foreground: 168 10% 65%;
 
-    --accent: 262 64% 52%;
-    --accent-foreground: 0 0% 100%;
+    --accent: 168 99% 42%;
+    --accent-foreground: 166 100% 3%;
 
     --destructive: 0 62% 40%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 220 20% 20%;
-    --input: 220 20% 20%;
+    --border: 168 30% 14%;
+    --input: 168 30% 14%;
     --ring: 168 99% 42%;
 
-    --sidebar-background: 220 20% 10%;
-    --sidebar-foreground: 210 20% 90%;
+    --sidebar-background: 166 80% 5%;
+    --sidebar-foreground: 168 15% 88%;
     --sidebar-primary: 168 99% 42%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 220 20% 15%;
-    --sidebar-accent-foreground: 210 20% 90%;
-    --sidebar-border: 220 20% 18%;
+    --sidebar-primary-foreground: 166 100% 3%;
+    --sidebar-accent: 166 40% 10%;
+    --sidebar-accent-foreground: 168 15% 88%;
+    --sidebar-border: 168 30% 14%;
     --sidebar-ring: 168 99% 42%;
+
+    --pipeelo-green: 168 99% 42%;
+    --pipeelo-green-light: 168 82% 52%;
+    --pipeelo-purple: 168 50% 40%;
+    --pipeelo-purple-light: 168 50% 55%;
+    --pipeelo-blue: 168 60% 45%;
   }
 }
 
