@@ -270,8 +270,6 @@ export default function Onboarding() {
           responsavel_cpf: r.responsavel_cpf,
           admin_email: r.admin_email,
           whatsapp_business: r.whatsapp_business,
-          anatel: r.anatel,
-          tipo_empresa: r.tipo_empresa,
           numero_assinantes: r.numero_assinantes,
         });
       } else {

@@ -4,8 +4,8 @@
     "ordem_sugerida": ["identificacao", "sac_geral", "financeiro", "suporte", "vendas"],
     "tempo_total_estimado": "60-80 minutos",
     "descricao": "Sistema de onboarding Pipeelo v3.0 - 5 departamentos, primeiro (identificacao) é bloqueante e cria o tenant no admin-pipeelo",
-    "versao": "3.1.0",
-    "total_perguntas": 141
+    "versao": "3.2.0",
+    "total_perguntas": 128
   },
 
   "departamentos": {
@@ -47,27 +47,6 @@
               "tipo": "text",
               "obrigatoria": true,
               "placeholder": "Ex: Pipeelo"
-            },
-            {
-              "id": "tipo_empresa",
-              "pergunta": "Que tipo de empresa é?",
-              "tipo": "select",
-              "obrigatoria": true,
-              "opcoes": [
-                {"value": "isp", "label": "ISP — Provedor de Internet"},
-                {"value": "tv_assinatura", "label": "TV por assinatura"},
-                {"value": "telefonia", "label": "Telefonia"},
-                {"value": "seguranca", "label": "Segurança Patrimonial"},
-                {"value": "outro", "label": "Outro"}
-              ]
-            },
-            {
-              "id": "anatel",
-              "pergunta": "Número da licença ANATEL (SCM) — se aplicável",
-              "tipo": "text",
-              "obrigatoria": false,
-              "placeholder": "Ex: 53500.000000/2020",
-              "hint": "Obrigatório para ISPs licenciados. Pode deixar em branco se não houver."
             },
             {
               "id": "numero_assinantes",
@@ -165,9 +144,10 @@
             {
               "id": "empresa_site",
               "pergunta": "Qual o site oficial da empresa?",
-              "tipo": "url",
+              "tipo": "text",
               "obrigatoria": true,
-              "placeholder": "https://www.exemplo.com.br"
+              "placeholder": "www.suaempresa.com.br",
+              "hint": "Pode digitar sem https://"
             },
             {
               "id": "empresa_portal_cliente",
@@ -269,56 +249,12 @@
               "hint": "Pode deixar em branco agora e definir depois (até 7 dias)."
             },
             {
-              "id": "genero_ia",
-              "pergunta": "Gênero da IA (afeta como ela se refere a si mesma)",
-              "tipo": "select",
-              "obrigatoria": true,
-              "condicional": "nome_ia_customizado == 'sim'",
-              "opcoes": [
-                {"value": "feminino", "label": "Feminino (ex: Ana, Clara, Eva)"},
-                {"value": "masculino", "label": "Masculino (ex: Nick, Bento, Zeca)"},
-                {"value": "neutro", "label": "Neutro / sem gênero"}
-              ]
-            },
-            {
-              "id": "tom_voz",
-              "pergunta": "Qual o tom de voz da IA?",
-              "tipo": "select",
-              "obrigatoria": true,
-              "hint": "Define o estilo de todas as mensagens.",
-              "opcoes": [
-                {"value": "simpatico_proximo", "label": "Simpático e próximo — humano, consultivo, usa 'você' (usado por SEA, Ciabrasnet)"},
-                {"value": "formal_profissional", "label": "Formal e profissional — 'o senhor/a senhora', mais corporativo"},
-                {"value": "descontraido_jovem", "label": "Descontraído e jovem — informal, gírias leves, emoji ocasional"},
-                {"value": "direto_pratico", "label": "Direto e prático — sem firula, respostas curtas e objetivas"}
-              ]
-            },
-            {
-              "id": "uso_emoji",
-              "pergunta": "A IA pode usar emojis?",
-              "tipo": "select",
-              "obrigatoria": true,
-              "opcoes": [
-                {"value": "sim_moderado", "label": "Sim, com moderação (1-2 por mensagem em momentos apropriados)"},
-                {"value": "sim_raro", "label": "Sim, mas só em saudações/despedidas"},
-                {"value": "nao", "label": "Não, zero emoji"}
-              ]
-            },
-            {
               "id": "regionalismo",
               "pergunta": "Existe algum regionalismo ou forma específica de tratamento que a IA deve usar?",
               "tipo": "textarea",
               "obrigatoria": false,
               "placeholder": "Ex: 'Bah', 'Uai', 'Oxe', 'Meu rei', gírias locais usadas pelo time de atendimento...",
               "hint": "Opcional — ajuda a IA soar local."
-            },
-            {
-              "id": "frases_proibidas",
-              "pergunta": "Existem palavras ou frases que a IA NÃO deve usar?",
-              "tipo": "textarea",
-              "obrigatoria": false,
-              "placeholder": "Ex: Evitar 'infelizmente', 'não podemos', 'política da empresa'. Preferir alternativas positivas.",
-              "hint": "Opcional — útil pra garantir tom consistente."
             }
           ]
         },
@@ -921,17 +857,6 @@
                 {"value": "transfere_anexo", "label": "Encaminha direto pro Financeiro com o anexo"},
                 {"value": "libera_confianca", "label": "Libera em confiança e o Financeiro confirma depois"}
               ]
-            },
-            {
-              "id": "negociacao_divida",
-              "pergunta": "Cliente pede parcelamento / negociação de dívida — o que a IA faz?",
-              "tipo": "select",
-              "obrigatoria": true,
-              "opcoes": [
-                {"value": "transfere_sempre", "label": "Transfere sempre pra Financeiro humano"},
-                {"value": "oferece_parcelas_fixas", "label": "Oferece parcelamento padrão (ex: 2x, 3x) conforme valor"},
-                {"value": "oferece_promessa", "label": "Oferece promessa de pagamento com desbloqueio por X dias"}
-              ]
             }
           ]
         }
@@ -1032,6 +957,7 @@
               "tipo": "select",
               "obrigatoria": true,
               "opcoes": [
+                {"value": "100", "label": "100% documentada (toda rede mapeada)"},
                 {"value": "bem_documentada", "label": "Bem documentada (>80% mapeado)"},
                 {"value": "parcialmente", "label": "Parcialmente documentada (40-80%)"},
                 {"value": "pouco_documentada", "label": "Pouco documentada (<40%)"}
@@ -1402,27 +1328,6 @@
           "descricao": "Como a IA conduz o lead do primeiro 'oi' até o fechamento.",
           "perguntas": [
             {
-              "id": "metodo_vendas",
-              "pergunta": "Qual método de vendas a IA deve usar?",
-              "tipo": "select",
-              "obrigatoria": true,
-              "opcoes": [
-                {"value": "def", "label": "DEF — Descobrir, Engajar, Fechar (consultivo)"},
-                {"value": "spin", "label": "SPIN — Situação, Problema, Implicação, Necessidade"},
-                {"value": "direto", "label": "Direto — mostrar planos e fechar rápido"},
-                {"value": "customizado", "label": "Customizado (descreva abaixo)"}
-              ],
-              "hint": "DEF é o mais usado por provedores Pipeelo e funciona bem com IA."
-            },
-            {
-              "id": "metodo_customizado_descricao",
-              "pergunta": "Descreva seu método customizado",
-              "tipo": "textarea",
-              "obrigatoria": true,
-              "condicional": "metodo_vendas == 'customizado'",
-              "placeholder": "Explique o passo a passo que a IA deve seguir no atendimento de vendas."
-            },
-            {
               "id": "perguntas_qualificacao_lista",
               "pergunta": "Quais perguntas a IA deve fazer para qualificar o lead?",
               "tipo": "checkbox_multiple",
@@ -1517,65 +1422,6 @@
                 {"value": "retencao", "label": "Transfere para retenção (comercial) após coletar motivo"},
                 {"value": "financeiro", "label": "Transfere para financeiro"},
                 {"value": "humano_direto", "label": "Transfere para atendente humano sem triagem"}
-              ]
-            },
-            {
-              "id": "tags_origem_lead",
-              "pergunta": "Quais tags de origem de lead vocês usam?",
-              "tipo": "checkbox_multiple",
-              "obrigatoria": true,
-              "opcoes": [
-                {"value": "instagram", "label": "Instagram"},
-                {"value": "facebook", "label": "Facebook"},
-                {"value": "google", "label": "Google Ads / Search"},
-                {"value": "indicacao", "label": "Indicação de cliente"},
-                {"value": "visita_presencial", "label": "Visita presencial"},
-                {"value": "inbound", "label": "Inbound orgânico"},
-                {"value": "mql", "label": "MQL (marketing qualificado)"},
-                {"value": "sql", "label": "SQL (vendas qualificado)"},
-                {"value": "sem_cobertura", "label": "Sem cobertura (registrar interesse)"},
-                {"value": "chatbot", "label": "Chatbot anterior"}
-              ],
-              "hint": "A IA marca essas tags automaticamente no atendimento."
-            }
-          ]
-        },
-
-        "cliente_existente": {
-          "titulo": "Cliente Existente vs Novo",
-          "icone": "👤",
-          "perguntas": [
-            {
-              "id": "upgrade_plano",
-              "pergunta": "Quando cliente existente quer upgrade de plano, o que a IA faz?",
-              "tipo": "select",
-              "obrigatoria": true,
-              "opcoes": [
-                {"value": "executa_direto", "label": "Executa o upgrade no sistema (se integração ERP permite)"},
-                {"value": "coleta_os_transfere", "label": "Coleta informações, abre OS e transfere"},
-                {"value": "dados_basicos_transfere", "label": "Coleta dados básicos e transfere (sem abrir OS)"}
-              ]
-            },
-            {
-              "id": "segundo_ponto",
-              "pergunta": "Quando cliente existente quer um segundo ponto em outro endereço?",
-              "tipo": "select",
-              "obrigatoria": true,
-              "opcoes": [
-                {"value": "novo_contrato", "label": "Novo contrato (nova venda)"},
-                {"value": "vinculado_desconto", "label": "Vinculado ao contrato, com desconto"},
-                {"value": "vinculado_sem_desconto", "label": "Vinculado ao contrato, sem desconto"},
-                {"value": "transfere", "label": "Transferir para comercial decidir"}
-              ]
-            },
-            {
-              "id": "mudanca_endereco_fluxo",
-              "pergunta": "Cliente quer mudar o serviço de endereço — como a IA procede?",
-              "tipo": "select",
-              "obrigatoria": true,
-              "opcoes": [
-                {"value": "verifica_viabilidade", "label": "Verifica viabilidade no novo endereço, se ok transfere pra comercial"},
-                {"value": "transfere_direto", "label": "Transfere direto sem verificar viabilidade"}
               ]
             }
           ]

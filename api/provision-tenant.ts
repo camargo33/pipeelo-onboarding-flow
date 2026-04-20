@@ -11,8 +11,6 @@ interface ProvisionRequest {
   responsavel_cpf: string;
   admin_email: string;
   whatsapp_business: string;
-  anatel?: string;
-  tipo_empresa: string;
   numero_assinantes?: string;
 }
 
@@ -46,7 +44,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       "responsavel_cpf",
       "admin_email",
       "whatsapp_business",
-      "tipo_empresa",
     ];
     for (const f of requiredFields) {
       if (!body[f]) return res.status(400).json({ error: `Missing field: ${f}` });
@@ -94,8 +91,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         responsible_document: normalizeCnpj(body.responsavel_cpf),
         admin_email: body.admin_email,
         whatsapp_number: body.whatsapp_business,
-        anatel_license: body.anatel || null,
-        company_type: body.tipo_empresa,
+        company_type: "isp",
         subscriber_range: body.numero_assinantes || null,
       },
     });
