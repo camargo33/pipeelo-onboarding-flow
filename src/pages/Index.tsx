@@ -83,7 +83,7 @@ const Index = () => {
             <Button 
               size="lg" 
               className="bg-gradient-primary hover:opacity-90 text-primary-foreground shadow-glow gap-2 px-8"
-              onClick={() => navigate('/onboarding')}
+              onClick={() => navigate('/novo')}
             >
               Iniciar Onboarding
               <ArrowRight className="h-5 w-5" />
