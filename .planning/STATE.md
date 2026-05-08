@@ -1,3 +1,18 @@
+---
+gsd_state_version: 1.0
+milestone: v1.0
+milestone_name: milestone
+status: completed
+stopped_at: Completed 01-02-PLAN.md
+last_updated: "2026-05-08T21:21:49.710Z"
+progress:
+  total_phases: 6
+  completed_phases: 0
+  total_plans: 6
+  completed_plans: 2
+  percent: 33
+---
+
 # Project State: Pipeelo Onboarding Flow — v2 Upgrade
 
 **Last updated:** 2026-05-08
@@ -17,7 +32,7 @@
 - **Phase:** 1 of 6 — Hardening + Server-Side Persistence
 - **Plan:** 01-01 (next) — Wave 1 endpoints `/api/sessions/*`
 - **Status:** Plan 01-00 (Wave 0 test infra) completed 2026-05-08
-- **Progress:** [░░░░░░░░░░] 0% (0/52 requirements complete — HARD-01 gate ativo, fica green ao fim de Plan 03)
+- **Progress:** [███░░░░░░░] 33%
 
 ## Phase Index
 
@@ -40,6 +55,7 @@
 | Cache hit rate Langfuse | N/A | >70% no system prompt |
 | Tool call success rate | N/A | ≥95% (gate de cutover Phase 6) |
 | Cross-tenant errors | N/A | 0 (gate inegociável) |
+| Phase 01-hardening-server-side-persistence P02 | 4m | 3 tasks | 10 files |
 
 ## Accumulated Context
 
@@ -78,9 +94,9 @@
 
 ## Session Continuity
 
-**Last session:** 2026-05-08 — Executed Plan 01-00 (Wave 0 test infra). Vitest 4 + helpers + audit HARD-01 + CI workflow + 13 it.todo stubs. 3 commits (`d6b27f6`, `1a8d561`, `8131820`).
+**Last session:** 2026-05-08T21:21:49.708Z
 **Next session:** Execute Plan 01-01 — Wave 1: endpoints `/api/sessions/{create,get,save-resposta,advance-department}` + auth helper + Zod schemas
-**Stopped At:** Completed 01-00-PLAN.md
+**Stopped At:** Completed 01-02-PLAN.md
 
 **Files de referência viva:**
 - `.planning/PROJECT.md` — escopo dos 4 pilares

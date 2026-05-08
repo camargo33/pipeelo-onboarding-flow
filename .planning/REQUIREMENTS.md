@@ -16,7 +16,7 @@
 - [ ] **HARD-07**: Rate limit em `/api/create-session` (5 req/IP/min) + Cloudflare Turnstile
 - [ ] **HARD-08**: RLS restrita e re-aplicada em produção, revertendo `relax_rls_for_testing.sql`
 - [ ] **HARD-09**: Anon key do Supabase não pode ler/escrever em `onboarding_sessions` (validado por teste de integração)
-- [ ] **HARD-10**: IDV 2026 oficial aplicada — logo Pipeelo correto, paleta Forest Floor `#000D0A` + accent `#01d5ac`, tipografia Inter, dark-first consistente
+- [x] **HARD-10**: IDV 2026 oficial aplicada — logo Pipeelo correto, paleta Forest Floor `#000D0A` + accent `#01d5ac`, tipografia Inter, dark-first consistente
 
 ### Pipeline Ingestão (PIPE)
 
@@ -124,7 +124,7 @@ Deferred — fora do escopo desta milestone, mas trackeado.
 | HARD-07 | Phase 1 | Pending |
 | HARD-08 | Phase 1 | Pending |
 | HARD-09 | Phase 1 | Pending |
-| HARD-10 | Phase 1 | Pending |
+| HARD-10 | Phase 1 | Complete |
 | PIPE-01 | Phase 2 | Pending |
 | PIPE-02 | Phase 2 | Pending |
 | PIPE-03 | Phase 2 | Pending |
