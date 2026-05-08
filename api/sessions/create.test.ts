@@ -2,12 +2,26 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { invokeHandler } from '../../tests/_helpers/handler';
 import { makeSupabaseMock } from '../../tests/_helpers/supabase-mock';
 
+vi.mock('../_lib/ratelimit', () => ({
+  createSessionLimiter: () => ({
+    limit: vi.fn(async () => ({ success: true, remaining: 4 })),
+  }),
+  __resetLimiterCache: () => {},
+}));
+
+vi.mock('../_lib/turnstile', () => ({
+  verifyTurnstileToken: vi.fn(async () => true),
+}));
+
 vi.mock('../_lib/supabase', () => ({
   getServiceSupabase: vi.fn(),
   requireSupabase: vi.fn(),
 }));
+
 import { getServiceSupabase } from '../_lib/supabase';
 import handler from './create';
+
+const VALID_CNPJ = '11222333000181';
 
 describe('POST /api/sessions/create', () => {
   beforeEach(() => vi.clearAllMocks());
@@ -21,7 +35,7 @@ describe('POST /api/sessions/create', () => {
     (getServiceSupabase as unknown as ReturnType<typeof vi.fn>).mockReturnValue(m);
     const r = await invokeHandler(handler as never, {
       method: 'POST',
-      body: { empresa_nome: 'Acme', cnpj: '12345678901234', turnstileToken: 't' },
+      body: { empresa_nome: 'Acme', cnpj: VALID_CNPJ, turnstileToken: 't' },
     });
     expect(r.statusCode).toBe(201);
     expect(r.body).toMatchObject({
@@ -48,7 +62,7 @@ describe('POST /api/sessions/create', () => {
     (getServiceSupabase as unknown as ReturnType<typeof vi.fn>).mockReturnValue(m);
     const r = await invokeHandler(handler as never, {
       method: 'POST',
-      body: { empresa_nome: 'Acme', cnpj: '12345678901234', turnstileToken: 't' },
+      body: { empresa_nome: 'Acme', cnpj: VALID_CNPJ, turnstileToken: 't' },
     });
     expect(r.statusCode).toBe(409);
     expect((r.body as { error: string }).error).toBe('cnpj_already_exists');
@@ -68,7 +82,7 @@ describe('POST /api/sessions/create', () => {
     (getServiceSupabase as unknown as ReturnType<typeof vi.fn>).mockReturnValue(m);
     await invokeHandler(handler as never, {
       method: 'POST',
-      body: { empresa_nome: 'Acme', cnpj: '12345678901234', turnstileToken: 't' },
+      body: { empresa_nome: 'Acme', cnpj: VALID_CNPJ, turnstileToken: 't' },
     });
     const args = (m._chain.insert as ReturnType<typeof vi.fn>).mock.calls[0][0];
     expect(args).toMatchObject({
