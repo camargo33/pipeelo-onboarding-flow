@@ -12,3 +12,9 @@ export function requireSupabase(): SupabaseClient {
   return cached;
 }
 
+/**
+ * Alias canônico usado pelos endpoints `/api/sessions/*` (Phase 1+).
+ * Mantém `requireSupabase` para retrocompatibilidade com endpoints legacy.
+ */
+export const getServiceSupabase = requireSupabase;
+
