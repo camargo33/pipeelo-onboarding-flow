@@ -58,7 +58,7 @@ Cliente termina o questionário → tenant fica vivo na Pipeelo automaticamente 
 **Depends on**: Phase 2 (precisa de schema contract estável antes de tools consumirem o payload)
 **Requirements**: TOOL-01, TOOL-02, TOOL-03, TOOL-04, TOOL-05, TOOL-06, TOOL-07
 **Plans**: 4 plans
-- [ ] 03-00-PLAN.md — Wave 0: Vitest config + DB migrations (jarvis_runs, jarvis_tool_calls, idempotency_keys) (TOOL-04)
+- [x] 03-00-PLAN.md — Wave 0: Vitest config + DB migrations (jarvis_runs, jarvis_tool_calls, idempotency_keys) (TOOL-04) — completed 2026-05-08
 - [ ] 03-01-PLAN.md — Wave 1: HTTP client central + withIdempotency wrapper + audit recorders (TOOL-03, TOOL-05)
 - [ ] 03-02-PLAN.md — Wave 2: 7 tools tipadas (create_tenant, create_user, create_category, create_assistant, link_function, create_kb, setup_elevenlabs) com Zod + tests >80% (TOOL-01, TOOL-02, TOOL-06)
 - [ ] 03-03-PLAN.md — Wave 3: Langfuse SDK + observability spans + painẽl admin read-only (TOOL-04, TOOL-07)
@@ -104,7 +104,11 @@ Cliente termina o questionário → tenant fica vivo na Pipeelo automaticamente 
   3. Threshold `JARVIS_GO_LIVE` atingido: ≥95% das tool calls bem-sucedidas, 0 cross-tenant errors, 0 prompts com elevation/PII leak
   4. Feature flag `JARVIS_ENABLED=true` em prod direciona novas sessões para Jarvis; flip para `false` em <30s reverte para `lib/onboarding-processor.ts` sem deploy
   5. `lib/onboarding-processor.ts` mantido funcional como fallback (validado por smoke test pós-cutover); UI continua oferecendo "Use deterministic processor" como opção manual
-**Plans**: TBD
+**Plans**: 4 plans
+- [ ] 06-00-PLAN.md — Wave 0: feature flag JARVIS_ENABLED + branch path no webhook handler (EVAL-05/06)
+- [ ] 06-01-PLAN.md — Wave 1: replay 5 sessões históricas Jarvis vs legacy + diff (EVAL-01/02)
+- [ ] 06-02-PLAN.md — Wave 2: Langfuse evals com rubric DNA tom 8 regras + threshold-check (EVAL-03/04)
+- [ ] 06-03-PLAN.md — Wave 3: cutover gradual + flip back drill <30s (EVAL-05/06)
 
 ## Phase Ordering Rationale
 
@@ -131,7 +135,7 @@ Com `parallelization: true` no config:
 | 3. Tool Layer + Audit | 0/4 | Not started | - |
 | 4. Jarvis Cron Pipeline | 0/0 | Not started | - |
 | 5. Painel + Notificações | 0/0 | Not started | - |
-| 6. Evals + Cutover | 0/0 | Not started | - |
+| 6. Evals + Cutover | 0/4 | Not started | - |
 
 ## Coverage Validation
 

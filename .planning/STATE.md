@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: in_progress
-stopped_at: Plan 01-05 autonomous tasks done — awaiting human cutover (PROD migration apply)
-last_updated: "2026-05-08T21:50:00.000Z"
+stopped_at: Plan 03-00 done — Wave 0 infra ready for Plans 03-01..03 + human apply migration in smoke
+last_updated: "2026-05-08T22:30:00.000Z"
 progress:
   total_phases: 6
   completed_phases: 0
-  total_plans: 6
-  completed_plans: 5
-  percent: 92
+  total_plans: 7
+  completed_plans: 6
+  percent: 86
 ---
 
 # Project State: Pipeelo Onboarding Flow — v2 Upgrade
@@ -29,18 +29,18 @@ progress:
 
 ## Current Position
 
-- **Phase:** 1 of 6 — Hardening + Server-Side Persistence
-- **Plan:** 01-05 — Wave 4 RLS lock — autonomous tasks DONE, awaiting human cutover
-- **Status:** Plan 01-05 autonomous artifacts criados 2026-05-08: migration `20260508120000_lock_rls_phase1.sql`, `scripts/rollback-rls.sql`, integration test `tests/rls/onboarding-sessions.test.ts` (5 cenários), RUNBOOK 7 etapas. CHECKPOINT bloqueante aguarda Felipe para aplicar em staging + smoke + drill + cutover prod (HARD-08/HARD-09 dependem de execução humana com DB credentials).
-- **Progress:** [█████████░] 92% (Phase 1: 5/6 plans done + 01-05 prep complete; faltando apenas cutover humano)
+- **Phase:** 3 of 6 — Tool Layer + Audit (Wave 0 done; Phase 1 still pending human cutover for 01-05)
+- **Plan:** 03-00 done → 03-01 next (Wave 1 in admin-pipeelo)
+- **Status:** Plan 03-00 (Wave 0 infra) completed 2026-05-08: Vitest config + setup em admin-pipeelo (globals=false, coverage v8 scoped a api/jarvis/_runtime/**), 3 pastas `api/jarvis/_runtime/{tools,tools/_shared,observability}` via .gitkeep, migration DDL `20260509000000_jarvis_audit_tables.sql` (jarvis_runs/jarvis_tool_calls/idempotency_keys com RLS service_role only) + rollback SQL. Suite admin-pipeelo: 89 tests passed. Commits `29e8696` (vitest) + `b222897` (migration). Migration NÃO aplicada — humano roda em smoke window. Plan 01-05 ainda awaiting human cutover (RLS lock prod).
+- **Progress:** [████████▌░] 86% (6/7 plans done across phases 1+3; faltando 01-05 cutover + Phase 3 Plans 01..03)
 
 ## Phase Index
 
 | # | Phase | Status | Requirements |
 |---|-------|--------|--------------|
-| 1 | Hardening + Server-Side Persistence | Not started | HARD-01..10 |
+| 1 | Hardening + Server-Side Persistence | In progress (5/6 + 01-05 prep) | HARD-01..10 |
 | 2 | Pipeline de Ingestão Robusta | Not started | PIPE-01..08 |
-| 3 | Tool Layer + Audit | Not started | TOOL-01..07 |
+| 3 | Tool Layer + Audit | In progress (Wave 0 done) | TOOL-01..07 |
 | 4 | Jarvis Cron Pipeline | Not started | JARV-01..12 |
 | 5 | Painel + Notificações | Not started | UI-01..09 |
 | 6 | Evals + Cutover | Not started | EVAL-01..06 |
@@ -55,6 +55,7 @@ progress:
 | Cache hit rate Langfuse | N/A | >70% no system prompt |
 | Tool call success rate | N/A | ≥95% (gate de cutover Phase 6) |
 | Cross-tenant errors | N/A | 0 (gate inegociável) |
+| Phase 03-tool-layer-audit P00 | 4m | 2 tasks | 6 created / 3 modified |
 | Phase 01-hardening-server-side-persistence P05 (autonomous) | 2m | 2 tasks | 4 created / 2 modified |
 | Phase 01-hardening-server-side-persistence P04 | 6m | 3 tasks | 13 created / 9 modified |
 | Phase 01-hardening-server-side-persistence P03 | 8m | 3 tasks | 10 created / 7 modified |
