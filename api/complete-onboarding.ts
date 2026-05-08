@@ -4,6 +4,13 @@ import {
   PAYLOAD_VERSION,
 } from "pipeelo-onboarding-contracts";
 import { requireSupabase } from "./_lib/supabase.js";
+import {
+  enqueueOutbox,
+  markInFlight,
+  markDelivered,
+  markFailedAttempt,
+  deliverOutbox,
+} from "./_lib/outbox.js";
 
 function expandHorarioSemanal(horario: Record<string, unknown> | null | undefined) {
   if (!horario || typeof horario !== "object") return horario;
@@ -115,36 +122,57 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const validatedPayload = parseResult.data;
 
     const targetUrl = testWebhookUrl || `${process.env.PIPEELO_ADMIN_API_URL || "https://admin.pipeelo.com"}/api/clients/onboarding/create`;
-    const apiToken = process.env.PIPEELO_ADMIN_API_TOKEN;
 
-    const headers: Record<string, string> = {
-      "Content-Type": "application/json",
-      // PIPE-04: idempotency key permite ao receiver deduplicar retries.
-      "Idempotency-Key": session.id,
-    };
-    if (!testWebhookUrl && apiToken) headers["Authorization"] = `Bearer ${apiToken}`;
-
-    const webhookResponse = await fetch(targetUrl, {
-      method: "POST",
-      headers,
-      body: JSON.stringify(validatedPayload),
+    // Plan 02-02: outbox-first. Grava row pending ANTES de qualquer fetch.
+    // Garante que mesmo com queda de rede, cron drena depois.
+    const outboxRow = await enqueueOutbox({
+      sessionId: session.id,
+      targetUrl,
+      payload: validatedPayload,
     });
 
-    if (!webhookResponse.ok) {
-      const body = await webhookResponse.text().catch(() => "");
-      // PII-safe log: status + sessionId, body truncado.
-      console.error("[complete-onboarding] admin webhook failed", {
-        status: webhookResponse.status,
-        sessionId: session.id,
-      });
-      return res.status(502).json({
-        error: "admin_webhook_failed",
-        status: webhookResponse.status,
-        body: body.slice(0, 500),
+    // Idempotency hit: row já delivered (re-entrada na mesma sessão) → 200 imediato sem refetch.
+    if (outboxRow.status === "delivered") {
+      return res.status(200).json({
+        success: true,
+        idempotent_hit: true,
+        outbox_id: outboxRow.id,
       });
     }
 
-    return res.status(200).json({ success: true, message: "Webhook sent successfully" });
+    // Tenta entrega inline (best-effort).
+    await markInFlight(outboxRow.id);
+    const result = await deliverOutbox(outboxRow);
+
+    if (result.ok) {
+      await markDelivered(outboxRow.id);
+      return res.status(200).json({
+        success: true,
+        message: "Webhook sent successfully",
+        outbox_id: outboxRow.id,
+      });
+    }
+
+    // Falha inline → marca pra retry. Cron /api/cron/reconcile-webhooks drena depois.
+    // Resposta 202 (Accepted): cliente vê tela de sucesso, eventual delivery garantido.
+    console.error("[complete-onboarding] inline delivery failed, queued for retry", {
+      sessionId: session.id,
+      outboxId: outboxRow.id,
+      status: result.status,
+    });
+
+    await markFailedAttempt(
+      outboxRow.id,
+      `${result.status ?? "no-resp"}: ${result.body ?? ""}`,
+      outboxRow.attempt_count,
+      outboxRow.max_attempts,
+    );
+
+    return res.status(202).json({
+      success: true,
+      queued_for_retry: true,
+      outbox_id: outboxRow.id,
+    });
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     console.error("complete-onboarding error:", message);
