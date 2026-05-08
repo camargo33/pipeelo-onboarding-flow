@@ -72,8 +72,8 @@
 - [ ] **EVAL-02**: Diff entre output determinístico vs Jarvis revisado manualmente — Jarvis não pode ter regressão funcional
 - [ ] **EVAL-03**: Langfuse evaluations definidas com DNA tom 8 regras como rubrica scorer (LLM-as-judge)
 - [ ] **EVAL-04**: Threshold mínimo: 95% das tool calls bem-sucedidas, 0 cross-tenant errors, prompts gerados passando ≥7/8 regras DNA tom
-- [ ] **EVAL-05**: Feature flag `JARVIS_ENABLED` controla cutover (default `false` em prod até evals OK)
-- [ ] **EVAL-06**: `lib/onboarding-processor.ts` mantido como fallback funcional; switch via flag instantâneo
+- [x] **EVAL-05**: Feature flag `JARVIS_ENABLED` controla cutover (default `false` em prod até evals OK)
+- [x] **EVAL-06**: `lib/onboarding-processor.ts` mantido como fallback funcional; switch via flag instantâneo
 
 ## v2 Requirements
 
@@ -165,8 +165,8 @@ Deferred — fora do escopo desta milestone, mas trackeado.
 | EVAL-02 | Phase 6 | Pending |
 | EVAL-03 | Phase 6 | Pending |
 | EVAL-04 | Phase 6 | Pending |
-| EVAL-05 | Phase 6 | Pending |
-| EVAL-06 | Phase 6 | Pending |
+| EVAL-05 | Phase 6 | Plan 06-00 (commit c8d353f) |
+| EVAL-06 | Phase 6 | Plan 06-00 (commit c8d353f) |
 
 **Coverage:**
 - v1 requirements: 52 total

@@ -3,8 +3,8 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: in_progress
-stopped_at: Plan 05-01 complete — 4 React Email templates IDV 2026 (WelcomeCEO, ReminderStalled, CredentialsReady com magic link 72h BRT, JarvisFailedAlert urgent). Layout shared + tokens + 9 tests verdes (incluindo XSS escape). Full suite 116 passing. Plan 03-03 ainda awaiting human checkpoint Task 3 (Langfuse cloud). Próximo: Plan 05-02 (triggers Resend disparam estes templates).
-last_updated: "2026-05-08T23:15:00.000Z"
+stopped_at: Plan 06-00 complete — feature flag JARVIS_ENABLED runtime-read + branch dual no webhook handler em admin-pipeelo. 4 commits (bb9ed44/e9bb79a RED+GREEN Task 1, 484e8b8/c8d353f RED+GREEN Task 2). Full suite 181/181. EVAL-05/06 ✅. Pendentes paralelos: Plan 03-03 Task 3 (Langfuse cloud), Plan 05-02 (Resend triggers), Plan 02-01 (schema real contracts). Próximo natural: Plan 06-01 (replay) bloqueado por Phase 4 cron.
+last_updated: "2026-05-08T23:04:00.000Z"
 progress:
   total_phases: 6
   completed_phases: 0
@@ -43,7 +43,7 @@ progress:
 | 3 | Tool Layer + Audit | In progress (Waves 0+1+2 done; W3 autonomous done, awaiting human checkpoint; TOOL-01..06 complete; TOOL-07 awaiting smoke) | TOOL-01..07 |
 | 4 | Jarvis Cron Pipeline | Not started | JARV-01..12 |
 | 5 | Painel + Notificações | Not started | UI-01..09 |
-| 6 | Evals + Cutover | Not started | EVAL-01..06 |
+| 6 | Evals + Cutover | In progress (Wave 0 done; EVAL-05/06 ✅) | EVAL-01..06 |
 
 ## Performance Metrics
 
@@ -55,6 +55,7 @@ progress:
 | Cache hit rate Langfuse | N/A | >70% no system prompt |
 | Tool call success rate | N/A | ≥95% (gate de cutover Phase 6) |
 | Cross-tenant errors | N/A | 0 (gate inegociável) |
+| Phase 06-evals-cutover P00 | 5m | 2 tasks (TDD) | 4 created / 1 modified |
 | Phase 02-pipeline-ingestao-robusta P00 | 7m | 2 tasks | 8 created / 2 modified |
 | Phase 03-tool-layer-audit P03 (autonomous portion) | 10m | 2/3 tasks | 6 created / 4 modified |
 | Phase 03-tool-layer-audit P02 | 8m | 2 tasks | 19 created / 0 modified |
@@ -97,6 +98,9 @@ progress:
 - **Upsert + ignoreDuplicates p/ race condition (Plan 03-01):** 2 workers no mesmo lease podem chegar simultaneamente; `onConflict='session_id,tool,args_hash'` + `ignoreDuplicates: true` torna o segundo upsert no-op silencioso.
 - **vitest.config.ts isolado em contracts/ (Plan 02-00):** root vitest do onboarding-flow carrega `vitest.setup.ts` que não existe dentro do subpacote workspace. Sem config isolado, vitest no contracts herda parent e quebra. Solução: 7 LOC `defineConfig` apontando só pra `src/**/*.test.ts`.
 - **Reuso de vitest.config.ts existente em admin-pipeelo (Plan 02-00):** plan declarava criação, mas Phase 3 (Plan 03-01) já tinha criado infra compatível. Não duplicar. Sanity test usa pattern `tests/**/*.test.ts` já presente no `include`.
+- **Feature flag runtime-read (Plan 06-00):** `process.env.JARVIS_ENABLED` lido em cada chamada (não cacheado em const top-level). Sem isso, EVAL-06 (flip back <30s) é impossível em Vercel — exigiria redeploy. WEBHOOK_TOKEN também migrado pra runtime-read pelo mesmo motivo (Rule 3 deviation: testes vi.stubEnv quebravam com leitura cacheada em module-load).
+- **Webhook persiste status='pending' em ambos modos (Plan 06-00):** branch jarvis vs legacy difere apenas no consumidor downstream (cron Phase 4 vs `/api/clients/onboarding/process`). Mantém idempotency uniforme + zero-blocking. Campo `data.mode='jarvis'|'legacy'` no response pra observability do cutover.
+- **Path canônico webhook resolvido (Plan 06-00):** `/api/clients/onboarding/create` (não `/api/v1/onboarding/ingest` da memory antiga). Open todo eliminado.
 
 ### Open Todos
 
@@ -104,7 +108,7 @@ progress:
 - Definir baseline de custo Claude API com 1-2 sessões teste em `claude-opus-4-7` no kickoff de Phase 4
 - Decidir subset da skill Jarvis a serializar em `system-prompt.ts` (prompt-optimizer? Trello [IA]? ElevenLabs?) no kickoff de Phase 4
 - Snapshot do payload `OnboardingRespostas` em CI dos dois repos (gate de Phase 2)
-- Confirmar path canônico do webhook admin-pipeelo: `/api/clients/onboarding/create` (código atual) vs `/api/v1/onboarding/ingest` (memory) — resolver em Phase 2
+- ~~Confirmar path canônico do webhook admin-pipeelo~~ ✅ resolvido em Plan 06-00: path canônico é `/api/clients/onboarding/create`
 
 ### Blockers
 
@@ -121,11 +125,13 @@ progress:
 
 ## Session Continuity
 
-**Last session:** 2026-05-08 — Executed Plan 02-00 (Phase 2 Wave 0). Criado pacote `pipeelo-onboarding-contracts@0.1.0` em `pipeelo-onboarding-flow/contracts/` (workspace local) com Zod skeleton + `PAYLOAD_VERSION='v1'` + 4 tests verdes. Linkado em admin-pipeelo via `file:../pipeelo-onboarding-flow/contracts` + sanity test 2/2. Suite full ambos repos verde (107 onboarding-flow, 176 admin-pipeelo). 2 commits: `246f193` (onboarding-flow), `3d5a1a9` (admin-pipeelo). Deviation Rule 3: contracts/vitest.config.ts isolado (root config aponta pra setup que não existe no subpacote). Reuso vitest.config.ts admin (já existia desde Phase 3). Pronto para Plan 02-01 substituir skeleton pelo schema real do payload de `api/complete-onboarding.ts`.
+**Last session:** 2026-05-08 (later) — Executed Plan 06-00 (Phase 6 Wave 0 — feature flag JARVIS_ENABLED). Task 1 (TDD) entregou `admin-pipeelo/lib/feature-flags.ts` com `isJarvisEnabled()` runtime-read + `feature-flags.test.ts` (15 cenários via `it.each`) + `.env.example` documentando flag. Task 2 (TDD) ramificou `app/api/clients/onboarding/create/route.ts` com branch `mode='jarvis'|'legacy'`, log estruturado `[webhook] mode=%s`, e migrou WEBHOOK_TOKEN pra runtime-read (Rule 3 deviation). 4 commits: `bb9ed44` (Task 1 RED), `e9bb79a` (Task 1 GREEN), `484e8b8` (Task 2 RED), `c8d353f` (Task 2 GREEN). Suite full admin-pipeelo: 181/181 (era 159, +22 tests; zero regressão). EVAL-05/06 marcados completos. `lib/onboarding-processor.ts` intacto e referenciado como fallback. Path canônico do webhook confirmado: `/api/clients/onboarding/create` — open todo eliminado.
+
+**Previous session:** 2026-05-08 — Executed Plan 02-00 (Phase 2 Wave 0). Criado pacote `pipeelo-onboarding-contracts@0.1.0` em `pipeelo-onboarding-flow/contracts/` (workspace local) com Zod skeleton + `PAYLOAD_VERSION='v1'` + 4 tests verdes. Linkado em admin-pipeelo via `file:../pipeelo-onboarding-flow/contracts` + sanity test 2/2. Suite full ambos repos verde (107 onboarding-flow, 176 admin-pipeelo). 2 commits: `246f193` (onboarding-flow), `3d5a1a9` (admin-pipeelo). Deviation Rule 3: contracts/vitest.config.ts isolado (root config aponta pra setup que não existe no subpacote). Reuso vitest.config.ts admin (já existia desde Phase 3). Pronto para Plan 02-01 substituir skeleton pelo schema real do payload de `api/complete-onboarding.ts`.
 
 **Previous session:** 2026-05-08 — Executed Plan 03-03 autonomous portion (Wave 3 — Langfuse + admin panel). Task 1 (TDD) entregou `api/jarvis/_runtime/observability/langfuse.ts` no-op safe (getLangfuseClient cached, createTrace com tenant tag, withSpan best-effort, flushLangfuse) + `langfuse.test.ts` (7 tests: no-op + instance modes); integrou em `wrap-tool.ts` (spans por invoke + langfuseSpanId em recordToolCall) e `audit.ts` (novo `createRunWithTrace` que cria trace + run linked via langfuse_trace_id). Task 2 entregou painel read-only `/admin/jarvis/runs` (Server Component lista filtrada por status) + `[id]` (drill-down com tool_calls + Langfuse link) + 2 API routes (`GET /api/admin/jarvis/runs` + `GET /api/admin/jarvis/runs/[id]`). 3 commits: `46f6aa8` (RED), `251a800` (GREEN SDK + integração), `dee0443` (admin panel). Suite full: 159/159 (era 152). langfuse@3.38.20 instalado (npm latest; v4 ainda não disponível, surface API compatível). Zero erros TS. **Task 3 pending checkpoint:human-verify** — Felipe deve criar projeto Langfuse cloud EU + setar env vars + aplicar migration jarvis_audit_tables em staging + smoke run.
 **Next session:** Felipe completa checkpoint Task 3 → "approved" finaliza Plan 03-03 SUMMARY (popular completed_date + tasks_pending_checkpoint=0). Depois: Phase 4 (Jarvis Cron Pipeline) pode começar — tool layer + audit + observability prontos.
-**Stopped At:** Plan 03-03 awaiting human checkpoint Task 3 (Langfuse cloud setup + smoke run)
+**Stopped At:** Plan 06-00 complete (feature flag JARVIS_ENABLED + branch webhook). Pendentes paralelos: Plan 03-03 Task 3 (Langfuse cloud, Felipe), Plan 05-02 (Resend triggers), Plan 02-01 (schema real contracts). Plan 06-01 (replay) destravado mas depende Phase 4.
 
 **Files de referência viva:**
 - `.planning/PROJECT.md` — escopo dos 4 pilares

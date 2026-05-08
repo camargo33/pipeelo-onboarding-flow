@@ -109,7 +109,7 @@ Cliente termina o questionário → tenant fica vivo na Pipeelo automaticamente 
   4. Feature flag `JARVIS_ENABLED=true` em prod direciona novas sessões para Jarvis; flip para `false` em <30s reverte para `lib/onboarding-processor.ts` sem deploy
   5. `lib/onboarding-processor.ts` mantido funcional como fallback (validado por smoke test pós-cutover); UI continua oferecendo "Use deterministic processor" como opção manual
 **Plans**: 4 plans
-- [ ] 06-00-PLAN.md — Wave 0: feature flag JARVIS_ENABLED + branch path no webhook handler (EVAL-05/06)
+- [x] 06-00-PLAN.md — Wave 0: feature flag JARVIS_ENABLED + branch path no webhook handler (EVAL-05/06) ✅ 2026-05-08 (commits bb9ed44, e9bb79a, 484e8b8, c8d353f)
 - [ ] 06-01-PLAN.md — Wave 1: replay 5 sessões históricas Jarvis vs legacy + diff (EVAL-01/02)
 - [ ] 06-02-PLAN.md — Wave 2: Langfuse evals com rubric DNA tom 8 regras + threshold-check (EVAL-03/04)
 - [ ] 06-03-PLAN.md — Wave 3: cutover gradual + flip back drill <30s (EVAL-05/06)
