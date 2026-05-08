@@ -4,40 +4,74 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { PipeeloLogo } from "@/components/PipeeloLogo";
+import { TurnstileWidget } from "@/components/TurnstileWidget";
 import { ArrowRight, Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { sessionApi, ApiError } from "@/lib/api-client";
 
+/**
+ * Tela de criação de sessão (HARD-01 + HARD-07).
+ *
+ * - Substitui POST /api/create-session legacy por sessionApi.create.
+ * - Renderiza TurnstileWidget; sem siteKey (dev) o token vem '' e o submit
+ *   confia no fallback server (Plan 04 fará o verify obrigatório).
+ * - Após sucesso navega para /<slug>?token=<access_token> — o token na URL
+ *   é a base do magic link (HARD-03).
+ *
+ * NOTA: input de CNPJ ainda não está aqui — Plan 04 (HARD-05) adiciona
+ * validação inline BrasilAPI. Por ora enviamos cnpj="" e o endpoint
+ * `create.ts` aceita (validação dura também migra em Plan 04).
+ */
 export default function NovoOnboarding() {
   const navigate = useNavigate();
   const [empresaNome, setEmpresaNome] = useState("");
-  const [ceoEmail, setCeoEmail] = useState("");
+  const [cnpj, setCnpj] = useState("");
+  const [turnstileToken, setTurnstileToken] = useState("");
   const [loading, setLoading] = useState(false);
+
+  const hasSiteKey = Boolean(import.meta.env.VITE_TURNSTILE_SITE_KEY);
+  const cnpjDigits = cnpj.replace(/\D/g, "");
+  const canSubmit =
+    empresaNome.trim().length >= 2 &&
+    cnpjDigits.length === 14 &&
+    (hasSiteKey ? turnstileToken.length > 0 : true);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (empresaNome.trim().length < 2) {
-      toast.error("Informe o nome da empresa");
+    if (!canSubmit) {
+      if (empresaNome.trim().length < 2) {
+        toast.error("Informe o nome da empresa");
+      } else if (cnpjDigits.length !== 14) {
+        toast.error("CNPJ deve ter 14 dígitos");
+      } else if (hasSiteKey && !turnstileToken) {
+        toast.error("Complete o captcha antes de continuar");
+      }
       return;
     }
     setLoading(true);
     try {
-      const res = await fetch("/api/create-session", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          empresa_nome: empresaNome.trim(),
-          ceo_email: ceoEmail.trim() || undefined,
-        }),
+      const { slug, access_token } = await sessionApi.create({
+        empresa_nome: empresaNome.trim(),
+        cnpj: cnpjDigits,
+        turnstileToken,
       });
-      const data = await res.json();
-      if (!res.ok || !data.success) {
-        throw new Error(data.error || "Falha ao criar sessão");
-      }
-      toast.success(`Onboarding criado: ${data.session.slug}`);
-      navigate(`/${data.session.slug}`);
+      toast.success(`Onboarding criado: ${slug}`);
+      navigate(`/${slug}?token=${access_token}`);
     } catch (err) {
-      const msg = err instanceof Error ? err.message : String(err);
-      toast.error(msg);
+      if (err instanceof ApiError) {
+        if (err.status === 409) {
+          toast.error("Já existe uma sessão para este CNPJ");
+        } else if (err.status === 403) {
+          toast.error("Captcha inválido — recarregue a página e tente de novo");
+        } else if (err.status === 429) {
+          toast.error("Muitas tentativas. Aguarde 1 minuto e tente de novo.");
+        } else {
+          toast.error(`Falha ao criar sessão: ${err.message}`);
+        }
+      } else {
+        const msg = err instanceof Error ? err.message : String(err);
+        toast.error(msg);
+      }
     } finally {
       setLoading(false);
     }
@@ -81,26 +115,33 @@ export default function NovoOnboarding() {
 
               <div>
                 <label className="block text-sm font-medium text-foreground mb-2">
-                  Email do responsável (CEO/Admin)
+                  CNPJ <span className="text-primary">*</span>
                 </label>
                 <Input
-                  type="email"
-                  value={ceoEmail}
-                  onChange={(e) => setCeoEmail(e.target.value)}
-                  placeholder="seunome@suaempresa.com.br"
+                  type="text"
+                  value={cnpj}
+                  onChange={(e) => setCnpj(e.target.value)}
+                  placeholder="00.000.000/0000-00"
                   className="text-lg py-6"
+                  inputMode="numeric"
                   disabled={loading}
                 />
                 <p className="text-xs text-muted-foreground mt-1">
-                  Opcional — usado pra enviar o link do onboarding por email.
+                  Apenas números — formatação é opcional.
                 </p>
               </div>
+
+              {hasSiteKey && (
+                <div>
+                  <TurnstileWidget onSuccess={setTurnstileToken} />
+                </div>
+              )}
 
               <Button
                 type="submit"
                 size="lg"
                 className="w-full gap-2"
-                disabled={loading}
+                disabled={loading || !canSubmit}
               >
                 {loading ? (
                   <>

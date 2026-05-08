@@ -1,35 +1,15 @@
 import { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { supabase } from '@/integrations/supabase/client';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { toast } from 'sonner';
-import { Building2, DollarSign, Wrench, TrendingUp, Check, Clock, ArrowRight, AlertCircle, Info, Users, MessageSquare, Pencil, IdCard, Lock } from 'lucide-react';
+import { Building2, DollarSign, Wrench, TrendingUp, Check, Clock, ArrowRight, AlertCircle, Info, Users, MessageSquare, Pencil, IdCard } from 'lucide-react';
 import { PipeeloLogo } from '@/components/PipeeloLogo';
 import { motion } from 'framer-motion';
 import { DepartmentId, DEPARTMENT_ORDER } from '@/types/onboarding';
+import { sessionApi, ApiError, type SessionDTO } from '@/lib/api-client';
 
-interface SessionData {
-  id: string;
-  empresa_nome: string;
-  slug: string;
-  tenant_id: string | null;
-  status_identificacao: string | null;
-  status_sac_geral: string | null;
-  status_financeiro: string | null;
-  status_suporte: string | null;
-  status_vendas: string | null;
-  responsavel_identificacao: string | null;
-  responsavel_sac_geral: string | null;
-  responsavel_financeiro: string | null;
-  responsavel_suporte: string | null;
-  responsavel_vendas: string | null;
-  concluido_identificacao_at: string | null;
-  concluido_sac_geral_at: string | null;
-  concluido_financeiro_at: string | null;
-  concluido_suporte_at: string | null;
-  concluido_vendas_at: string | null;
-}
+type SessionData = SessionDTO;
 
 const departmentConfig: Record<DepartmentId, {
   icon: typeof Building2;
@@ -97,6 +77,8 @@ const departmentConfig: Record<DepartmentId, {
 
 const OnboardingSession = () => {
   const { slug } = useParams<{ slug: string }>();
+  const [searchParams] = useSearchParams();
+  const token = searchParams.get('token') ?? '';
   const navigate = useNavigate();
   const [session, setSession] = useState<SessionData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -109,36 +91,45 @@ const OnboardingSession = () => {
         setLoading(false);
         return;
       }
+      if (!token) {
+        setError('Link inválido — token ausente. Use o magic link enviado por email.');
+        setLoading(false);
+        return;
+      }
 
-      const { data, error: fetchError } = await supabase
-        .from('onboarding_sessions')
-        .select('*')
-        .eq('slug', slug)
-        .maybeSingle();
-
-      if (fetchError) {
-        console.error('Erro ao buscar sessão:', fetchError);
-        setError('Erro ao carregar dados');
-      } else if (!data) {
-        setError('Link inválido ou expirado');
-      } else {
-        setSession(data);
+      try {
+        const { session: dto } = await sessionApi.get(slug, token);
+        setSession(dto);
+      } catch (e) {
+        if (e instanceof ApiError) {
+          if (e.status === 401) {
+            setError('Link inválido ou token incorreto');
+          } else if (e.status === 410) {
+            setError('Sessão expirou (>30 dias). Solicite um novo link.');
+          } else {
+            setError(`Erro ao carregar sessão: ${e.message}`);
+          }
+        } else {
+          // eslint-disable-next-line no-console
+          console.error('Erro ao buscar sessão:', e);
+          setError('Erro ao carregar dados');
+        }
       }
       setLoading(false);
     };
 
     fetchSession();
-  }, [slug]);
+  }, [slug, token]);
 
   const getDepartmentStatus = (deptId: DepartmentId) => {
     if (!session) return { completed: false, responsavel: null, completedAt: null };
-    
+
     const statusMap: Record<DepartmentId, { status: string | null; responsavel: string | null; completedAt: string | null }> = {
-      identificacao: { status: session.status_identificacao, responsavel: session.responsavel_identificacao, completedAt: session.concluido_identificacao_at },
-      sac_geral: { status: session.status_sac_geral, responsavel: session.responsavel_sac_geral, completedAt: session.concluido_sac_geral_at },
-      financeiro: { status: session.status_financeiro, responsavel: session.responsavel_financeiro, completedAt: session.concluido_financeiro_at },
-      suporte: { status: session.status_suporte, responsavel: session.responsavel_suporte, completedAt: session.concluido_suporte_at },
-      vendas: { status: session.status_vendas, responsavel: session.responsavel_vendas, completedAt: session.concluido_vendas_at },
+      identificacao: { status: session.status_identificacao, responsavel: session.responsavel_identificacao ?? null, completedAt: session.concluido_identificacao_at ?? null },
+      sac_geral: { status: session.status_sac_geral, responsavel: session.responsavel_sac_geral ?? null, completedAt: session.concluido_sac_geral_at ?? null },
+      financeiro: { status: session.status_financeiro, responsavel: session.responsavel_financeiro ?? null, completedAt: session.concluido_financeiro_at ?? null },
+      suporte: { status: session.status_suporte, responsavel: session.responsavel_suporte ?? null, completedAt: session.concluido_suporte_at ?? null },
+      vendas: { status: session.status_vendas, responsavel: session.responsavel_vendas ?? null, completedAt: session.concluido_vendas_at ?? null },
     };
 
     const info = statusMap[deptId];
@@ -161,7 +152,9 @@ const OnboardingSession = () => {
       toast.error('Preencha primeiro o departamento "Identificação" — ele cria o tenant na Pipeelo');
       return;
     }
-    navigate(`/${slug}/${deptId}`);
+    // Propaga o token para a rota interna preservar autenticação
+    const tokenSuffix = token ? `?token=${encodeURIComponent(token)}` : '';
+    navigate(`/${slug}/${deptId}${tokenSuffix}`);
   };
 
   const getCompletedCount = () => {
@@ -198,7 +191,10 @@ const OnboardingSession = () => {
   }
 
   const completedCount = getCompletedCount();
+  // NOTE: progress ainda é /4 — Plan 01-04 (HARD-06) corrige para /5 com Identificação
   const allCompleted = completedCount === 4;
+  // referenciado para evitar warning de unused import
+  void DEPARTMENT_ORDER;
 
   return (
     <div className="min-h-screen bg-background">
@@ -224,8 +220,8 @@ const OnboardingSession = () => {
               {session.empresa_nome}
             </p>
             <p className="text-muted-foreground">
-              {allCompleted 
-                ? '🎉 Parabéns! Todos os departamentos foram preenchidos!' 
+              {allCompleted
+                ? '🎉 Parabéns! Todos os departamentos foram preenchidos!'
                 : `Progresso: ${completedCount}/4 departamentos concluídos`}
             </p>
           </div>
@@ -295,10 +291,10 @@ const OnboardingSession = () => {
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0.3 + index * 0.1 }}
                 >
-                  <Card 
+                  <Card
                     className={`${config.bgColor} ${config.borderColor} border transition-all ${
-                      status.completed 
-                        ? 'opacity-75' 
+                      status.completed
+                        ? 'opacity-75'
                         : 'hover:scale-[1.01] hover:shadow-lg cursor-pointer'
                     }`}
                     onClick={() => !status.completed && startDepartment(deptId)}
@@ -312,7 +308,7 @@ const OnboardingSession = () => {
                           <div className="min-w-0">
                             <h3 className="font-semibold text-foreground">{config.label}</h3>
                             <p className="text-sm text-muted-foreground mb-2">{config.description}</p>
-                            
+
                             {status.completed ? (
                               <div className="text-sm text-muted-foreground">
                                 <span className="text-green-400 font-medium">✓ Concluído</span>
@@ -352,7 +348,8 @@ const OnboardingSession = () => {
                                 className="text-amber-500 hover:text-amber-600 hover:bg-amber-500/10"
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  navigate(`/${slug}/${deptId}`);
+                                  const tokenSuffix = token ? `?token=${encodeURIComponent(token)}` : '';
+                                  navigate(`/${slug}/${deptId}${tokenSuffix}`);
                                 }}
                               >
                                 <Pencil className="w-4 h-4 mr-1" />
