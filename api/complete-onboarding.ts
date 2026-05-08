@@ -1,4 +1,8 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
+import {
+  OnboardingPayloadSchema,
+  PAYLOAD_VERSION,
+} from "pipeelo-onboarding-contracts";
 import { requireSupabase } from "./_lib/supabase.js";
 
 function expandHorarioSemanal(horario: Record<string, unknown> | null | undefined) {
@@ -65,12 +69,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     const payload = {
+      payload_version: PAYLOAD_VERSION,
       session: {
         id: session.id,
         empresa_nome: session.empresa_nome,
         ceo_email: session.ceo_email,
-        access_token: session.access_token,
+        cnpj: session.cnpj,
+        access_token: session.access_token ?? null,
         tenant_id: session.tenant_id ?? null,
+        pipeelo_token: session.pipeelo_token ?? null,
         created_at: session.created_at,
         responsaveis: {
           sac_geral: session.responsavel_sac_geral,
@@ -88,22 +95,53 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       respostas: respostasPorDepartamento,
     };
 
+    // PIPE-01/PIPE-02/PIPE-08: validar contrato antes de mandar pro admin.
+    // Falha early com 500 estruturado em vez de mandar payload inválido pelo wire.
+    const parseResult = OnboardingPayloadSchema.safeParse(payload);
+    if (!parseResult.success) {
+      // PII-safe log: só sessionId + paths/codes dos issues, nada de respostas/cnpj/email crus.
+      console.error("[complete-onboarding] invalid_outbound_payload", {
+        sessionId: session.id,
+        issues: parseResult.error.issues.map((i) => ({
+          path: i.path,
+          code: i.code,
+        })),
+      });
+      return res.status(500).json({
+        error: "invalid_outbound_payload",
+        issues: parseResult.error.issues,
+      });
+    }
+    const validatedPayload = parseResult.data;
+
     const targetUrl = testWebhookUrl || `${process.env.PIPEELO_ADMIN_API_URL || "https://admin.pipeelo.com"}/api/clients/onboarding/create`;
     const apiToken = process.env.PIPEELO_ADMIN_API_TOKEN;
 
-    const headers: Record<string, string> = { "Content-Type": "application/json" };
+    const headers: Record<string, string> = {
+      "Content-Type": "application/json",
+      // PIPE-04: idempotency key permite ao receiver deduplicar retries.
+      "Idempotency-Key": session.id,
+    };
     if (!testWebhookUrl && apiToken) headers["Authorization"] = `Bearer ${apiToken}`;
 
     const webhookResponse = await fetch(targetUrl, {
       method: "POST",
       headers,
-      body: JSON.stringify(payload),
+      body: JSON.stringify(validatedPayload),
     });
 
-    const webhookBody = await webhookResponse.text();
     if (!webhookResponse.ok) {
-      console.error("Webhook failed:", webhookResponse.status, webhookBody);
-      return res.status(500).json({ error: "Webhook failed", status: webhookResponse.status, details: webhookBody });
+      const body = await webhookResponse.text().catch(() => "");
+      // PII-safe log: status + sessionId, body truncado.
+      console.error("[complete-onboarding] admin webhook failed", {
+        status: webhookResponse.status,
+        sessionId: session.id,
+      });
+      return res.status(502).json({
+        error: "admin_webhook_failed",
+        status: webhookResponse.status,
+        body: body.slice(0, 500),
+      });
     }
 
     return res.status(200).json({ success: true, message: "Webhook sent successfully" });
