@@ -47,7 +47,11 @@ Cliente termina o questionário → tenant fica vivo na Pipeelo automaticamente 
   3. Disparar mesmo webhook duas vezes resulta em apenas uma sessão criada no admin-pipeelo (idempotency por `session_id` validada)
   4. Webhook recebe payload sem `tenant_id`/identificação incompleta e retorna 400 estruturado (não 200 silencioso)
   5. Status de uma sessão evolui visivelmente: `pending → in_progress → completed → processing → live | failed | needs_review` (state machine implementada com transições logadas)
-**Plans**: TBD
+**Plans**: 4 plans
+- [ ] 02-00-PLAN.md — Wave 1: pacote pipeelo-onboarding-contracts skeleton + Vitest scaffold no admin-pipeelo (PIPE-01)
+- [ ] 02-01-PLAN.md — Wave 2: Schema Zod completo + sender/receiver Zod parse (PIPE-01, PIPE-02, PIPE-08)
+- [ ] 02-02-PLAN.md — Wave 3: Outbox pattern + reconciliation cron + state machine (PIPE-04, PIPE-05, PIPE-06, PIPE-07)
+- [ ] 02-03-PLAN.md — Wave 4: Token rotation doc + env config + checkpoint humano apply migration (PIPE-03)
 
 ### Phase 3: Tool Layer + Audit (sem agente)
 **Goal**: Construir camada determinística de tools tipadas com idempotency + audit completo. Tenant pode ser provisionado end-to-end manualmente (chamando tools) antes do agente entrar.
@@ -118,7 +122,7 @@ Com `parallelization: true` no config:
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Hardening + Server-Side Persistence | 4/6 | In progress | - |
-| 2. Pipeline de Ingestão Robusta | 0/0 | Not started | - |
+| 2. Pipeline de Ingestão Robusta | 0/4 | Not started | - |
 | 3. Tool Layer + Audit | 0/0 | Not started | - |
 | 4. Jarvis Cron Pipeline | 0/0 | Not started | - |
 | 5. Painel + Notificações | 0/0 | Not started | - |
