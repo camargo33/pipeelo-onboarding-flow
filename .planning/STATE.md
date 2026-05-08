@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: in_progress
-stopped_at: Completed 01-04-PLAN.md
+stopped_at: Plan 01-05 autonomous tasks done — awaiting human cutover (PROD migration apply)
 last_updated: "2026-05-08T21:50:00.000Z"
 progress:
   total_phases: 6
   completed_phases: 0
   total_plans: 6
   completed_plans: 5
-  percent: 83
+  percent: 92
 ---
 
 # Project State: Pipeelo Onboarding Flow — v2 Upgrade
@@ -30,9 +30,9 @@ progress:
 ## Current Position
 
 - **Phase:** 1 of 6 — Hardening + Server-Side Persistence
-- **Plan:** 01-05 (next) — Wave 4 RLS lock migration + smoke staging + cutover prod
-- **Status:** Plan 01-04 (Wave 3 anti-abuse) completed 2026-05-08 — HARD-04, HARD-05, HARD-06, HARD-07 fechados; CI gate HARD-01 endurecido (continue-on-error removido)
-- **Progress:** [████████░░] 83% (5/6 phase 1 plans done — 01-00 infra, 01-01 endpoints, 01-02 IDV, 01-03 front migration, 01-04 anti-abuse)
+- **Plan:** 01-05 — Wave 4 RLS lock — autonomous tasks DONE, awaiting human cutover
+- **Status:** Plan 01-05 autonomous artifacts criados 2026-05-08: migration `20260508120000_lock_rls_phase1.sql`, `scripts/rollback-rls.sql`, integration test `tests/rls/onboarding-sessions.test.ts` (5 cenários), RUNBOOK 7 etapas. CHECKPOINT bloqueante aguarda Felipe para aplicar em staging + smoke + drill + cutover prod (HARD-08/HARD-09 dependem de execução humana com DB credentials).
+- **Progress:** [█████████░] 92% (Phase 1: 5/6 plans done + 01-05 prep complete; faltando apenas cutover humano)
 
 ## Phase Index
 
@@ -55,6 +55,7 @@ progress:
 | Cache hit rate Langfuse | N/A | >70% no system prompt |
 | Tool call success rate | N/A | ≥95% (gate de cutover Phase 6) |
 | Cross-tenant errors | N/A | 0 (gate inegociável) |
+| Phase 01-hardening-server-side-persistence P05 (autonomous) | 2m | 2 tasks | 4 created / 2 modified |
 | Phase 01-hardening-server-side-persistence P04 | 6m | 3 tasks | 13 created / 9 modified |
 | Phase 01-hardening-server-side-persistence P03 | 8m | 3 tasks | 10 created / 7 modified |
 | Phase 01-hardening-server-side-persistence P02 | 4m | 3 tasks | 10 files |
@@ -109,9 +110,9 @@ progress:
 
 ## Session Continuity
 
-**Last session:** 2026-05-08 — Executed Plan 01-04 (Wave 3 anti-abuse + validations). Adicionado ratelimit Upstash (5/IP/min) + Turnstile siteverify em `/api/sessions/create`; criado `/api/sessions/validate-cnpj` proxy BrasilAPI+ReceitaWS+cache 24h; CnpjSchema/EmailSchema/WhatsappBrSchema; ProgressBar denominador `/4`→`/5` (HARD-06); validateCnpj inline em NovoOnboarding com formatCnpj máscara. CI: removido `continue-on-error` do audit step (HARD-01 enforced). 102 testes passando + 8 todo, audit verde, build verde. 3 commits (`f29b803`, `f715ce0`, `00e2fba`).
-**Next session:** Execute Plan 01-05 — Wave 4: aplicar migration `<ts>_lock_rls_phase1.sql` (HARD-08), validar anon key denied (HARD-09), smoke staging E2E end-to-end (HARD-03 manual gate), email coluna em sessions p/ send-magic-link real, opcional wirar validate-cnpj no front.
-**Stopped At:** Completed 01-04-PLAN.md
+**Last session:** 2026-05-08 — Executed Plan 01-05 autonomous tasks (Wave 4 prep). Criado `supabase/migrations/20260508120000_lock_rls_phase1.sql` (drop public policies + recreate `service_role only AS RESTRICTIVE` em onboarding_sessions+respostas), `scripts/rollback-rls.sql` (rede de segurança <5min), `tests/rls/onboarding-sessions.test.ts` (5 cenários — anon SELECT/INSERT/UPDATE → 42501 ou 0 rows; skipa sem env staging), `01-05-RUNBOOK.md` (7 etapas: pré-condições → smoke pre-lock → apply staging → validar → drill → apply prod → smoke prod). Suite verde (103 passed + 5 skipped + 7 todo). 2 commits (`843eb97`, `7419859`). Plano `autonomous: false` — checkpoint bloqueante aguarda Felipe para aplicação manual em staging + cutover prod (DB credentials são humano-only).
+**Next session:** Felipe executa RUNBOOK 01-05 — apply staging, smoke pre/post, rollback drill <5min, apply PROD em janela baixo tráfego, smoke prod, monitorar 30min. Após approved: criar 01-05-SUMMARY + marcar Phase 1 done. Se rolled-back: investigar causa + Plan 06 gap closure.
+**Stopped At:** Plan 01-05 autonomous tasks done — checkpoint blocking (PROD apply requires human DB access)
 
 **Files de referência viva:**
 - `.planning/PROJECT.md` — escopo dos 4 pilares
