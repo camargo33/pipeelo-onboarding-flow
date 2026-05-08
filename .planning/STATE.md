@@ -3,8 +3,8 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: in_progress
-stopped_at: Plan 04-01 complete — Wave 1 do Jarvis Cron Pipeline em admin-pipeelo. 3 módulos estáticos entregues em api/jarvis/_runtime/: sanitize-input.ts (escape <user_input> case-insensitive), system-prompt.ts (JARVIS_SYSTEM_PROMPT >=2000 chars com skill subset + DNA tom 8 regras + JARV-11/12 declarados, buildTenantContext envelope), tools-registry.ts (JARVIS_TOOLS via zod-to-json-schema target=openApi3 + dispatchTool com whitelist + Zod pre-parse + delegate para tool.invoke). 3 commits admin-pipeelo (0e440bf sanitize, e3021f3 system-prompt, 3a1cc9c tools-registry). 32/32 tests novos passando, 100% coverage nos 3 arquivos. Suite full 260/260 (era 190; +70 tests includes 02-02 wave). Cobre JARV-01, JARV-02, JARV-10, JARV-11, JARV-12. Plan 04-02 (agent-loop) destravado.
-last_updated: "2026-05-08T20:30:00.000Z"
+stopped_at: Plan 04-02 complete — Wave 2 do Jarvis Cron Pipeline em admin-pipeelo. Coração do agente entregue em api/jarvis/_runtime/: loop-detector.ts (janela-3 com hash sha256 canonical-json chave-order-insensitive + LoopDetectedError), anthropic-client.ts (singleton SDK + buildCachedSystem com cache_control ephemeral 1h), agent-loop.ts (runAgentLoop com MAX_ITER=25, TOKEN_BUDGET=200k, model claude-opus-4-7, max_tokens=8192, telemetria cacheReadTokens/cacheCreationTokens em AgentLoopResult). 3 commits admin-pipeelo (67ac0b8 loop-detector+anthropic-client, 22588c1 agent-loop, 3ce8247 cleanup TS). 18/18 tests novos passando (9 LoopDetector+buildCachedSystem, 9 runAgentLoop). 98.63% statements coverage nos 3 arquivos novos. Suite _runtime full 120/120. Cobre JARV-03, JARV-08, JARV-10. Zero fetch direto (verificado via grep). Plan 04-03 (lease + cron) destravado — pode importar runAgentLoop direto.
+last_updated: "2026-05-08T20:36:00.000Z"
 progress:
   total_phases: 6
   completed_phases: 0
@@ -29,8 +29,8 @@ progress:
 
 ## Current Position
 
-- **Phase:** 4 of 6 — Jarvis Cron Pipeline (Wave 0+1 complete 2026-05-08)
-- **Plan:** 04-01 complete (Wave 1 — system-prompt + tools-registry + sanitize-input). Próximo: 04-02 (agent-loop com Anthropic.messages.create + cache_control ephemeral).
+- **Phase:** 4 of 6 — Jarvis Cron Pipeline (Waves 0+1+2 complete 2026-05-08)
+- **Plan:** 04-02 complete (Wave 2 — agent-loop + loop-detector + anthropic-client com cache ephemeral 1h). Próximo: 04-03 (lease SKIP LOCKED + cron Vercel jarvis-tick).
 - **Status:** Plan 03-03 (Wave 3 — Langfuse + admin panel) Tasks 1+2 completos 2026-05-08: `api/jarvis/_runtime/observability/langfuse.ts` (no-op safe wrapper, 7 tests verdes), `wrap-tool.ts` emitindo spans com tenant tag, `audit.createRunWithTrace` linkando trace_id, painel `/admin/jarvis/runs` + drill-down + 2 API routes Server Components. 3 commits: `46f6aa8` (RED tests), `251a800` (GREEN SDK + integração), `dee0443` (admin panel). Suite full: 159/159. Zero erros TS. **Task 3 pending human:** criar projeto Langfuse cloud EU + env vars (LANGFUSE_PUBLIC_KEY/SECRET_KEY/HOST) + aplicar migration jarvis_audit_tables em staging admin-pipeelo + smoke run com 1 sessão real → confirmar painel renderiza + trace aparece em Langfuse dashboard com tag tenant:.... Plan 01-05 ainda awaiting human cutover (RLS lock prod).
 - **Progress:** [██████████] 100% (7/7 plans done; faltando: Plan 01-05 cutover + Plan 03-03 Task 3 checkpoint)
 
@@ -41,7 +41,7 @@ progress:
 | 1 | Hardening + Server-Side Persistence | In progress (5/6 + 01-05 prep) | HARD-01..10 |
 | 2 | Pipeline de Ingestão Robusta | In progress (Wave 0 done; 02-00 SHIPPED 2026-05-08) | PIPE-01..08 |
 | 3 | Tool Layer + Audit | In progress (Waves 0+1+2 done; W3 autonomous done, awaiting human checkpoint; TOOL-01..06 complete; TOOL-07 awaiting smoke) | TOOL-01..07 |
-| 4 | Jarvis Cron Pipeline | In progress (Waves 0+1 done 2026-05-08) | JARV-01..12 |
+| 4 | Jarvis Cron Pipeline | In progress (Waves 0+1+2 done 2026-05-08) | JARV-01..12 |
 | 5 | Painel + Notificações | Not started | UI-01..09 |
 | 6 | Evals + Cutover | In progress (Wave 0 done; EVAL-05/06 ✅) | EVAL-01..06 |
 
@@ -57,6 +57,7 @@ progress:
 | Cross-tenant errors | N/A | 0 (gate inegociável) |
 | Phase 04-jarvis-cron-pipeline P00 | 8m | 2 tasks | 1 created / 3 modified |
 | Phase 04-jarvis-cron-pipeline P01 | 25m | 3 tasks (TDD) | 6 created / 2 modified |
+| Phase 04-jarvis-cron-pipeline P02 | 12m | 2 tasks (TDD) | 5 created / 0 modified |
 | Phase 06-evals-cutover P00 | 5m | 2 tasks (TDD) | 4 created / 1 modified |
 | Phase 02-pipeline-ingestao-robusta P00 | 7m | 2 tasks | 8 created / 2 modified |
 | Phase 03-tool-layer-audit P03 (autonomous portion) | 10m | 2/3 tasks | 6 created / 4 modified |
