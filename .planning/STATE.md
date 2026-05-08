@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: in_progress
-stopped_at: Plan 02-00 complete — pipeelo-onboarding-contracts package criado (workspace) + scaffold Vitest no admin-pipeelo (sanity test 2/2). Plan 03-03 ainda awaiting human checkpoint Task 3 (Langfuse cloud setup). Próximo: Plan 02-01 (schema real do contrato).
-last_updated: "2026-05-08T23:01:00.000Z"
+stopped_at: Plan 05-01 complete — 4 React Email templates IDV 2026 (WelcomeCEO, ReminderStalled, CredentialsReady com magic link 72h BRT, JarvisFailedAlert urgent). Layout shared + tokens + 9 tests verdes (incluindo XSS escape). Full suite 116 passing. Plan 03-03 ainda awaiting human checkpoint Task 3 (Langfuse cloud). Próximo: Plan 05-02 (triggers Resend disparam estes templates).
+last_updated: "2026-05-08T23:15:00.000Z"
 progress:
   total_phases: 6
   completed_phases: 0
-  total_plans: 8
-  completed_plans: 8
+  total_plans: 9
+  completed_plans: 9
   percent: 100
 ---
 
