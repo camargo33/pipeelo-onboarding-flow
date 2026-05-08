@@ -43,14 +43,14 @@
 
 - [x] **JARV-01**: `system-prompt.ts` materializa skill Jarvis (subset operacional) + DNA tom 8 regras como prompt cacheável
 - [x] **JARV-02**: Tools registry expõe schemas via `zodToJsonSchema` para Anthropic Messages API
-- [ ] **JARV-03**: `agent-loop.ts` itera com `MAX_ITER=25`, token budget máximo por sessão, loop detector (hash dos últimos 3 tool calls)
-- [ ] **JARV-04**: Lease pattern com `SELECT FOR UPDATE SKIP LOCKED` — uma sessão processada por exatamente um worker por vez
-- [ ] **JARV-05**: Stuck-lock recovery: lock expira após 10min, sessão volta a `pending` com `attempt_count++`
-- [ ] **JARV-06**: Vercel Cron `/api/cron/jarvis-tick` roda a cada 15min em horário UTC (mapeado pra BRT comercial), com `CRON_SECRET` Bearer
-- [ ] **JARV-07**: Cron é fire-and-forget: claim a sessão e dispara `/api/jarvis/run` async, sem aguardar
-- [ ] **JARV-08**: Prompt caching ephemeral 1h aplicado no system prompt (cache hit rate medido em Langfuse)
-- [ ] **JARV-09**: Após `attempt_count >= 3`, sessão vai para `needs_review` e dispara alerta WhatsApp
-- [ ] **JARV-10**: Jarvis NUNCA chama `fetch` direto — todas saídas são via tools registradas (validado por lint custom ou code review checklist)
+- [x] **JARV-03**: `agent-loop.ts` itera com `MAX_ITER=25`, token budget máximo por sessão, loop detector (hash dos últimos 3 tool calls)
+- [x] **JARV-04**: Lease pattern com `SELECT FOR UPDATE SKIP LOCKED` — uma sessão processada por exatamente um worker por vez
+- [x] **JARV-05**: Stuck-lock recovery: lock expira após 10min, sessão volta a `pending` com `attempt_count++`
+- [x] **JARV-06**: Vercel Cron `/api/cron/jarvis-tick` roda a cada 15min em horário UTC (mapeado pra BRT comercial), com `CRON_SECRET` Bearer
+- [x] **JARV-07**: Cron é fire-and-forget: claim a sessão e dispara `/api/jarvis/run` async, sem aguardar
+- [x] **JARV-08**: Prompt caching ephemeral 1h aplicado no system prompt (cache hit rate medido em Langfuse)
+- [x] **JARV-09**: Após `attempt_count >= 3`, sessão vai para `needs_review` e dispara alerta WhatsApp
+- [x] **JARV-10**: Jarvis NUNCA chama `fetch` direto — todas saídas são via tools registradas (validado por lint custom ou code review checklist)
 - [x] **JARV-11**: `tenant_id` é parâmetro fixo no escopo da run, nunca decidido pelo LLM (evita cross-tenant bleed)
 - [x] **JARV-12**: Inputs do questionário escapados com `<user_input>` delimitado no prompt (mitigação prompt injection)
 
@@ -142,14 +142,14 @@ Deferred — fora do escopo desta milestone, mas trackeado.
 | TOOL-07 | Phase 3 | Pending |
 | JARV-01 | Phase 4 | ✅ Plan 04-01 (system-prompt.ts) |
 | JARV-02 | Phase 4 | ✅ Plan 04-01 (tools-registry.ts) |
-| JARV-03 | Phase 4 | Pending |
-| JARV-04 | Phase 4 | Pending |
-| JARV-05 | Phase 4 | Pending |
-| JARV-06 | Phase 4 | Pending |
-| JARV-07 | Phase 4 | Pending |
-| JARV-08 | Phase 4 | Pending |
-| JARV-09 | Phase 4 | Pending |
-| JARV-10 | Phase 4 | Pending |
+| JARV-03 | Phase 4 | ✅ Plan 04-02 (agent-loop MAX_ITER=25 + TOKEN_BUDGET=200k + LoopDetector) |
+| JARV-04 | Phase 4 | ✅ Plan 04-03 (claim_pending_sessions RPC + claim-session.ts) |
+| JARV-05 | Phase 4 | ✅ Plan 04-03 (stuck-lock recovery 10min na RPC) |
+| JARV-06 | Phase 4 | ✅ Plan 04-03 (/api/cron/jarvis-tick + vercel.json schedule */15) |
+| JARV-07 | Phase 4 | ✅ Plan 04-03 (fire-and-forget fetch keepalive em jarvis-tick) |
+| JARV-08 | Phase 4 | ✅ Plan 04-02 (buildCachedSystem cache_control ephemeral 1h) |
+| JARV-09 | Phase 4 | ✅ Plan 04-03 (retry-policy + markNeedsReview + fireWhatsAppAlert) |
+| JARV-10 | Phase 4 | ✅ Plan 04-02 (zero fetch direto em agent-loop; dispatchTool único exit) |
 | JARV-11 | Phase 4 | ✅ Plan 04-01 (system-prompt + buildTenantContext) |
 | JARV-12 | Phase 4 | ✅ Plan 04-01 (sanitize-input.ts + system-prompt) |
 | UI-01 | Phase 5 | Pending |
