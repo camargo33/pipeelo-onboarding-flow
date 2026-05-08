@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: in_progress
-stopped_at: Plan 03-03 awaiting human checkpoint — Wave 3 autonomous tasks done (langfuse@3.38.20 SDK + wrapper + spans + admin panel /admin/jarvis/runs). 7 new tests; 159/159 full suite. Felipe: criar projeto Langfuse cloud + env vars + smoke run + aplicar migration jarvis_audit_tables em staging admin-pipeelo.
-last_updated: "2026-05-08T22:55:00.000Z"
+stopped_at: Plan 02-00 complete — pipeelo-onboarding-contracts package criado (workspace) + scaffold Vitest no admin-pipeelo (sanity test 2/2). Plan 03-03 ainda awaiting human checkpoint Task 3 (Langfuse cloud setup). Próximo: Plan 02-01 (schema real do contrato).
+last_updated: "2026-05-08T23:01:00.000Z"
 progress:
   total_phases: 6
   completed_phases: 0
-  total_plans: 7
-  completed_plans: 7
+  total_plans: 8
+  completed_plans: 8
   percent: 100
 ---
 
@@ -29,8 +29,8 @@ progress:
 
 ## Current Position
 
-- **Phase:** 3 of 6 — Tool Layer + Audit (Waves 0+1+2 done; Wave 3 awaiting human checkpoint)
-- **Plan:** 03-03 in_progress (Tasks 1+2 autonomous done; Task 3 checkpoint:human-verify aguardando Felipe)
+- **Phase:** 2 of 6 — Pipeline de Ingestão Robusta (Wave 0 complete; Plan 03-03 Task 3 ainda pending paralelo)
+- **Plan:** 02-00 complete (Wave 0 — contracts skeleton + Vitest scaffold). Próximo: 02-01 schema real.
 - **Status:** Plan 03-03 (Wave 3 — Langfuse + admin panel) Tasks 1+2 completos 2026-05-08: `api/jarvis/_runtime/observability/langfuse.ts` (no-op safe wrapper, 7 tests verdes), `wrap-tool.ts` emitindo spans com tenant tag, `audit.createRunWithTrace` linkando trace_id, painel `/admin/jarvis/runs` + drill-down + 2 API routes Server Components. 3 commits: `46f6aa8` (RED tests), `251a800` (GREEN SDK + integração), `dee0443` (admin panel). Suite full: 159/159. Zero erros TS. **Task 3 pending human:** criar projeto Langfuse cloud EU + env vars (LANGFUSE_PUBLIC_KEY/SECRET_KEY/HOST) + aplicar migration jarvis_audit_tables em staging admin-pipeelo + smoke run com 1 sessão real → confirmar painel renderiza + trace aparece em Langfuse dashboard com tag tenant:.... Plan 01-05 ainda awaiting human cutover (RLS lock prod).
 - **Progress:** [██████████] 100% (7/7 plans done; faltando: Plan 01-05 cutover + Plan 03-03 Task 3 checkpoint)
 
@@ -39,7 +39,7 @@ progress:
 | # | Phase | Status | Requirements |
 |---|-------|--------|--------------|
 | 1 | Hardening + Server-Side Persistence | In progress (5/6 + 01-05 prep) | HARD-01..10 |
-| 2 | Pipeline de Ingestão Robusta | Not started | PIPE-01..08 |
+| 2 | Pipeline de Ingestão Robusta | In progress (Wave 0 done; 02-00 SHIPPED 2026-05-08) | PIPE-01..08 |
 | 3 | Tool Layer + Audit | In progress (Waves 0+1+2 done; W3 autonomous done, awaiting human checkpoint; TOOL-01..06 complete; TOOL-07 awaiting smoke) | TOOL-01..07 |
 | 4 | Jarvis Cron Pipeline | Not started | JARV-01..12 |
 | 5 | Painel + Notificações | Not started | UI-01..09 |
@@ -55,6 +55,7 @@ progress:
 | Cache hit rate Langfuse | N/A | >70% no system prompt |
 | Tool call success rate | N/A | ≥95% (gate de cutover Phase 6) |
 | Cross-tenant errors | N/A | 0 (gate inegociável) |
+| Phase 02-pipeline-ingestao-robusta P00 | 7m | 2 tasks | 8 created / 2 modified |
 | Phase 03-tool-layer-audit P03 (autonomous portion) | 10m | 2/3 tasks | 6 created / 4 modified |
 | Phase 03-tool-layer-audit P02 | 8m | 2 tasks | 19 created / 0 modified |
 | Phase 03-tool-layer-audit P01 | 6m | 3 tasks | 9 created / 0 modified |
@@ -94,6 +95,8 @@ progress:
 - **Audit best-effort by construction (Plan 03-01):** recordToolCall + finalizeRun envoltas em try/catch top-level. Anti-pattern "audit kills run" literalmente impossível na implementação. createRun é exceção — sem run_id não há FK válida pra tool_calls.
 - **Erro NÃO cacheia em withIdempotency (Plan 03-01):** retry pode passar; cache de erro permanente é veneno. fn() throw → `idempotency_keys` permanece vazio.
 - **Upsert + ignoreDuplicates p/ race condition (Plan 03-01):** 2 workers no mesmo lease podem chegar simultaneamente; `onConflict='session_id,tool,args_hash'` + `ignoreDuplicates: true` torna o segundo upsert no-op silencioso.
+- **vitest.config.ts isolado em contracts/ (Plan 02-00):** root vitest do onboarding-flow carrega `vitest.setup.ts` que não existe dentro do subpacote workspace. Sem config isolado, vitest no contracts herda parent e quebra. Solução: 7 LOC `defineConfig` apontando só pra `src/**/*.test.ts`.
+- **Reuso de vitest.config.ts existente em admin-pipeelo (Plan 02-00):** plan declarava criação, mas Phase 3 (Plan 03-01) já tinha criado infra compatível. Não duplicar. Sanity test usa pattern `tests/**/*.test.ts` já presente no `include`.
 
 ### Open Todos
 
@@ -118,7 +121,9 @@ progress:
 
 ## Session Continuity
 
-**Last session:** 2026-05-08 — Executed Plan 03-03 autonomous portion (Wave 3 — Langfuse + admin panel). Task 1 (TDD) entregou `api/jarvis/_runtime/observability/langfuse.ts` no-op safe (getLangfuseClient cached, createTrace com tenant tag, withSpan best-effort, flushLangfuse) + `langfuse.test.ts` (7 tests: no-op + instance modes); integrou em `wrap-tool.ts` (spans por invoke + langfuseSpanId em recordToolCall) e `audit.ts` (novo `createRunWithTrace` que cria trace + run linked via langfuse_trace_id). Task 2 entregou painel read-only `/admin/jarvis/runs` (Server Component lista filtrada por status) + `[id]` (drill-down com tool_calls + Langfuse link) + 2 API routes (`GET /api/admin/jarvis/runs` + `GET /api/admin/jarvis/runs/[id]`). 3 commits: `46f6aa8` (RED), `251a800` (GREEN SDK + integração), `dee0443` (admin panel). Suite full: 159/159 (era 152). langfuse@3.38.20 instalado (npm latest; v4 ainda não disponível, surface API compatível). Zero erros TS. **Task 3 pending checkpoint:human-verify** — Felipe deve criar projeto Langfuse cloud EU + setar env vars + aplicar migration jarvis_audit_tables em staging + smoke run.
+**Last session:** 2026-05-08 — Executed Plan 02-00 (Phase 2 Wave 0). Criado pacote `pipeelo-onboarding-contracts@0.1.0` em `pipeelo-onboarding-flow/contracts/` (workspace local) com Zod skeleton + `PAYLOAD_VERSION='v1'` + 4 tests verdes. Linkado em admin-pipeelo via `file:../pipeelo-onboarding-flow/contracts` + sanity test 2/2. Suite full ambos repos verde (107 onboarding-flow, 176 admin-pipeelo). 2 commits: `246f193` (onboarding-flow), `3d5a1a9` (admin-pipeelo). Deviation Rule 3: contracts/vitest.config.ts isolado (root config aponta pra setup que não existe no subpacote). Reuso vitest.config.ts admin (já existia desde Phase 3). Pronto para Plan 02-01 substituir skeleton pelo schema real do payload de `api/complete-onboarding.ts`.
+
+**Previous session:** 2026-05-08 — Executed Plan 03-03 autonomous portion (Wave 3 — Langfuse + admin panel). Task 1 (TDD) entregou `api/jarvis/_runtime/observability/langfuse.ts` no-op safe (getLangfuseClient cached, createTrace com tenant tag, withSpan best-effort, flushLangfuse) + `langfuse.test.ts` (7 tests: no-op + instance modes); integrou em `wrap-tool.ts` (spans por invoke + langfuseSpanId em recordToolCall) e `audit.ts` (novo `createRunWithTrace` que cria trace + run linked via langfuse_trace_id). Task 2 entregou painel read-only `/admin/jarvis/runs` (Server Component lista filtrada por status) + `[id]` (drill-down com tool_calls + Langfuse link) + 2 API routes (`GET /api/admin/jarvis/runs` + `GET /api/admin/jarvis/runs/[id]`). 3 commits: `46f6aa8` (RED), `251a800` (GREEN SDK + integração), `dee0443` (admin panel). Suite full: 159/159 (era 152). langfuse@3.38.20 instalado (npm latest; v4 ainda não disponível, surface API compatível). Zero erros TS. **Task 3 pending checkpoint:human-verify** — Felipe deve criar projeto Langfuse cloud EU + setar env vars + aplicar migration jarvis_audit_tables em staging + smoke run.
 **Next session:** Felipe completa checkpoint Task 3 → "approved" finaliza Plan 03-03 SUMMARY (popular completed_date + tasks_pending_checkpoint=0). Depois: Phase 4 (Jarvis Cron Pipeline) pode começar — tool layer + audit + observability prontos.
 **Stopped At:** Plan 03-03 awaiting human checkpoint Task 3 (Langfuse cloud setup + smoke run)
 
