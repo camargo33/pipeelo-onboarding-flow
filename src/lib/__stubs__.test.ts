@@ -1,9 +1,9 @@
 import { describe, it } from 'vitest';
 
-describe('src/lib + hooks Wave 2 stubs', () => {
-  it.todo('sessionApi.test.ts — fetch wrappers tipados pra /api/sessions/*');
-  it.todo('useAutosave.test.ts — debounce 500ms + cancela re-input');
-  it.todo('TurnstileWidget.test.tsx — renderiza + callback onSuccess');
-  it.todo('ProgressBar.test.tsx — denominador = 5');
-  it.todo('idv-2026.test.tsx — paleta forest-floor + lime-accent presentes');
+describe('src/lib + hooks Wave 2 stubs (remaining)', () => {
+  // sessionApi → coberto em src/lib/api-client.test.ts (Plan 01-03)
+  // useAutosave → coberto em src/lib/debounced-save.test.ts (Plan 01-03)
+  // TurnstileWidget → coberto em src/components/TurnstileWidget.test.tsx (Plan 01-03)
+  // idv-2026 → coberto em src/styles/idv-2026.test.tsx (Plan 01-02)
+  it.todo('ProgressBar.test.tsx — denominador = 5 (Plan 01-04)');
 });
