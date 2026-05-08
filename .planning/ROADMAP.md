@@ -32,8 +32,8 @@ Cliente termina o questionário → tenant fica vivo na Pipeelo automaticamente 
 **Plans**: 6 plans
 - [x] 01-00-PLAN.md — Wave 0: test infra (Vitest + helpers + audit script HARD-01) — completed 2026-05-08
 - [x] 01-01-PLAN.md — Wave 1: endpoints /api/sessions/* + auth helper + Zod schemas — completed 2026-05-08
-- [ ] 01-02-PLAN.md — Wave 1: IDV 2026 (tokens Tailwind + Inter + logo SVG)
-- [ ] 01-03-PLAN.md — Wave 2: front migration (api-client + autosave + Turnstile widget)
+- [x] 01-02-PLAN.md — Wave 1: IDV 2026 (tokens Tailwind + Inter + logo SVG) — completed 2026-05-08
+- [x] 01-03-PLAN.md — Wave 2: front migration (api-client + autosave + Turnstile widget) — completed 2026-05-08 (HARD-01 audit gate verde)
 - [ ] 01-04-PLAN.md — Wave 3: rate-limit + Turnstile server + BrasilAPI + ProgressBar fix
 - [ ] 01-05-PLAN.md — Wave 4: RLS lock migration + smoke staging + cutover prod
 
@@ -117,7 +117,7 @@ Com `parallelization: true` no config:
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Hardening + Server-Side Persistence | 0/6 | Not started | - |
+| 1. Hardening + Server-Side Persistence | 4/6 | In progress | - |
 | 2. Pipeline de Ingestão Robusta | 0/0 | Not started | - |
 | 3. Tool Layer + Audit | 0/0 | Not started | - |
 | 4. Jarvis Cron Pipeline | 0/0 | Not started | - |

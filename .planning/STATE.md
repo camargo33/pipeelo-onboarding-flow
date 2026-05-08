@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: completed
-stopped_at: Completed 01-02-PLAN.md
-last_updated: "2026-05-08T21:21:49.710Z"
+status: in_progress
+stopped_at: Completed 01-03-PLAN.md
+last_updated: "2026-05-08T21:34:00.000Z"
 progress:
   total_phases: 6
   completed_phases: 0
   total_plans: 6
-  completed_plans: 3
-  percent: 50
+  completed_plans: 4
+  percent: 67
 ---
 
 # Project State: Pipeelo Onboarding Flow — v2 Upgrade
@@ -30,9 +30,9 @@ progress:
 ## Current Position
 
 - **Phase:** 1 of 6 — Hardening + Server-Side Persistence
-- **Plan:** 01-03 (next) — Wave 2 front migration (api-client + autosave + Turnstile widget)
-- **Status:** Plan 01-01 (Wave 1 endpoints `/api/sessions/*`) completed 2026-05-08
-- **Progress:** [█████░░░░░] 50% (3/6 phase 1 plans done — 01-00 infra, 01-01 endpoints, 01-02 IDV)
+- **Plan:** 01-04 (next) — Wave 3 rate-limit + Turnstile server + BrasilAPI + ProgressBar fix
+- **Status:** Plan 01-03 (Wave 2 front migration) completed 2026-05-08 — HARD-01 audit gate FECHADO
+- **Progress:** [██████░░░░] 67% (4/6 phase 1 plans done — 01-00 infra, 01-01 endpoints, 01-02 IDV, 01-03 front migration)
 
 ## Phase Index
 
@@ -55,6 +55,7 @@ progress:
 | Cache hit rate Langfuse | N/A | >70% no system prompt |
 | Tool call success rate | N/A | ≥95% (gate de cutover Phase 6) |
 | Cross-tenant errors | N/A | 0 (gate inegociável) |
+| Phase 01-hardening-server-side-persistence P03 | 8m | 3 tasks | 10 created / 7 modified |
 | Phase 01-hardening-server-side-persistence P02 | 4m | 3 tasks | 10 files |
 | Phase 01-hardening-server-side-persistence P01 | 4m | 3 tasks | 14 created / 3 modified |
 
@@ -74,6 +75,10 @@ progress:
 - **Alias `getServiceSupabase = requireSupabase` em `api/_lib/supabase.ts`:** evita rename de endpoints legacy (Plan 01-01); mantém nome canônico para Wave 1+ sem breaking changes.
 - **`send-magic-link` com `to: []` placeholder até Plan 04 (Wave 3):** schema de Identificação ainda não tem coluna email; endpoint expõe `link_preview` em dev/preview e dispara Resend só se `RESEND_API_KEY` setado.
 - **Idempotency contractual (não funcional) em testes:** validamos via spy `mock.calls` que upsert recebe mesmo `onConflict` em chamadas repetidas. Idempotency funcional real será verificada em Plan 01-05 (RLS lock + smoke staging).
+- **AdminOnboarding.tsx migrado dentro do Plan 01-03 (Rule 3):** plan declarado cobria 3 pages, mas audit gate HARD-01 exige zero supabase.from em src/. Adicionados 3 endpoints `/api/admin/sessions-{list,create,delete}` + helper `assertAdminUser` (Bearer JWT Supabase Auth). Sem essa decisão, audit script continua exit 1 e Plan 01-05 RLS lock quebra a tela admin.
+- **Auth admin via Bearer JWT Supabase Auth:** ainda não há RBAC role-check; pré-Phase-1 também era "qualquer user logado" via anon RLS. Phase 5 adiciona role-check explícito.
+- **vi.stubEnv para mockar import.meta.env (Vitest 4):** Vite/SWC resolve `import.meta.env.X` para literal em build time quando ausente; mutar runtime não funciona. Pattern correto é `vi.stubEnv` + `vi.unstubAllEnvs()` em afterEach.
+- **Token na querystring (sessionApi.get):** trade-off conhecido do magic link (Pitfall 3). TTL 30d + flow "reenviar link" mitigam.
 
 ### Open Todos
 
@@ -98,9 +103,9 @@ progress:
 
 ## Session Continuity
 
-**Last session:** 2026-05-08 — Executed Plan 01-01 (Wave 1 endpoints). 5 endpoints `/api/sessions/*` + auth-session helper (TTL 30d) + 2 Zod schemas + 28 testes Vitest verdes. 3 commits (`74573b4`, `5d1a974`, `1b07d90`).
-**Next session:** Execute Plan 01-03 — Wave 2 front migration: substituir `supabase.from(onboarding_*)` por `sessionApi` (`Onboarding.tsx`, `OnboardingSession.tsx`, `NovoOnboarding.tsx`). Audit script HARD-01 deve ficar exit 0 ao final.
-**Stopped At:** Completed 01-01-PLAN.md (paralelo a 01-02-PLAN.md)
+**Last session:** 2026-05-08 — Executed Plan 01-03 (Wave 2 front migration). Migradas 4 pages (Onboarding, OnboardingSession, NovoOnboarding, AdminOnboarding) + 3 utils novos (api-client, debounced-save, TurnstileWidget) + 4 endpoints admin novos (`/api/admin/sessions-list|create|delete` + helper `assertAdminUser`). Audit script HARD-01 exit 0 ✅. 47 testes passando, build verde. 3 commits (`8ae540d`, `c534257`, `c1adc98`).
+**Next session:** Execute Plan 01-04 — Wave 3: rate-limit Upstash + Turnstile server-side verify em `/api/sessions/create`, BrasilAPI lookup CNPJ inline em NovoOnboarding (HARD-05), ProgressBar `/4`→`/5` (HARD-06), email coluna em sessions para magic link real.
+**Stopped At:** Completed 01-03-PLAN.md
 
 **Files de referência viva:**
 - `.planning/PROJECT.md` — escopo dos 4 pilares

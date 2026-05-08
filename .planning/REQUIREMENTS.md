@@ -7,13 +7,13 @@
 
 ### Hardening (HARD)
 
-- [~] **HARD-01**: Todas as leituras/escritas de `onboarding_sessions` passam por `/api/sessions/*` server-side com service-role (zero `supabase.from()` no `src/`) — backend pronto Plan 01-01; gate verde após Plan 01-03 (front migration)
-- [~] **HARD-02**: Per-question autosave (debounced 500ms) salva resposta individual sem esperar conclusão de departamento — endpoint PUT pronto Plan 01-01; hook `useDebouncedAutosave` em Plan 01-03
+- [x] **HARD-01**: Todas as leituras/escritas de `onboarding_sessions` passam por `/api/sessions/*` server-side com service-role (zero `supabase.from()` no `src/`) — completo Plan 01-03 (audit script exit 0, 4 pages migradas + 3 endpoints admin novos)
+- [x] **HARD-02**: Per-question autosave (debounced 500ms) salva resposta individual sem esperar conclusão de departamento — completo Plan 01-03 (`useDebouncedAutosave` em Onboarding.tsx + flush em pagehide)
 - [~] **HARD-03**: Cliente pode retomar sessão via magic link (`?session=slug&token=access_token`) com TTL 30 dias — `assertSessionAccess` (TTL 30d) + `send-magic-link` prontos Plan 01-01; smoke E2E em Plan 01-05
 - [x] **HARD-04**: Identificação é gate de entrada — sem CNPJ + email + WhatsApp validados, demais departamentos ficam bloqueados — server-side enforced Plan 01-01 (`/api/sessions/complete-department` 403 identification_gate)
 - [ ] **HARD-05**: Validações inline aplicadas: CNPJ via BrasilAPI, email RFC 5322, WhatsApp E.164 com DDD BR
 - [ ] **HARD-06**: Progress bar mostra `X/5 departamentos` (Identificação conta como departamento 1)
-- [ ] **HARD-07**: Rate limit em `/api/create-session` (5 req/IP/min) + Cloudflare Turnstile
+- [~] **HARD-07**: Rate limit em `/api/create-session` (5 req/IP/min) + Cloudflare Turnstile — TurnstileWidget client-side pronto Plan 01-03; rate-limit Upstash + verifyTurnstileToken server-side ficam em Plan 01-04
 - [ ] **HARD-08**: RLS restrita e re-aplicada em produção, revertendo `relax_rls_for_testing.sql`
 - [ ] **HARD-09**: Anon key do Supabase não pode ler/escrever em `onboarding_sessions` (validado por teste de integração)
 - [x] **HARD-10**: IDV 2026 oficial aplicada — logo Pipeelo correto, paleta Forest Floor `#000D0A` + accent `#01d5ac`, tipografia Inter, dark-first consistente
@@ -115,13 +115,13 @@ Deferred — fora do escopo desta milestone, mas trackeado.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| HARD-01 | Phase 1 | Pending |
-| HARD-02 | Phase 1 | Pending |
+| HARD-01 | Phase 1 | Done (Plan 01-03) |
+| HARD-02 | Phase 1 | Done (Plan 01-03) |
 | HARD-03 | Phase 1 | Pending |
 | HARD-04 | Phase 1 | Pending |
 | HARD-05 | Phase 1 | Pending |
 | HARD-06 | Phase 1 | Pending |
-| HARD-07 | Phase 1 | Pending |
+| HARD-07 | Phase 1 | Partial (client done Plan 01-03, server in Plan 01-04) |
 | HARD-08 | Phase 1 | Pending |
 | HARD-09 | Phase 1 | Pending |
 | HARD-10 | Phase 1 | Complete |
