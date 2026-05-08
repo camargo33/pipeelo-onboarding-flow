@@ -15,9 +15,9 @@
 ## Current Position
 
 - **Phase:** 1 of 6 — Hardening + Server-Side Persistence
-- **Plan:** Not yet planned (run `/gsd:plan-phase 1`)
-- **Status:** Roadmap created, awaiting plan
-- **Progress:** [░░░░░░░░░░] 0% (0/52 requirements complete)
+- **Plan:** 01-01 (next) — Wave 1 endpoints `/api/sessions/*`
+- **Status:** Plan 01-00 (Wave 0 test infra) completed 2026-05-08
+- **Progress:** [░░░░░░░░░░] 0% (0/52 requirements complete — HARD-01 gate ativo, fica green ao fim de Plan 03)
 
 ## Phase Index
 
@@ -45,6 +45,9 @@
 
 ### Key Decisions
 
+- **Audit script via fs walk (não git grep):** shell quoting do git grep com `\x27` e `:!` magic-pathspec quebra no Windows/PowerShell. fs walk é cross-platform e independente de git.
+- **CI audit step com `continue-on-error: true` até Wave 2:** plan 01-00 instala o gate, mas `supabase.from(onboarding_*)` ainda existe em 4 páginas src/. Remove flag ao concluir Plan 03.
+- **Vitest 4.x (não 2.x):** release atual instalado via npm; `--reporter=basic` removido em v4 (default reporter é equivalente).
 - **Manter Vite + React (não migrar pra Next.js):** migração recente de Lovable → Vite ainda assentando. Custo de outra migração não justifica.
 - **Substituir `onboarding-processor.ts` determinístico por Jarvis (mantendo fallback):** flexibilidade > determinismo, mas com rede de segurança via feature flag.
 - **Trigger Jarvis via Vercel Cron (`/api/cron/jarvis-tick`) + lease pattern:** server-side full-auto adicionaria infra. Cron + Postgres SKIP LOCKED resolve até 50 sessões/dia.
@@ -75,8 +78,9 @@
 
 ## Session Continuity
 
-**Last session:** Initialization (PROJECT, REQUIREMENTS, research, codebase audit, ROADMAP)
-**Next session:** `/gsd:plan-phase 1` — decompor Phase 1 (Hardening) em plans executáveis
+**Last session:** 2026-05-08 — Executed Plan 01-00 (Wave 0 test infra). Vitest 4 + helpers + audit HARD-01 + CI workflow + 13 it.todo stubs. 3 commits (`d6b27f6`, `1a8d561`, `8131820`).
+**Next session:** Execute Plan 01-01 — Wave 1: endpoints `/api/sessions/{create,get,save-resposta,advance-department}` + auth helper + Zod schemas
+**Stopped At:** Completed 01-00-PLAN.md
 
 **Files de referência viva:**
 - `.planning/PROJECT.md` — escopo dos 4 pilares

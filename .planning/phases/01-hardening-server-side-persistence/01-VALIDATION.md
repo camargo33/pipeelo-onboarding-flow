@@ -2,8 +2,8 @@
 phase: 1
 slug: hardening-server-side-persistence
 status: draft
-nyquist_compliant: false
-wave_0_complete: false
+nyquist_compliant: true
+wave_0_complete: true
 created: 2026-05-08
 ---
 
@@ -40,9 +40,9 @@ created: 2026-05-08
 
 | Task ID | Plan | Wave | Requirement | Test Type | Automated Command | File Exists | Status |
 |---------|------|------|-------------|-----------|-------------------|-------------|--------|
-| 1-00-01 | 00 | 0 | infra | install | `npm i -D vitest @vitest/coverage-v8 @testing-library/react @testing-library/jest-dom jsdom` | ❌ W0 | ⬜ pending |
-| 1-00-02 | 00 | 0 | infra | scaffold | `test -f vitest.config.ts` | ❌ W0 | ⬜ pending |
-| 1-00-03 | 00 | 0 | HARD-01 | gate | `node scripts/audit-no-supabase-from.mjs` | ❌ W0 | ⬜ pending |
+| 1-00-01 | 00 | 0 | infra | install | `npm i -D vitest @vitest/coverage-v8 @testing-library/react @testing-library/jest-dom jsdom` | ✅ d6b27f6 | ✅ green |
+| 1-00-02 | 00 | 0 | infra | scaffold | `test -f vitest.config.ts` | ✅ d6b27f6 | ✅ green |
+| 1-00-03 | 00 | 0 | HARD-01 | gate | `node scripts/audit-no-supabase-from.mjs` | ✅ 1a8d561 | ⚠️ exit 1 esperado (pré-Wave 2) |
 | 1-01-01 | 01 | 1 | HARD-01 | unit | `npm test -- api/sessions/create.test.ts` | ❌ W0 | ⬜ pending |
 | 1-01-02 | 01 | 1 | HARD-01 | unit | `npm test -- api/sessions/get.test.ts` | ❌ W0 | ⬜ pending |
 | 1-01-03 | 01 | 1 | HARD-02 | unit | `npm test -- api/sessions/save-answer.test.ts` | ❌ W0 | ⬜ pending |
@@ -67,15 +67,15 @@ created: 2026-05-08
 
 ## Wave 0 Requirements
 
-- [ ] `vitest.config.ts` — config base com jsdom env, coverage v8, paths alias `@/*`
-- [ ] `vitest.setup.ts` — jest-dom matchers + Supabase env mocks
-- [ ] `tests/_helpers/handler.ts` — helper para testar Vercel Functions sem `vercel dev`
-- [ ] `tests/_helpers/supabase-mock.ts` — service role client mock pra testes unit
-- [ ] `tests/_helpers/db-staging.ts` — connection string DB staging dedicado pra testes RLS reais
-- [ ] `scripts/audit-no-supabase-from.mjs` — script CI que retorna exit 1 se `supabase.from(` aparecer em `src/` fora de `src/integrations/`
-- [ ] `package.json` — scripts `test`, `test:coverage`, `audit:no-supabase-from`
-- [ ] `.github/workflows/ci.yml` (se ainda não existe) — roda audit + test em PRs
-- [ ] Stubs vazios pra todos os arquivos `*.test.ts` referenciados na tabela acima (failing tests OK, presence garantida)
+- [x] `vitest.config.ts` — config base com jsdom env, coverage v8, paths alias `@/*`
+- [x] `vitest.setup.ts` — jest-dom matchers + Supabase env mocks
+- [x] `tests/_helpers/handler.ts` — helper para testar Vercel Functions sem `vercel dev`
+- [x] `tests/_helpers/supabase-mock.ts` — service role client mock pra testes unit
+- [x] `tests/_helpers/db-staging.ts` — connection string DB staging dedicado pra testes RLS reais
+- [x] `scripts/audit-no-supabase-from.mjs` — script CI que retorna exit 1 se `supabase.from(` aparecer em `src/` fora de `src/integrations/`
+- [x] `package.json` — scripts `test`, `test:coverage`, `audit:no-supabase-from`
+- [x] `.github/workflows/ci.yml` (se ainda não existe) — roda audit + test em PRs
+- [x] Stubs vazios pra todos os arquivos `*.test.ts` referenciados na tabela acima (failing tests OK, presence garantida)
 
 ---
 
