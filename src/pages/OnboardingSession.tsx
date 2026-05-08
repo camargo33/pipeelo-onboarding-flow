@@ -191,10 +191,10 @@ const OnboardingSession = () => {
   }
 
   const completedCount = getCompletedCount();
-  // NOTE: progress ainda é /4 — Plan 01-04 (HARD-06) corrige para /5 com Identificação
-  const allCompleted = completedCount === 4;
-  // referenciado para evitar warning de unused import
-  void DEPARTMENT_ORDER;
+  // HARD-06 fix: denominador = DEPARTMENT_ORDER.length (= 5, com Identificação como dept 1)
+  const totalDepartments = DEPARTMENT_ORDER.length;
+  const allCompleted = completedCount === totalDepartments;
+  const progressPct = Math.round((completedCount / totalDepartments) * 100);
 
   return (
     <div className="min-h-screen bg-background">
@@ -221,8 +221,8 @@ const OnboardingSession = () => {
             </p>
             <p className="text-muted-foreground">
               {allCompleted
-                ? '🎉 Parabéns! Todos os departamentos foram preenchidos!'
-                : `Progresso: ${completedCount}/4 departamentos concluídos`}
+                ? 'Parabéns! Todos os departamentos foram preenchidos!'
+                : `Progresso: ${completedCount}/${totalDepartments} departamentos concluídos`}
             </p>
           </div>
 
@@ -261,17 +261,19 @@ const OnboardingSession = () => {
             </motion.div>
           )}
 
-          {/* Progress Bar */}
-          <div className="mb-6">
+          {/* Progress Bar — HARD-06 /5 com DEPARTMENT_ORDER.length */}
+          <div className="mb-6" data-testid="overview-progress">
             <div className="flex justify-between text-sm text-muted-foreground mb-2">
-              <span>Progresso geral</span>
-              <span>{Math.round((completedCount / 4) * 100)}%</span>
+              <span>
+                Progresso geral ({completedCount}/{totalDepartments})
+              </span>
+              <span>{progressPct}%</span>
             </div>
             <div className="h-2 bg-muted rounded-full overflow-hidden">
               <motion.div
                 className="h-full bg-primary rounded-full"
                 initial={{ width: 0 }}
-                animate={{ width: `${(completedCount / 4) * 100}%` }}
+                animate={{ width: `${progressPct}%` }}
                 transition={{ duration: 0.5, delay: 0.3 }}
               />
             </div>

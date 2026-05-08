@@ -19,9 +19,7 @@ jobs:
       - run: npm ci
 
       - name: Audit HARD-01 (no supabase.from(onboarding_*) in src/)
-        # Esperado falhar até Wave 2 (Plan 03) completar a migração leitura/escrita.
-        # Remover continue-on-error quando o audit ficar green.
-        continue-on-error: true
+        # Plan 01-03 fechou o gate (exit 0); Plan 01-04 trava como bloqueante de PR.
         run: npm run audit:no-supabase-from
 
       - name: Run Vitest

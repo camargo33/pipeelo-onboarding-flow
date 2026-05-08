@@ -8,6 +8,7 @@ import { TurnstileWidget } from "@/components/TurnstileWidget";
 import { ArrowRight, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { sessionApi, ApiError } from "@/lib/api-client";
+import { cleanCnpj, formatCnpj, validateCnpj } from "@/lib/cnpj";
 
 /**
  * Tela de criação de sessão (HARD-01 + HARD-07).
@@ -26,23 +27,42 @@ export default function NovoOnboarding() {
   const navigate = useNavigate();
   const [empresaNome, setEmpresaNome] = useState("");
   const [cnpj, setCnpj] = useState("");
+  const [cnpjError, setCnpjError] = useState<string | null>(null);
+  const [cnpjTouched, setCnpjTouched] = useState(false);
   const [turnstileToken, setTurnstileToken] = useState("");
   const [loading, setLoading] = useState(false);
 
   const hasSiteKey = Boolean(import.meta.env.VITE_TURNSTILE_SITE_KEY);
-  const cnpjDigits = cnpj.replace(/\D/g, "");
+  const cnpjDigits = cleanCnpj(cnpj);
+  const cnpjValid = cnpjDigits.length === 14 && validateCnpj(cnpjDigits) === null;
   const canSubmit =
     empresaNome.trim().length >= 2 &&
-    cnpjDigits.length === 14 &&
+    cnpjValid &&
     (hasSiteKey ? turnstileToken.length > 0 : true);
+
+  const handleCnpjChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const masked = formatCnpj(e.target.value);
+    setCnpj(masked);
+    if (cnpjTouched) {
+      setCnpjError(validateCnpj(masked));
+    }
+  };
+
+  const handleCnpjBlur = () => {
+    setCnpjTouched(true);
+    setCnpjError(validateCnpj(cnpj));
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!canSubmit) {
       if (empresaNome.trim().length < 2) {
         toast.error("Informe o nome da empresa");
-      } else if (cnpjDigits.length !== 14) {
-        toast.error("CNPJ deve ter 14 dígitos");
+      } else if (!cnpjValid) {
+        const err = validateCnpj(cnpj) ?? "CNPJ inválido";
+        setCnpjError(err);
+        setCnpjTouched(true);
+        toast.error(err);
       } else if (hasSiteKey && !turnstileToken) {
         toast.error("Complete o captcha antes de continuar");
       }
@@ -120,15 +140,28 @@ export default function NovoOnboarding() {
                 <Input
                   type="text"
                   value={cnpj}
-                  onChange={(e) => setCnpj(e.target.value)}
+                  onChange={handleCnpjChange}
+                  onBlur={handleCnpjBlur}
                   placeholder="00.000.000/0000-00"
                   className="text-lg py-6"
                   inputMode="numeric"
                   disabled={loading}
+                  aria-invalid={Boolean(cnpjError)}
+                  aria-describedby="cnpj-error"
                 />
-                <p className="text-xs text-muted-foreground mt-1">
-                  Apenas números — formatação é opcional.
-                </p>
+                {cnpjError ? (
+                  <p
+                    id="cnpj-error"
+                    className="text-xs text-destructive mt-1"
+                    role="alert"
+                  >
+                    {cnpjError}
+                  </p>
+                ) : (
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Validação local de checksum — formatação é automática.
+                  </p>
+                )}
               </div>
 
               {hasSiteKey && (
