@@ -1,4 +1,5 @@
 import type { Config } from "tailwindcss";
+import { COLORS } from "./src/styles/theme";
 
 export default {
   darkMode: ["class"],
@@ -67,6 +68,8 @@ export default {
           "purple-light": "hsl(var(--pipeelo-purple-light))",
           blue: "hsl(var(--pipeelo-blue))",
         },
+        // IDV 2026 tokens — HARD-10 (canonical hex from REQUIREMENTS)
+        ...COLORS,
       },
       borderRadius: {
         lg: "var(--radius)",
