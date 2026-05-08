@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { nanoid } from 'nanoid';
 import { assertAdminUser, AdminAuthError } from '../_lib/admin-auth';
 import { getServiceSupabase } from '../_lib/supabase';
+import { sendTransactionalEmail } from '../_lib/email-sender';
 
 const Body = z.object({
   empresa_nome: z.string().min(2).max(160),
@@ -47,6 +48,39 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       .single();
 
     if (error) return res.status(500).json({ error: error.message });
+
+    // Plan 05-02 / UI-04: dispara WelcomeCEO assíncrono se ceo_email presente.
+    // Não bloqueia create — falha de email cai em retry manual via painel
+    // (Plan 05-03). Idempotente via email_log (Pitfall 7).
+    const created = data as {
+      id: string;
+      slug: string;
+      access_token: string;
+      ceo_email: string | null;
+      empresa_nome: string;
+    };
+    if (created?.ceo_email) {
+      const baseUrl =
+        process.env.PUBLIC_APP_URL ??
+        process.env.ONBOARDING_BASE_URL ??
+        'https://onboarding.pipeelo.com';
+      void sendTransactionalEmail({
+        template: 'WelcomeCEO',
+        sessionId: created.id,
+        to: created.ceo_email,
+        props: {
+          ceoNome: 'CEO',
+          empresaNome: created.empresa_nome,
+          magicLink: `${baseUrl}/?session=${created.slug}&token=${created.access_token}`,
+        },
+      }).catch((err) => {
+        console.error('[admin/sessions-create] welcome email failed', {
+          sessionId: created.id,
+          err: err instanceof Error ? err.message : String(err),
+        });
+      });
+    }
+
     return res.status(201).json({ session: data });
   } catch (e: unknown) {
     if (e instanceof AdminAuthError) return res.status(e.status).json({ error: e.message });
