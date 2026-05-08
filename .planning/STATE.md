@@ -3,8 +3,8 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: in_progress
-stopped_at: Plan 03-01 done — Wave 1 _shared/ helpers (HTTP, idempotency, audit) + 31 tests verdes / 95% coverage; ready for Plan 03-02 (7 tipped tools)
-last_updated: "2026-05-08T22:30:00.000Z"
+stopped_at: Plan 03-02 done — Wave 2 7 deterministic tools + wrapTool factory + Zod schemas; 33 new tests / 91.83% lines coverage em api/jarvis/_runtime/tools/. Ready for Plan 03-03 (Wave 3 — Langfuse).
+last_updated: "2026-05-08T22:45:00.000Z"
 progress:
   total_phases: 6
   completed_phases: 0
@@ -29,9 +29,9 @@ progress:
 
 ## Current Position
 
-- **Phase:** 3 of 6 — Tool Layer + Audit (Waves 0+1 done; Phase 1 still pending human cutover for 01-05)
-- **Plan:** 03-01 done → 03-02 next (Wave 2 — 7 tipped tools)
-- **Status:** Plan 03-01 (Wave 1 shared helpers) completed 2026-05-08: `api/jarvis/_runtime/tools/_shared/{types,supabase,http,idempotency,audit}.ts` + 4 test files. callExternal() é único caminho HTTP (TOOL-05 gate clean). withIdempotency() com canonicalJson + SHA-256 + upsert race-tolerant (TOOL-03). createRun/recordToolCall/finalizeRun (audit best-effort by construction). 31 tests verdes, 95.4% lines coverage. Commits: `fd0285e` (Task 1 http+types+supabase), `76b7e6c` (Task 2 idempotency), `268d7df` (Task 3 audit). Migration ainda NÃO aplicada — testes mockam. Plan 01-05 ainda awaiting human cutover (RLS lock prod).
+- **Phase:** 3 of 6 — Tool Layer + Audit (Waves 0+1+2 done; Phase 1 still pending human cutover for 01-05)
+- **Plan:** 03-02 done → 03-03 next (Wave 3 — Langfuse SDK + spans)
+- **Status:** Plan 03-02 (Wave 2 — 7 deterministic tools) completed 2026-05-08: `api/jarvis/_runtime/tools/{schemas,index,create_tenant,create_user,create_category,create_assistant,link_function,create_kb,setup_elevenlabs}.ts` + 8 test files + `_shared/wrap-tool.ts` factory. Zod `.strict()` em TODOS os inputs bloqueia tenant_id (Pitfall 2). wrapTool combina Zod parse + withIdempotency + recordToolCall + timing — invoke() NUNCA throws. 33 novos tests verdes, 91.83% lines coverage em tools/. Commits: `5125118` (Task 1 schemas + wrapTool factory), `d059830` (Task 2 7 tools + index). Endpoint reconciliation com `lib/onboarding-processor.ts` real fica para Phase 4. Plan 01-05 ainda awaiting human cutover (RLS lock prod).
 - **Progress:** [██████████] 100% (7/7 plans done across phases 1+3; faltando 01-05 cutover + Phase 3 Plans 02-03)
 
 ## Phase Index
@@ -40,7 +40,7 @@ progress:
 |---|-------|--------|--------------|
 | 1 | Hardening + Server-Side Persistence | In progress (5/6 + 01-05 prep) | HARD-01..10 |
 | 2 | Pipeline de Ingestão Robusta | Not started | PIPE-01..08 |
-| 3 | Tool Layer + Audit | In progress (Waves 0+1 done; TOOL-03/04/05 complete) | TOOL-01..07 |
+| 3 | Tool Layer + Audit | In progress (Waves 0+1+2 done; TOOL-01/02/03/04/05/06 complete) | TOOL-01..07 |
 | 4 | Jarvis Cron Pipeline | Not started | JARV-01..12 |
 | 5 | Painel + Notificações | Not started | UI-01..09 |
 | 6 | Evals + Cutover | Not started | EVAL-01..06 |
@@ -55,6 +55,7 @@ progress:
 | Cache hit rate Langfuse | N/A | >70% no system prompt |
 | Tool call success rate | N/A | ≥95% (gate de cutover Phase 6) |
 | Cross-tenant errors | N/A | 0 (gate inegociável) |
+| Phase 03-tool-layer-audit P02 | 8m | 2 tasks | 19 created / 0 modified |
 | Phase 03-tool-layer-audit P01 | 6m | 3 tasks | 9 created / 0 modified |
 | Phase 03-tool-layer-audit P00 | 4m | 2 tasks | 6 created / 3 modified |
 | Phase 01-hardening-server-side-persistence P05 (autonomous) | 2m | 2 tasks | 4 created / 2 modified |

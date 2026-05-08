@@ -136,7 +136,7 @@ Com `parallelization: true` no config:
 |-------|----------------|--------|-----------|
 | 1. Hardening + Server-Side Persistence | 4/6 | In progress | - |
 | 2. Pipeline de Ingestão Robusta | 0/4 | Not started | - |
-| 3. Tool Layer + Audit | 0/4 | Not started | - |
+| 3. Tool Layer + Audit | 3/4 | In Progress|  |
 | 4. Jarvis Cron Pipeline | 0/4 | Not started | - |
 | 5. Painel + Notificações | 0/0 | Not started | - |
 | 6. Evals + Cutover | 0/4 | Not started | - |

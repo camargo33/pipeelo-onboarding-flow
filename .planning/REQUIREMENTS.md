@@ -31,12 +31,12 @@
 
 ### Tool Layer (TOOL)
 
-- [ ] **TOOL-01**: Módulo `api/jarvis/_runtime/tools/` no admin-pipeelo com uma função tipada por tool (Zod input/output)
-- [ ] **TOOL-02**: Tools mínimas implementadas e testáveis sem agente: `create_tenant`, `create_user`, `create_category`, `create_assistant`, `link_function`, `create_kb`, `setup_elevenlabs`
+- [x] **TOOL-01**: Módulo `api/jarvis/_runtime/tools/` no admin-pipeelo com uma função tipada por tool (Zod input/output)
+- [x] **TOOL-02**: Tools mínimas implementadas e testáveis sem agente: `create_tenant`, `create_user`, `create_category`, `create_assistant`, `link_function`, `create_kb`, `setup_elevenlabs`
 - [x] **TOOL-03**: Wrapper `withIdempotency()` que persiste em `idempotency_keys (session_id, tool, hash)` antes da chamada externa — Plan 03-01 (2026-05-08)
 - [x] **TOOL-04**: Tabelas `jarvis_runs` + `jarvis_tool_calls` registram cada execução (input, output, duration_ms, error) — DDL pronto em Plan 03-00 (apply manual pendente)
 - [x] **TOOL-05**: Cliente HTTP central `tools/_shared/http.ts` com retry, logging, headers de idempotência — Plan 03-01 (2026-05-08)
-- [ ] **TOOL-06**: Suite Vitest cobre tools puras (mocks de API Pipeelo) com >80% cobertura nas paths críticas
+- [x] **TOOL-06**: Suite Vitest cobre tools puras (mocks de API Pipeelo) com >80% cobertura nas paths críticas
 - [ ] **TOOL-07**: Langfuse SDK integrado registrando spans de tool calls com tenant_id como tag
 
 ### Jarvis Cron Pipeline (JARV)
@@ -133,12 +133,12 @@ Deferred — fora do escopo desta milestone, mas trackeado.
 | PIPE-06 | Phase 2 | Pending |
 | PIPE-07 | Phase 2 | Pending |
 | PIPE-08 | Phase 2 | Pending |
-| TOOL-01 | Phase 3 | Pending |
-| TOOL-02 | Phase 3 | Pending |
+| TOOL-01 | Phase 3 | Complete |
+| TOOL-02 | Phase 3 | Complete |
 | TOOL-03 | Phase 3 | Complete (Plan 03-01) |
 | TOOL-04 | Phase 3 | DDL ready (Plan 03-00) |
 | TOOL-05 | Phase 3 | Complete (Plan 03-01) |
-| TOOL-06 | Phase 3 | Pending |
+| TOOL-06 | Phase 3 | Complete |
 | TOOL-07 | Phase 3 | Pending |
 | JARV-01 | Phase 4 | Pending |
 | JARV-02 | Phase 4 | Pending |
