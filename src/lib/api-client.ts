@@ -111,3 +111,44 @@ export const sessionApi = {
       body: JSON.stringify({ slug }),
     }),
 };
+
+/**
+ * API client para endpoints `/api/admin/*` — sempre envia Bearer JWT do
+ * Supabase Auth (validação server-side via assertAdminUser).
+ */
+async function adminApi<T>(
+  path: string,
+  authToken: string,
+  init?: RequestInit
+): Promise<T> {
+  const r = await fetch(path, {
+    ...init,
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${authToken}`,
+      ...(init?.headers ?? {}),
+    },
+  });
+  if (!r.ok) {
+    const body = await r.json().catch(() => ({} as { error?: string; code?: string }));
+    throw new ApiError(r.status, body.error ?? r.statusText, body.code);
+  }
+  return r.json() as Promise<T>;
+}
+
+export const adminSessionApi = {
+  list: (authToken: string) =>
+    adminApi<{ sessions: SessionDTO[] }>('/api/admin/sessions-list', authToken),
+
+  create: (authToken: string, input: { empresa_nome: string; ceo_email?: string }) =>
+    adminApi<{ session: SessionDTO }>('/api/admin/sessions-create', authToken, {
+      method: 'POST',
+      body: JSON.stringify(input),
+    }),
+
+  delete: (authToken: string, session_id: string) =>
+    adminApi<{ ok: true }>('/api/admin/sessions-delete', authToken, {
+      method: 'POST',
+      body: JSON.stringify({ session_id }),
+    }),
+};

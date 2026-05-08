@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useState, useEffect, useCallback, useRef } from 'react';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, ArrowRight, Check, Building2, DollarSign, Wrench, TrendingUp, Loader2, IdCard } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -10,7 +10,8 @@ import { QuestionRenderer } from '@/components/onboarding/QuestionRenderer';
 import { useOnboarding } from '@/hooks/useOnboarding';
 import { DepartmentId } from '@/types/onboarding';
 import { useToast } from '@/hooks/use-toast';
-import { supabase } from '@/integrations/supabase/client';
+import { sessionApi, ApiError } from '@/lib/api-client';
+import { useDebouncedAutosave } from '@/lib/debounced-save';
 
 type Step = 'perguntas' | 'resumo' | 'sucesso';
 
@@ -30,8 +31,25 @@ const departmentColors: Record<DepartmentId, string> = {
   vendas: 'bg-amber-500'
 };
 
+const VALID_DEPTS: DepartmentId[] = ['identificacao', 'sac_geral', 'financeiro', 'suporte', 'vendas'];
+
+/**
+ * Tela de preenchimento do questionário (HARD-01 + HARD-02 + HARD-03).
+ *
+ * Fluxo refatorado:
+ * - Hidrata estado via `sessionApi.get(slug, token)` (obrigatório `?token=` na URL).
+ * - Per-question autosave debounced 500ms via `useDebouncedAutosave` chamando
+ *   `sessionApi.saveResposta` — server é fonte de verdade.
+ * - `handleSubmit` final chama `sessionApi.completeDepartment` para marcar status
+ *   (gate enforced server-side em departamentos não-Identificação).
+ * - Side-effects legacy (`/api/provision-tenant`, `/api/sync-department`,
+ *   `/api/complete-onboarding`, `/api/send-email`) MANTIDOS com `keepalive: true`
+ *   até Phase 2 reescrever com outbox pattern.
+ */
 export default function Onboarding() {
   const { slug, departamento: urlDepartamento } = useParams<{ slug: string; departamento: string }>();
+  const [searchParams] = useSearchParams();
+  const token = searchParams.get('token') ?? '';
   const navigate = useNavigate();
   const { toast } = useToast();
   const [step, setStep] = useState<Step>('perguntas');
@@ -39,8 +57,9 @@ export default function Onboarding() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [empresaNome, setEmpresaNomeState] = useState<string>('');
+  const [allStatuses, setAllStatuses] = useState<Record<string, string | null>>({});
   const [loading, setLoading] = useState(true);
-  
+
   const {
     state,
     departamentoData,
@@ -59,84 +78,128 @@ export default function Onboarding() {
     nextQuestion,
     previousQuestion,
     setResponsavelNome,
-    resetOnboarding
   } = useOnboarding();
 
-  // Load session data from slug
+  // Hidratar do servidor ao montar
   useEffect(() => {
     const loadSession = async () => {
       if (!slug || !urlDepartamento) {
         navigate('/');
         return;
       }
-
-      // Validate department
-      const validDepts: DepartmentId[] = ['identificacao', 'sac_geral', 'financeiro', 'suporte', 'vendas'];
-      if (!validDepts.includes(urlDepartamento as DepartmentId)) {
+      if (!VALID_DEPTS.includes(urlDepartamento as DepartmentId)) {
         navigate('/');
         return;
       }
-
-      const { data: session, error: sessionError } = await supabase
-        .from('onboarding_sessions')
-        .select('*')
-        .eq('slug', slug)
-        .maybeSingle();
-
-      if (sessionError || !session) {
+      if (!token) {
         toast({
           title: 'Link inválido',
-          description: 'Este link não existe ou expirou.',
+          description: 'Token ausente. Use o magic link enviado por email.',
           variant: 'destructive',
         });
         navigate('/');
         return;
       }
 
-      // Check if department already completed - allow editing always
-      const statusField = `status_${urlDepartamento}` as keyof typeof session;
+      try {
+        const { session, respostas } = await sessionApi.get(slug, token);
+        setSessionId(session.id);
+        setEmpresaNomeState(session.empresa_nome);
+        setEmpresaNome(session.empresa_nome);
+        setDepartamento(urlDepartamento as DepartmentId);
+        setAllStatuses({
+          status_identificacao: session.status_identificacao,
+          status_sac_geral: session.status_sac_geral,
+          status_financeiro: session.status_financeiro,
+          status_suporte: session.status_suporte,
+          status_vendas: session.status_vendas,
+        });
 
-      setSessionId(session.id);
-      setEmpresaNomeState(session.empresa_nome);
-      setEmpresaNome(session.empresa_nome);
-      setDepartamento(urlDepartamento as DepartmentId);
-
-      // Load existing responses if editing
-      if (session[statusField] === 'concluido') {
-        const { data: existingResponses } = await supabase
-          .from('onboarding_respostas')
-          .select('pergunta_id, resposta')
-          .eq('session_id', session.id)
-          .eq('departamento', urlDepartamento);
-
-        if (existingResponses && existingResponses.length > 0) {
-          existingResponses.forEach((resp) => {
-            setResposta(resp.pergunta_id, resp.resposta);
-          });
+        // Hidratar respostas existentes do departamento atual
+        const ofDept = respostas.filter((r) => r.departamento === urlDepartamento);
+        ofDept.forEach((r) => {
+          setResposta(r.pergunta_id, r.valor);
+        });
+      } catch (e) {
+        if (e instanceof ApiError) {
+          if (e.status === 401) {
+            toast({
+              title: 'Link inválido',
+              description: 'Token incorreto ou sessão não encontrada.',
+              variant: 'destructive',
+            });
+          } else if (e.status === 410) {
+            toast({
+              title: 'Sessão expirou',
+              description: 'Solicite um novo link (>30 dias).',
+              variant: 'destructive',
+            });
+          } else {
+            toast({
+              title: 'Erro ao carregar sessão',
+              description: e.message,
+              variant: 'destructive',
+            });
+          }
+        } else {
+          // eslint-disable-next-line no-console
+          console.error('Erro ao carregar sessão:', e);
         }
+        navigate('/');
+        return;
       }
 
       setLoading(false);
     };
 
     loadSession();
-  }, [slug, urlDepartamento, navigate, toast, setEmpresaNome, setDepartamento]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [slug, urlDepartamento, token]);
+
+  // Autosave per-question debounced (HARD-02)
+  const currentQuestionId = currentQuestion?.id;
+  const currentValue = currentQuestionId ? state.respostas[currentQuestionId] : undefined;
+  const lastSavedKeyRef = useRef<string | null>(null);
+
+  const saver = useCallback(
+    async (v: unknown) => {
+      if (!slug || !token || !state.departamento || !currentQuestionId) return;
+      if (v === undefined || v === null || v === '') return;
+      try {
+        await sessionApi.saveResposta({
+          slug,
+          token,
+          departamento: state.departamento,
+          pergunta_id: currentQuestionId,
+          valor: v,
+        });
+        lastSavedKeyRef.current = `${currentQuestionId}:${JSON.stringify(v)}`;
+      } catch (e) {
+        // Silencioso — debounced-save loga + value continua em state pra retry
+        // eslint-disable-next-line no-console
+        console.error('[autosave] falhou', e);
+      }
+    },
+    [slug, token, state.departamento, currentQuestionId]
+  );
+
+  useDebouncedAutosave(currentValue, saver, 500, !!currentQuestionId && !loading);
 
   const validateCurrentQuestion = () => {
     if (!currentQuestion) return true;
-    
+
     if (currentQuestion.tipo === 'info' || currentQuestion.tipo === 'info_link') {
       return true;
     }
 
     const resposta = state.respostas[currentQuestion.id];
-    
+
     if (currentQuestion.obrigatoria) {
       if (resposta === undefined || resposta === '' || resposta === null) {
         setError('Este campo é obrigatório');
         return false;
       }
-      
+
       if (currentQuestion.tipo === 'checkbox_multiple') {
         const selectedValues = resposta?.selected || (Array.isArray(resposta) ? resposta : []);
         if (selectedValues.length === 0) {
@@ -172,7 +235,7 @@ export default function Onboarding() {
   const handleNext = () => {
     if (step === 'perguntas') {
       if (!validateCurrentQuestion()) return;
-      
+
       if (isLastQuestion) {
         setStep('resumo');
       } else {
@@ -191,7 +254,8 @@ export default function Onboarding() {
     setError('');
     if (step === 'perguntas') {
       if (isFirstQuestion) {
-        navigate(`/${slug}`);
+        const tokenSuffix = token ? `?token=${encodeURIComponent(token)}` : '';
+        navigate(`/${slug}${tokenSuffix}`);
       } else {
         previousQuestion();
       }
@@ -201,61 +265,38 @@ export default function Onboarding() {
   };
 
   const handleSubmit = async () => {
-    if (!state.departamento || !departamentoData || !sessionId) return;
-    
-    setIsSubmitting(true);
-    
-    try {
-      // 1. Save all responses
-      const respostasToInsert = Object.entries(state.respostas).map(([perguntaId, resposta]) => ({
-        session_id: sessionId,
-        departamento: state.departamento!,
-        pergunta_id: perguntaId,
-        resposta: resposta,
-      }));
-      
-      const { error: respostasError } = await supabase
-        .from('onboarding_respostas')
-        .upsert(respostasToInsert, { 
-          onConflict: 'session_id,departamento,pergunta_id' 
-        });
-      
-      if (respostasError) throw respostasError;
-      
-      // 2. Update session status for this department
-      const statusField = `status_${state.departamento}` as const;
-      const responsavelField = `responsavel_${state.departamento}` as const;
-      const concluidoField = `concluido_${state.departamento}_at` as const;
-      
-      const { data: updatedSession, error: updateError } = await supabase
-        .from('onboarding_sessions')
-        .update({
-          [statusField]: 'concluido',
-          [responsavelField]: state.responsavelNome,
-          [concluidoField]: new Date().toISOString(),
-        })
-        .eq('id', sessionId)
-        .select()
-        .single();
-      
-      if (updateError) throw updateError;
+    if (!state.departamento || !departamentoData || !sessionId || !slug || !token) return;
 
-      // SUCESSO: dados salvos no banco. Mostrar tela de sucesso imediatamente.
+    setIsSubmitting(true);
+
+    try {
+      // Marcar departamento como concluído via API (gate enforced server-side)
+      await sessionApi.completeDepartment({
+        slug,
+        token,
+        departamento: state.departamento,
+        responsavel_nome: state.responsavelNome,
+      });
+
       toast({
-        title: "Respostas salvas!",
+        title: 'Respostas salvas!',
         description: `O departamento ${departamentoData.nome} foi salvo com sucesso. Você pode editar a qualquer momento.`,
       });
       setStep('sucesso');
       setIsSubmitting(false);
 
-      // Disparar integrações em background (Vercel Functions)
+      // Disparar integrações em background (Vercel Functions).
+      // keepalive:true mitiga Pitfall 1 (fire-and-forget sem keepalive).
+      // Phase 2 reescreve com outbox pattern.
       const postJson = (path: string, body: unknown) =>
         fetch(path, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(body),
+          keepalive: true,
         })
           .then((r) => r.json())
+          // eslint-disable-next-line no-console
           .catch((err) => console.error(`${path} failed (non-blocking):`, err));
 
       // 1. Se for Identificação → provisionar tenant no admin-pipeelo
@@ -280,15 +321,20 @@ export default function Onboarding() {
         });
       }
 
-      // 3. Webhook final se TUDO concluído
-      if (
-        updatedSession &&
-        updatedSession.status_identificacao === 'concluido' &&
-        updatedSession.status_sac_geral === 'concluido' &&
-        updatedSession.status_financeiro === 'concluido' &&
-        updatedSession.status_suporte === 'concluido' &&
-        updatedSession.status_vendas === 'concluido'
-      ) {
+      // 3. Webhook final se TUDO concluído (calculado a partir do estado local
+      // pós-completeDepartment: o departamento atual acaba de virar 'concluido')
+      const updatedStatuses = {
+        ...allStatuses,
+        [`status_${state.departamento}`]: 'concluido',
+      };
+      const allDeptsCompleted =
+        updatedStatuses.status_identificacao === 'concluido' &&
+        updatedStatuses.status_sac_geral === 'concluido' &&
+        updatedStatuses.status_financeiro === 'concluido' &&
+        updatedStatuses.status_suporte === 'concluido' &&
+        updatedStatuses.status_vendas === 'concluido';
+
+      if (allDeptsCompleted) {
         postJson('/api/complete-onboarding', { sessionId });
       }
 
@@ -301,13 +347,38 @@ export default function Onboarding() {
         respostas: state.respostas,
         sessionId,
       });
-    } catch (error: any) {
-      console.error('Erro ao salvar onboarding:', error);
-      toast({
-        title: "Erro ao salvar",
-        description: error.message || "Não foi possível salvar as respostas. Tente novamente.",
-        variant: "destructive",
-      });
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error('Erro ao concluir departamento:', err);
+      if (err instanceof ApiError) {
+        if (err.status === 403) {
+          toast({
+            title: 'Identificação obrigatória',
+            description: 'Complete primeiro a Identificação antes de concluir este departamento.',
+            variant: 'destructive',
+          });
+          const tokenSuffix = token ? `?token=${encodeURIComponent(token)}` : '';
+          navigate(`/${slug}${tokenSuffix}`);
+        } else if (err.status === 401 || err.status === 410) {
+          toast({
+            title: 'Sessão inválida',
+            description: 'Use o link mais recente enviado por email.',
+            variant: 'destructive',
+          });
+        } else {
+          toast({
+            title: 'Erro ao salvar',
+            description: err.message || 'Não foi possível concluir. Tente novamente.',
+            variant: 'destructive',
+          });
+        }
+      } else {
+        toast({
+          title: 'Erro ao salvar',
+          description: 'Não foi possível concluir. Tente novamente.',
+          variant: 'destructive',
+        });
+      }
       setIsSubmitting(false);
     }
   };
@@ -340,10 +411,10 @@ export default function Onboarding() {
                 </div>
               )}
             </div>
-            
+
             {step === 'perguntas' && (
               <div className="w-48 sm:w-64">
-                <ProgressBar 
+                <ProgressBar
                   current={answeredQuestions}
                   total={totalQuestions}
                   percentage={progress}
@@ -388,15 +459,15 @@ export default function Onboarding() {
               />
 
               <div className="flex gap-4">
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant="outline"
                   onClick={handleBack}
                   size="lg"
                 >
                   <ArrowLeft className="mr-2 h-4 w-4" />
                   Voltar
                 </Button>
-                <Button 
+                <Button
                   onClick={handleNext}
                   className="flex-1 bg-pipeelo-green hover:bg-pipeelo-green/90"
                   size="lg"
@@ -437,9 +508,9 @@ export default function Onboarding() {
                         .map((q: any) => {
                           const resposta = state.respostas[q.id];
                           if (resposta === undefined || resposta === '') return null;
-                          
+
                           let displayValue: string = '';
-                          
+
                           if (q.tipo === 'checkbox_multiple') {
                             const selected = resposta?.selected || (Array.isArray(resposta) ? resposta : []);
                             const labels = selected.map((v: string) => {
@@ -478,7 +549,7 @@ export default function Onboarding() {
                           } else {
                             displayValue = String(resposta);
                           }
-                          
+
                           return (
                             <div key={q.id} className="text-sm">
                               <span className="text-muted-foreground">{q.pergunta}</span>
@@ -506,15 +577,15 @@ export default function Onboarding() {
               </div>
 
               <div className="flex gap-4">
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant="outline"
                   onClick={handleBack}
                   size="lg"
                 >
                   <ArrowLeft className="mr-2 h-4 w-4" />
                   Voltar
                 </Button>
-                <Button 
+                <Button
                   onClick={handleNext}
                   className="flex-1 bg-pipeelo-green hover:bg-pipeelo-green/90"
                   size="lg"
@@ -547,7 +618,7 @@ export default function Onboarding() {
               <div className="w-20 h-20 rounded-full bg-pipeelo-green/20 flex items-center justify-center mx-auto">
                 <Check className="h-10 w-10 text-pipeelo-green" />
               </div>
-              
+
               <div className="space-y-2">
                 <h1 className="text-3xl font-bold">Departamento concluído!</h1>
                 <p className="text-muted-foreground">
@@ -562,8 +633,11 @@ export default function Onboarding() {
               </div>
 
               <div className="flex flex-col gap-3">
-                <Button 
-                  onClick={() => navigate(`/${slug}`)}
+                <Button
+                  onClick={() => {
+                    const tokenSuffix = token ? `?token=${encodeURIComponent(token)}` : '';
+                    navigate(`/${slug}${tokenSuffix}`);
+                  }}
                   className="bg-pipeelo-green hover:bg-pipeelo-green/90"
                   size="lg"
                 >

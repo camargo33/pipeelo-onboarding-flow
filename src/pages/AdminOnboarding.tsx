@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -8,6 +8,7 @@ import { toast } from 'sonner';
 import { Copy, Plus, Building2, ExternalLink, Check, Clock, RefreshCw, Trash2, Loader2, LogOut } from 'lucide-react';
 import { PipeeloLogo } from '@/components/PipeeloLogo';
 import { AdminLogin } from '@/components/AdminLogin';
+import { adminSessionApi, ApiError, type SessionDTO } from '@/lib/api-client';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -20,22 +21,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 
-interface OnboardingSession {
-  id: string;
-  empresa_nome: string;
-  slug: string;
-  ceo_email: string | null;
-  created_at: string;
-  updated_at: string;
-  status_sac_geral: string | null;
-  status_financeiro: string | null;
-  status_suporte: string | null;
-  status_vendas: string | null;
-  concluido_sac_geral_at: string | null;
-  concluido_financeiro_at: string | null;
-  concluido_suporte_at: string | null;
-  concluido_vendas_at: string | null;
-}
+type OnboardingSession = SessionDTO;
 
 const AdminOnboarding = () => {
   const [empresaNome, setEmpresaNome] = useState('');
@@ -47,26 +33,46 @@ const AdminOnboarding = () => {
   const [deleting, setDeleting] = useState<string | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
 
-  const fetchSessions = async (showRefresh = false) => {
-    if (showRefresh) setRefreshing(true);
-    
-    const { data, error } = await supabase
-      .from('onboarding_sessions')
-      .select('*')
-      .order('created_at', { ascending: false });
+  /**
+   * Recupera o JWT atual do Supabase Auth para enviar nas requests `/api/admin/*`.
+   * Continua usando supabase-js (auth client only — não toca onboarding_*).
+   */
+  const getAuthToken = useCallback(async (): Promise<string | null> => {
+    const { data } = await supabase.auth.getSession();
+    return data.session?.access_token ?? null;
+  }, []);
 
-    if (error) {
-      console.error('Erro ao buscar sessões:', error);
-      toast.error('Erro ao carregar sessões');
-    } else {
-      setSessions(data || []);
-    }
-    setLoading(false);
-    setRefreshing(false);
-  };
+  const fetchSessions = useCallback(
+    async (showRefresh = false) => {
+      if (showRefresh) setRefreshing(true);
+      try {
+        const token = await getAuthToken();
+        if (!token) {
+          toast.error('Sessão expirada — faça login novamente');
+          setIsAuthenticated(false);
+          return;
+        }
+        const { sessions: rows } = await adminSessionApi.list(token);
+        setSessions(rows);
+      } catch (e) {
+        if (e instanceof ApiError && e.status === 401) {
+          toast.error('Sessão expirada — faça login novamente');
+          setIsAuthenticated(false);
+        } else {
+          // eslint-disable-next-line no-console
+          console.error('Erro ao buscar sessões:', e);
+          toast.error('Erro ao carregar sessões');
+        }
+      } finally {
+        setLoading(false);
+        setRefreshing(false);
+      }
+    },
+    [getAuthToken]
+  );
 
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setIsAuthenticated(!!session);
       if (session) {
         fetchSessions();
@@ -77,11 +83,13 @@ const AdminOnboarding = () => {
       setIsAuthenticated(!!session);
       if (session) {
         fetchSessions();
+      } else {
+        setLoading(false);
       }
     });
 
     return () => subscription.unsubscribe();
-  }, []);
+  }, [fetchSessions]);
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -96,66 +104,61 @@ const AdminOnboarding = () => {
     }
 
     setCreating(true);
-    
-    const { data, error } = await supabase
-      .from('onboarding_sessions')
-      .insert({
+    try {
+      const token = await getAuthToken();
+      if (!token) {
+        toast.error('Sessão expirada — faça login novamente');
+        setIsAuthenticated(false);
+        return;
+      }
+      await adminSessionApi.create(token, {
         empresa_nome: empresaNome.trim(),
-        ceo_email: ceoEmail.trim() || null,
-      })
-      .select()
-      .single();
-
-    if (error) {
-      console.error('Erro ao criar sessão:', error);
-      toast.error('Erro ao criar link');
-    } else {
+        ceo_email: ceoEmail.trim() || undefined,
+      });
       toast.success('Link criado com sucesso!');
       setEmpresaNome('');
       setCeoEmail('');
       fetchSessions();
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.error('Erro ao criar sessão:', e);
+      const msg = e instanceof ApiError ? e.message : 'Erro ao criar link';
+      toast.error(msg);
+    } finally {
+      setCreating(false);
     }
-    setCreating(false);
   };
 
   const deleteSession = async (sessionId: string) => {
     setDeleting(sessionId);
-    
-    // First delete related responses
-    const { error: respostasError } = await supabase
-      .from('onboarding_respostas')
-      .delete()
-      .eq('session_id', sessionId);
-
-    if (respostasError) {
-      console.error('Erro ao deletar respostas:', respostasError);
-      toast.error('Erro ao apagar sessão');
-      setDeleting(null);
-      return;
-    }
-
-    // Then delete the session
-    const { error } = await supabase
-      .from('onboarding_sessions')
-      .delete()
-      .eq('id', sessionId);
-
-    if (error) {
-      console.error('Erro ao deletar sessão:', error);
-      toast.error('Erro ao apagar sessão');
-    } else {
+    try {
+      const token = await getAuthToken();
+      if (!token) {
+        toast.error('Sessão expirada — faça login novamente');
+        setIsAuthenticated(false);
+        return;
+      }
+      await adminSessionApi.delete(token, sessionId);
       toast.success('Sessão apagada com sucesso!');
-      setSessions(sessions.filter(s => s.id !== sessionId));
+      setSessions((prev) => prev.filter((s) => s.id !== sessionId));
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.error('Erro ao deletar sessão:', e);
+      const msg = e instanceof ApiError ? e.message : 'Erro ao apagar sessão';
+      toast.error(msg);
+    } finally {
+      setDeleting(null);
     }
-    setDeleting(null);
   };
 
-  const getOnboardingUrl = (slug: string) => {
-    return `https://onboarding.pipeelo.com/${slug}`;
+  const getOnboardingUrl = (session: OnboardingSession) => {
+    const accessToken = (session as { access_token?: string }).access_token;
+    const base = `https://onboarding.pipeelo.com/${session.slug}`;
+    return accessToken ? `${base}?token=${accessToken}` : base;
   };
 
-  const copyLink = (slug: string) => {
-    navigator.clipboard.writeText(getOnboardingUrl(slug));
+  const copyLink = (session: OnboardingSession) => {
+    navigator.clipboard.writeText(getOnboardingUrl(session));
     toast.success('Link copiado!');
   };
 
@@ -184,7 +187,7 @@ const AdminOnboarding = () => {
     ].filter(Boolean) as string[];
 
     if (dates.length === 0) return null;
-    
+
     const sorted = dates.sort((a, b) => new Date(b).getTime() - new Date(a).getTime());
     return sorted[0];
   };
@@ -267,8 +270,8 @@ const AdminOnboarding = () => {
                 />
               </div>
             </div>
-            <Button 
-              onClick={createSession} 
+            <Button
+              onClick={createSession}
               disabled={creating || !empresaNome.trim()}
               className="w-full sm:w-auto"
             >
@@ -280,9 +283,9 @@ const AdminOnboarding = () => {
         {/* Sessions list */}
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-semibold text-foreground">Links Criados</h2>
-          <Button 
-            variant="outline" 
-            size="sm" 
+          <Button
+            variant="outline"
+            size="sm"
             onClick={() => fetchSessions(true)}
             disabled={refreshing}
           >
@@ -312,7 +315,7 @@ const AdminOnboarding = () => {
             {sessions.map((session) => {
               const lastCompleted = getLastCompletedDate(session);
               const allCompleted = isAllCompleted(session);
-              
+
               return (
                 <Card key={session.id} className="bg-card/50 hover:bg-card/80 transition-colors">
                   <CardContent className="p-4">
@@ -325,7 +328,7 @@ const AdminOnboarding = () => {
                             {getCompletedCount(session)}/4
                           </Badge>
                         </div>
-                        
+
                         <div className="flex flex-wrap gap-2 mb-3">
                           {getStatusBadge(session.status_sac_geral, 'SAC/Geral')}
                           {getStatusBadge(session.status_financeiro, 'Financeiro')}
@@ -334,7 +337,9 @@ const AdminOnboarding = () => {
                         </div>
 
                         <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
-                          <span>Criado em {formatDate(session.created_at)}</span>
+                          {session.created_at && (
+                            <span>Criado em {formatDate(session.created_at)}</span>
+                          )}
                           {allCompleted && lastCompleted && (
                             <>
                               <span>•</span>
@@ -354,7 +359,7 @@ const AdminOnboarding = () => {
                         <Button
                           variant="outline"
                           size="sm"
-                          onClick={() => copyLink(session.slug)}
+                          onClick={() => copyLink(session)}
                         >
                           <Copy className="w-4 h-4 mr-2" />
                           Copiar Link
@@ -362,7 +367,7 @@ const AdminOnboarding = () => {
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => window.open(getOnboardingUrl(session.slug), '_blank')}
+                          onClick={() => window.open(getOnboardingUrl(session), '_blank')}
                         >
                           <ExternalLink className="w-4 h-4" />
                         </Button>
@@ -385,13 +390,13 @@ const AdminOnboarding = () => {
                             <AlertDialogHeader>
                               <AlertDialogTitle>Apagar sessão?</AlertDialogTitle>
                               <AlertDialogDescription>
-                                Tem certeza que deseja apagar a sessão de <strong>{session.empresa_nome}</strong>? 
+                                Tem certeza que deseja apagar a sessão de <strong>{session.empresa_nome}</strong>?
                                 Esta ação não pode ser desfeita e todas as respostas serão perdidas.
                               </AlertDialogDescription>
                             </AlertDialogHeader>
                             <AlertDialogFooter>
                               <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                              <AlertDialogAction 
+                              <AlertDialogAction
                                 onClick={() => deleteSession(session.id)}
                                 className="bg-destructive hover:bg-destructive/90"
                               >
