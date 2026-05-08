@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: in_progress
-stopped_at: Plan 03-00 done — Wave 0 infra ready for Plans 03-01..03 + human apply migration in smoke
+stopped_at: Plan 03-01 done — Wave 1 _shared/ helpers (HTTP, idempotency, audit) + 31 tests verdes / 95% coverage; ready for Plan 03-02 (7 tipped tools)
 last_updated: "2026-05-08T22:30:00.000Z"
 progress:
   total_phases: 6
   completed_phases: 0
   total_plans: 7
-  completed_plans: 6
-  percent: 86
+  completed_plans: 7
+  percent: 100
 ---
 
 # Project State: Pipeelo Onboarding Flow — v2 Upgrade
@@ -29,10 +29,10 @@ progress:
 
 ## Current Position
 
-- **Phase:** 3 of 6 — Tool Layer + Audit (Wave 0 done; Phase 1 still pending human cutover for 01-05)
-- **Plan:** 03-00 done → 03-01 next (Wave 1 in admin-pipeelo)
-- **Status:** Plan 03-00 (Wave 0 infra) completed 2026-05-08: Vitest config + setup em admin-pipeelo (globals=false, coverage v8 scoped a api/jarvis/_runtime/**), 3 pastas `api/jarvis/_runtime/{tools,tools/_shared,observability}` via .gitkeep, migration DDL `20260509000000_jarvis_audit_tables.sql` (jarvis_runs/jarvis_tool_calls/idempotency_keys com RLS service_role only) + rollback SQL. Suite admin-pipeelo: 89 tests passed. Commits `29e8696` (vitest) + `b222897` (migration). Migration NÃO aplicada — humano roda em smoke window. Plan 01-05 ainda awaiting human cutover (RLS lock prod).
-- **Progress:** [████████▌░] 86% (6/7 plans done across phases 1+3; faltando 01-05 cutover + Phase 3 Plans 01..03)
+- **Phase:** 3 of 6 — Tool Layer + Audit (Waves 0+1 done; Phase 1 still pending human cutover for 01-05)
+- **Plan:** 03-01 done → 03-02 next (Wave 2 — 7 tipped tools)
+- **Status:** Plan 03-01 (Wave 1 shared helpers) completed 2026-05-08: `api/jarvis/_runtime/tools/_shared/{types,supabase,http,idempotency,audit}.ts` + 4 test files. callExternal() é único caminho HTTP (TOOL-05 gate clean). withIdempotency() com canonicalJson + SHA-256 + upsert race-tolerant (TOOL-03). createRun/recordToolCall/finalizeRun (audit best-effort by construction). 31 tests verdes, 95.4% lines coverage. Commits: `fd0285e` (Task 1 http+types+supabase), `76b7e6c` (Task 2 idempotency), `268d7df` (Task 3 audit). Migration ainda NÃO aplicada — testes mockam. Plan 01-05 ainda awaiting human cutover (RLS lock prod).
+- **Progress:** [██████████] 100% (7/7 plans done across phases 1+3; faltando 01-05 cutover + Phase 3 Plans 02-03)
 
 ## Phase Index
 
@@ -40,7 +40,7 @@ progress:
 |---|-------|--------|--------------|
 | 1 | Hardening + Server-Side Persistence | In progress (5/6 + 01-05 prep) | HARD-01..10 |
 | 2 | Pipeline de Ingestão Robusta | Not started | PIPE-01..08 |
-| 3 | Tool Layer + Audit | In progress (Wave 0 done) | TOOL-01..07 |
+| 3 | Tool Layer + Audit | In progress (Waves 0+1 done; TOOL-03/04/05 complete) | TOOL-01..07 |
 | 4 | Jarvis Cron Pipeline | Not started | JARV-01..12 |
 | 5 | Painel + Notificações | Not started | UI-01..09 |
 | 6 | Evals + Cutover | Not started | EVAL-01..06 |
@@ -55,6 +55,7 @@ progress:
 | Cache hit rate Langfuse | N/A | >70% no system prompt |
 | Tool call success rate | N/A | ≥95% (gate de cutover Phase 6) |
 | Cross-tenant errors | N/A | 0 (gate inegociável) |
+| Phase 03-tool-layer-audit P01 | 6m | 3 tasks | 9 created / 0 modified |
 | Phase 03-tool-layer-audit P00 | 4m | 2 tasks | 6 created / 3 modified |
 | Phase 01-hardening-server-side-persistence P05 (autonomous) | 2m | 2 tasks | 4 created / 2 modified |
 | Phase 01-hardening-server-side-persistence P04 | 6m | 3 tasks | 13 created / 9 modified |
@@ -87,6 +88,10 @@ progress:
 - **ProgressBar component genérico mantido (Plan 01-04):** HARD-06 fix vive em OnboardingSession.tsx (denominador = DEPARTMENT_ORDER.length). ProgressBar component (current/total/percentage) é reusável p/ perguntas.
 - **CI gate HARD-01 endurecido (Plan 01-04):** removido `continue-on-error: true` do audit step. PRs futuros que reintroduzirem `supabase.from(onboarding_*)` em `src/` falham build.
 - **validate-cnpj endpoint criado mas não wired no front:** decisão consciente — front mantém validação local (checksum) pra UX rápida; lookup público fica nice-to-have pra Plan 05/Phase 2 (com rate-limit próprio).
+- **fetch nativo + backoff inline em callExternal (Plan 03-01):** sem axios, sem p-retry — Node 18+ tem AbortController; backoff exponencial com jitter cabe em ~10 LOC. Dep zero adicional.
+- **Audit best-effort by construction (Plan 03-01):** recordToolCall + finalizeRun envoltas em try/catch top-level. Anti-pattern "audit kills run" literalmente impossível na implementação. createRun é exceção — sem run_id não há FK válida pra tool_calls.
+- **Erro NÃO cacheia em withIdempotency (Plan 03-01):** retry pode passar; cache de erro permanente é veneno. fn() throw → `idempotency_keys` permanece vazio.
+- **Upsert + ignoreDuplicates p/ race condition (Plan 03-01):** 2 workers no mesmo lease podem chegar simultaneamente; `onConflict='session_id,tool,args_hash'` + `ignoreDuplicates: true` torna o segundo upsert no-op silencioso.
 
 ### Open Todos
 
@@ -111,9 +116,9 @@ progress:
 
 ## Session Continuity
 
-**Last session:** 2026-05-08 — Executed Plan 01-05 autonomous tasks (Wave 4 prep). Criado `supabase/migrations/20260508120000_lock_rls_phase1.sql` (drop public policies + recreate `service_role only AS RESTRICTIVE` em onboarding_sessions+respostas), `scripts/rollback-rls.sql` (rede de segurança <5min), `tests/rls/onboarding-sessions.test.ts` (5 cenários — anon SELECT/INSERT/UPDATE → 42501 ou 0 rows; skipa sem env staging), `01-05-RUNBOOK.md` (7 etapas: pré-condições → smoke pre-lock → apply staging → validar → drill → apply prod → smoke prod). Suite verde (103 passed + 5 skipped + 7 todo). 2 commits (`843eb97`, `7419859`). Plano `autonomous: false` — checkpoint bloqueante aguarda Felipe para aplicação manual em staging + cutover prod (DB credentials são humano-only).
-**Next session:** Felipe executa RUNBOOK 01-05 — apply staging, smoke pre/post, rollback drill <5min, apply PROD em janela baixo tráfego, smoke prod, monitorar 30min. Após approved: criar 01-05-SUMMARY + marcar Phase 1 done. Se rolled-back: investigar causa + Plan 06 gap closure.
-**Stopped At:** Plan 01-05 autonomous tasks done — checkpoint blocking (PROD apply requires human DB access)
+**Last session:** 2026-05-08 — Executed Plan 03-01 (Wave 1 _shared/ helpers no admin-pipeelo). 9 arquivos criados em `api/jarvis/_runtime/tools/_shared/`: types.ts (ToolContext/Result/HttpRequest/HttpError), supabase.ts (service-role singleton), http.ts (callExternal — único caminho HTTP, retry/timeout/4xx-vs-5xx), idempotency.ts (canonicalJson + SHA-256 + withIdempotency com upsert race-tolerant), audit.ts (createRun + recordToolCall best-effort + finalizeRun best-effort), + 4 test files. 31 tests verdes (8 http + 12 idempotency + 9 audit + 2 supabase). Coverage 95.4% lines / 100% funcs. TOOL-05 gate confirmado: 1 fetch( em todo api/jarvis/_runtime/tools/ (dentro de http.ts). Zero erros TS no novo código. Suite global admin-pipeelo: 120 tests passed em 30 files. 3 commits atômicos: `fd0285e`, `76b7e6c`, `268d7df`. Pitfalls 1+6 endereçados.
+**Next session:** Plan 03-02 (Wave 2) — 7 tools determinísticas em `api/jarvis/_runtime/tools/*.ts` consumindo callExternal/withIdempotency/recordToolCall do _shared/. Coverage gate ≥80%. Em paralelo: Felipe segue RUNBOOK 01-05 (RLS lock prod) e aplica migration `20260509000000_jarvis_audit_tables.sql` em smoke window — sem isso recordToolCall em runtime real só logga warnings (testes seguem mockados, não bloqueia desenvolvimento).
+**Stopped At:** Plan 03-01 done — pronto para Plan 03-02 (Wave 2 — 7 tipped tools)
 
 **Files de referência viva:**
 - `.planning/PROJECT.md` — escopo dos 4 pilares
