@@ -57,6 +57,11 @@ Cliente termina o questionário → tenant fica vivo na Pipeelo automaticamente 
 **Goal**: Construir camada determinística de tools tipadas com idempotency + audit completo. Tenant pode ser provisionado end-to-end manualmente (chamando tools) antes do agente entrar.
 **Depends on**: Phase 2 (precisa de schema contract estável antes de tools consumirem o payload)
 **Requirements**: TOOL-01, TOOL-02, TOOL-03, TOOL-04, TOOL-05, TOOL-06, TOOL-07
+**Plans**: 4 plans
+- [ ] 03-00-PLAN.md — Wave 0: Vitest config + DB migrations (jarvis_runs, jarvis_tool_calls, idempotency_keys) (TOOL-04)
+- [ ] 03-01-PLAN.md — Wave 1: HTTP client central + withIdempotency wrapper + audit recorders (TOOL-03, TOOL-05)
+- [ ] 03-02-PLAN.md — Wave 2: 7 tools tipadas (create_tenant, create_user, create_category, create_assistant, link_function, create_kb, setup_elevenlabs) com Zod + tests >80% (TOOL-01, TOOL-02, TOOL-06)
+- [ ] 03-03-PLAN.md — Wave 3: Langfuse SDK + observability spans + painẽl admin read-only (TOOL-04, TOOL-07)
 **Success Criteria** (what must be TRUE):
   1. Felipe roda script local que invoca tools (`create_tenant`, `create_category`, `create_assistant`, `link_function`, `create_kb`, `setup_elevenlabs`) com sample session.respostas e tenant aparece configurado no admin-pipeelo
   2. Rodar mesma tool 2x com args idênticos resulta em 1 chamada externa real (segunda retorna do `idempotency_keys` cache)
@@ -123,7 +128,7 @@ Com `parallelization: true` no config:
 |-------|----------------|--------|-----------|
 | 1. Hardening + Server-Side Persistence | 4/6 | In progress | - |
 | 2. Pipeline de Ingestão Robusta | 0/4 | Not started | - |
-| 3. Tool Layer + Audit | 0/0 | Not started | - |
+| 3. Tool Layer + Audit | 0/4 | Not started | - |
 | 4. Jarvis Cron Pipeline | 0/0 | Not started | - |
 | 5. Painel + Notificações | 0/0 | Not started | - |
 | 6. Evals + Cutover | 0/0 | Not started | - |
