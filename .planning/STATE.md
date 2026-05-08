@@ -3,8 +3,8 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: in_progress
-stopped_at: Plan 03-02 done — Wave 2 7 deterministic tools + wrapTool factory + Zod schemas; 33 new tests / 91.83% lines coverage em api/jarvis/_runtime/tools/. Ready for Plan 03-03 (Wave 3 — Langfuse).
-last_updated: "2026-05-08T22:45:00.000Z"
+stopped_at: Plan 03-03 awaiting human checkpoint — Wave 3 autonomous tasks done (langfuse@3.38.20 SDK + wrapper + spans + admin panel /admin/jarvis/runs). 7 new tests; 159/159 full suite. Felipe: criar projeto Langfuse cloud + env vars + smoke run + aplicar migration jarvis_audit_tables em staging admin-pipeelo.
+last_updated: "2026-05-08T22:55:00.000Z"
 progress:
   total_phases: 6
   completed_phases: 0
@@ -29,10 +29,10 @@ progress:
 
 ## Current Position
 
-- **Phase:** 3 of 6 — Tool Layer + Audit (Waves 0+1+2 done; Phase 1 still pending human cutover for 01-05)
-- **Plan:** 03-02 done → 03-03 next (Wave 3 — Langfuse SDK + spans)
-- **Status:** Plan 03-02 (Wave 2 — 7 deterministic tools) completed 2026-05-08: `api/jarvis/_runtime/tools/{schemas,index,create_tenant,create_user,create_category,create_assistant,link_function,create_kb,setup_elevenlabs}.ts` + 8 test files + `_shared/wrap-tool.ts` factory. Zod `.strict()` em TODOS os inputs bloqueia tenant_id (Pitfall 2). wrapTool combina Zod parse + withIdempotency + recordToolCall + timing — invoke() NUNCA throws. 33 novos tests verdes, 91.83% lines coverage em tools/. Commits: `5125118` (Task 1 schemas + wrapTool factory), `d059830` (Task 2 7 tools + index). Endpoint reconciliation com `lib/onboarding-processor.ts` real fica para Phase 4. Plan 01-05 ainda awaiting human cutover (RLS lock prod).
-- **Progress:** [██████████] 100% (7/7 plans done across phases 1+3; faltando 01-05 cutover + Phase 3 Plans 02-03)
+- **Phase:** 3 of 6 — Tool Layer + Audit (Waves 0+1+2 done; Wave 3 awaiting human checkpoint)
+- **Plan:** 03-03 in_progress (Tasks 1+2 autonomous done; Task 3 checkpoint:human-verify aguardando Felipe)
+- **Status:** Plan 03-03 (Wave 3 — Langfuse + admin panel) Tasks 1+2 completos 2026-05-08: `api/jarvis/_runtime/observability/langfuse.ts` (no-op safe wrapper, 7 tests verdes), `wrap-tool.ts` emitindo spans com tenant tag, `audit.createRunWithTrace` linkando trace_id, painel `/admin/jarvis/runs` + drill-down + 2 API routes Server Components. 3 commits: `46f6aa8` (RED tests), `251a800` (GREEN SDK + integração), `dee0443` (admin panel). Suite full: 159/159. Zero erros TS. **Task 3 pending human:** criar projeto Langfuse cloud EU + env vars (LANGFUSE_PUBLIC_KEY/SECRET_KEY/HOST) + aplicar migration jarvis_audit_tables em staging admin-pipeelo + smoke run com 1 sessão real → confirmar painel renderiza + trace aparece em Langfuse dashboard com tag tenant:.... Plan 01-05 ainda awaiting human cutover (RLS lock prod).
+- **Progress:** [██████████] 100% (7/7 plans done; faltando: Plan 01-05 cutover + Plan 03-03 Task 3 checkpoint)
 
 ## Phase Index
 
@@ -40,7 +40,7 @@ progress:
 |---|-------|--------|--------------|
 | 1 | Hardening + Server-Side Persistence | In progress (5/6 + 01-05 prep) | HARD-01..10 |
 | 2 | Pipeline de Ingestão Robusta | Not started | PIPE-01..08 |
-| 3 | Tool Layer + Audit | In progress (Waves 0+1+2 done; TOOL-01/02/03/04/05/06 complete) | TOOL-01..07 |
+| 3 | Tool Layer + Audit | In progress (Waves 0+1+2 done; W3 autonomous done, awaiting human checkpoint; TOOL-01..06 complete; TOOL-07 awaiting smoke) | TOOL-01..07 |
 | 4 | Jarvis Cron Pipeline | Not started | JARV-01..12 |
 | 5 | Painel + Notificações | Not started | UI-01..09 |
 | 6 | Evals + Cutover | Not started | EVAL-01..06 |
@@ -55,6 +55,7 @@ progress:
 | Cache hit rate Langfuse | N/A | >70% no system prompt |
 | Tool call success rate | N/A | ≥95% (gate de cutover Phase 6) |
 | Cross-tenant errors | N/A | 0 (gate inegociável) |
+| Phase 03-tool-layer-audit P03 (autonomous portion) | 10m | 2/3 tasks | 6 created / 4 modified |
 | Phase 03-tool-layer-audit P02 | 8m | 2 tasks | 19 created / 0 modified |
 | Phase 03-tool-layer-audit P01 | 6m | 3 tasks | 9 created / 0 modified |
 | Phase 03-tool-layer-audit P00 | 4m | 2 tasks | 6 created / 3 modified |
@@ -117,9 +118,9 @@ progress:
 
 ## Session Continuity
 
-**Last session:** 2026-05-08 — Executed Plan 03-01 (Wave 1 _shared/ helpers no admin-pipeelo). 9 arquivos criados em `api/jarvis/_runtime/tools/_shared/`: types.ts (ToolContext/Result/HttpRequest/HttpError), supabase.ts (service-role singleton), http.ts (callExternal — único caminho HTTP, retry/timeout/4xx-vs-5xx), idempotency.ts (canonicalJson + SHA-256 + withIdempotency com upsert race-tolerant), audit.ts (createRun + recordToolCall best-effort + finalizeRun best-effort), + 4 test files. 31 tests verdes (8 http + 12 idempotency + 9 audit + 2 supabase). Coverage 95.4% lines / 100% funcs. TOOL-05 gate confirmado: 1 fetch( em todo api/jarvis/_runtime/tools/ (dentro de http.ts). Zero erros TS no novo código. Suite global admin-pipeelo: 120 tests passed em 30 files. 3 commits atômicos: `fd0285e`, `76b7e6c`, `268d7df`. Pitfalls 1+6 endereçados.
-**Next session:** Plan 03-02 (Wave 2) — 7 tools determinísticas em `api/jarvis/_runtime/tools/*.ts` consumindo callExternal/withIdempotency/recordToolCall do _shared/. Coverage gate ≥80%. Em paralelo: Felipe segue RUNBOOK 01-05 (RLS lock prod) e aplica migration `20260509000000_jarvis_audit_tables.sql` em smoke window — sem isso recordToolCall em runtime real só logga warnings (testes seguem mockados, não bloqueia desenvolvimento).
-**Stopped At:** Plan 03-01 done — pronto para Plan 03-02 (Wave 2 — 7 tipped tools)
+**Last session:** 2026-05-08 — Executed Plan 03-03 autonomous portion (Wave 3 — Langfuse + admin panel). Task 1 (TDD) entregou `api/jarvis/_runtime/observability/langfuse.ts` no-op safe (getLangfuseClient cached, createTrace com tenant tag, withSpan best-effort, flushLangfuse) + `langfuse.test.ts` (7 tests: no-op + instance modes); integrou em `wrap-tool.ts` (spans por invoke + langfuseSpanId em recordToolCall) e `audit.ts` (novo `createRunWithTrace` que cria trace + run linked via langfuse_trace_id). Task 2 entregou painel read-only `/admin/jarvis/runs` (Server Component lista filtrada por status) + `[id]` (drill-down com tool_calls + Langfuse link) + 2 API routes (`GET /api/admin/jarvis/runs` + `GET /api/admin/jarvis/runs/[id]`). 3 commits: `46f6aa8` (RED), `251a800` (GREEN SDK + integração), `dee0443` (admin panel). Suite full: 159/159 (era 152). langfuse@3.38.20 instalado (npm latest; v4 ainda não disponível, surface API compatível). Zero erros TS. **Task 3 pending checkpoint:human-verify** — Felipe deve criar projeto Langfuse cloud EU + setar env vars + aplicar migration jarvis_audit_tables em staging + smoke run.
+**Next session:** Felipe completa checkpoint Task 3 → "approved" finaliza Plan 03-03 SUMMARY (popular completed_date + tasks_pending_checkpoint=0). Depois: Phase 4 (Jarvis Cron Pipeline) pode começar — tool layer + audit + observability prontos.
+**Stopped At:** Plan 03-03 awaiting human checkpoint Task 3 (Langfuse cloud setup + smoke run)
 
 **Files de referência viva:**
 - `.planning/PROJECT.md` — escopo dos 4 pilares
