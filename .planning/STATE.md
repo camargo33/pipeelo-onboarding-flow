@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: in_progress
-stopped_at: Plan 06-00 complete — feature flag JARVIS_ENABLED runtime-read + branch dual no webhook handler em admin-pipeelo. 4 commits (bb9ed44/e9bb79a RED+GREEN Task 1, 484e8b8/c8d353f RED+GREEN Task 2). Full suite 181/181. EVAL-05/06 ✅. Pendentes paralelos: Plan 03-03 Task 3 (Langfuse cloud), Plan 05-02 (Resend triggers), Plan 02-01 (schema real contracts). Próximo natural: Plan 06-01 (replay) bloqueado por Phase 4 cron.
-last_updated: "2026-05-08T23:04:00.000Z"
+stopped_at: Plan 04-00 complete — Wave 0 do Jarvis Cron Pipeline em admin-pipeelo. @anthropic-ai/sdk@0.95.1 instalado, migration `20260509120000_jarvis_lease_columns.sql` criada (NÃO aplicada — checkpoint humano), .env.example com ANTHROPIC_API_KEY + CRON_SECRET. 2 commits admin-pipeelo (6f882f1 chore SDK+env, 11036c9 feat migration). Suite full 190/190. Wave 1 (Plans 04-01/02/03) destravada para implementar system-prompt + tools-registry + agent-loop + lease/cron.
+last_updated: "2026-05-08T20:15:00.000Z"
 progress:
   total_phases: 6
   completed_phases: 0
-  total_plans: 9
-  completed_plans: 9
+  total_plans: 10
+  completed_plans: 10
   percent: 100
 ---
 
@@ -29,8 +29,8 @@ progress:
 
 ## Current Position
 
-- **Phase:** 2 of 6 — Pipeline de Ingestão Robusta (Wave 0 complete; Plan 03-03 Task 3 ainda pending paralelo)
-- **Plan:** 02-00 complete (Wave 0 — contracts skeleton + Vitest scaffold). Próximo: 02-01 schema real.
+- **Phase:** 4 of 6 — Jarvis Cron Pipeline (Wave 0 complete 2026-05-08)
+- **Plan:** 04-00 complete (Wave 0 — SDK Anthropic + lease columns migration + env vars). Próximo: 04-01 (system-prompt + tools-registry).
 - **Status:** Plan 03-03 (Wave 3 — Langfuse + admin panel) Tasks 1+2 completos 2026-05-08: `api/jarvis/_runtime/observability/langfuse.ts` (no-op safe wrapper, 7 tests verdes), `wrap-tool.ts` emitindo spans com tenant tag, `audit.createRunWithTrace` linkando trace_id, painel `/admin/jarvis/runs` + drill-down + 2 API routes Server Components. 3 commits: `46f6aa8` (RED tests), `251a800` (GREEN SDK + integração), `dee0443` (admin panel). Suite full: 159/159. Zero erros TS. **Task 3 pending human:** criar projeto Langfuse cloud EU + env vars (LANGFUSE_PUBLIC_KEY/SECRET_KEY/HOST) + aplicar migration jarvis_audit_tables em staging admin-pipeelo + smoke run com 1 sessão real → confirmar painel renderiza + trace aparece em Langfuse dashboard com tag tenant:.... Plan 01-05 ainda awaiting human cutover (RLS lock prod).
 - **Progress:** [██████████] 100% (7/7 plans done; faltando: Plan 01-05 cutover + Plan 03-03 Task 3 checkpoint)
 
@@ -41,7 +41,7 @@ progress:
 | 1 | Hardening + Server-Side Persistence | In progress (5/6 + 01-05 prep) | HARD-01..10 |
 | 2 | Pipeline de Ingestão Robusta | In progress (Wave 0 done; 02-00 SHIPPED 2026-05-08) | PIPE-01..08 |
 | 3 | Tool Layer + Audit | In progress (Waves 0+1+2 done; W3 autonomous done, awaiting human checkpoint; TOOL-01..06 complete; TOOL-07 awaiting smoke) | TOOL-01..07 |
-| 4 | Jarvis Cron Pipeline | Not started | JARV-01..12 |
+| 4 | Jarvis Cron Pipeline | In progress (Wave 0 done 2026-05-08) | JARV-01..12 |
 | 5 | Painel + Notificações | Not started | UI-01..09 |
 | 6 | Evals + Cutover | In progress (Wave 0 done; EVAL-05/06 ✅) | EVAL-01..06 |
 
@@ -55,6 +55,7 @@ progress:
 | Cache hit rate Langfuse | N/A | >70% no system prompt |
 | Tool call success rate | N/A | ≥95% (gate de cutover Phase 6) |
 | Cross-tenant errors | N/A | 0 (gate inegociável) |
+| Phase 04-jarvis-cron-pipeline P00 | 8m | 2 tasks | 1 created / 3 modified |
 | Phase 06-evals-cutover P00 | 5m | 2 tasks (TDD) | 4 created / 1 modified |
 | Phase 02-pipeline-ingestao-robusta P00 | 7m | 2 tasks | 8 created / 2 modified |
 | Phase 03-tool-layer-audit P03 (autonomous portion) | 10m | 2/3 tasks | 6 created / 4 modified |
@@ -125,13 +126,16 @@ progress:
 
 ## Session Continuity
 
-**Last session:** 2026-05-08 (later) — Executed Plan 06-00 (Phase 6 Wave 0 — feature flag JARVIS_ENABLED). Task 1 (TDD) entregou `admin-pipeelo/lib/feature-flags.ts` com `isJarvisEnabled()` runtime-read + `feature-flags.test.ts` (15 cenários via `it.each`) + `.env.example` documentando flag. Task 2 (TDD) ramificou `app/api/clients/onboarding/create/route.ts` com branch `mode='jarvis'|'legacy'`, log estruturado `[webhook] mode=%s`, e migrou WEBHOOK_TOKEN pra runtime-read (Rule 3 deviation). 4 commits: `bb9ed44` (Task 1 RED), `e9bb79a` (Task 1 GREEN), `484e8b8` (Task 2 RED), `c8d353f` (Task 2 GREEN). Suite full admin-pipeelo: 181/181 (era 159, +22 tests; zero regressão). EVAL-05/06 marcados completos. `lib/onboarding-processor.ts` intacto e referenciado como fallback. Path canônico do webhook confirmado: `/api/clients/onboarding/create` — open todo eliminado.
+**Last session:** 2026-05-08 — Executed Plan 04-00 (Phase 4 Wave 0 — Jarvis Cron Pipeline infrastructure). Em admin-pipeelo: instalou `@anthropic-ai/sdk@0.95.1` (SDK oficial, não Vercel AI), criou `supabase/migrations/20260509120000_jarvis_lease_columns.sql` idempotente com 5 ADD COLUMN (locked_at, locked_by, attempt_count, last_error, last_run_id) + índice parcial `idx_onboarding_sessions_claim` para SKIP LOCKED scan + 5 COMMENTs. Atualizou `.env.example` com bloco "Jarvis Cron Pipeline (Phase 4)" documentando ANTHROPIC_API_KEY + CRON_SECRET; reorganizou bloco Langfuse com nota de no-op safe mode (Rule 3 deviation: 3 das 5 chaves planejadas já existiam de Phase 3). 2 commits: `6f882f1` (chore SDK+env), `11036c9` (feat migration). Suite full admin-pipeelo: 190/190. Migration NÃO aplicada — apply staging/prod = checkpoint humano (DB credentials + janela manutenção). Wave 1 (Plans 04-01/02/03) destravada para system-prompt + tools-registry + agent-loop + lease/cron.
 
-**Previous session:** 2026-05-08 — Executed Plan 02-00 (Phase 2 Wave 0). Criado pacote `pipeelo-onboarding-contracts@0.1.0` em `pipeelo-onboarding-flow/contracts/` (workspace local) com Zod skeleton + `PAYLOAD_VERSION='v1'` + 4 tests verdes. Linkado em admin-pipeelo via `file:../pipeelo-onboarding-flow/contracts` + sanity test 2/2. Suite full ambos repos verde (107 onboarding-flow, 176 admin-pipeelo). 2 commits: `246f193` (onboarding-flow), `3d5a1a9` (admin-pipeelo). Deviation Rule 3: contracts/vitest.config.ts isolado (root config aponta pra setup que não existe no subpacote). Reuso vitest.config.ts admin (já existia desde Phase 3). Pronto para Plan 02-01 substituir skeleton pelo schema real do payload de `api/complete-onboarding.ts`.
+**Previous session:** 2026-05-08 (later) — Executed Plan 06-00 (Phase 6 Wave 0 — feature flag JARVIS_ENABLED). Task 1 (TDD) entregou `admin-pipeelo/lib/feature-flags.ts` com `isJarvisEnabled()` runtime-read + `feature-flags.test.ts` (15 cenários via `it.each`) + `.env.example` documentando flag. Task 2 (TDD) ramificou `app/api/clients/onboarding/create/route.ts` com branch `mode='jarvis'|'legacy'`, log estruturado `[webhook] mode=%s`, e migrou WEBHOOK_TOKEN pra runtime-read (Rule 3 deviation). 4 commits: `bb9ed44` (Task 1 RED), `e9bb79a` (Task 1 GREEN), `484e8b8` (Task 2 RED), `c8d353f` (Task 2 GREEN). Suite full admin-pipeelo: 181/181 (era 159, +22 tests; zero regressão). EVAL-05/06 marcados completos. `lib/onboarding-processor.ts` intacto e referenciado como fallback. Path canônico do webhook confirmado: `/api/clients/onboarding/create` — open todo eliminado.
+
+**Earlier session:** 2026-05-08 — Executed Plan 02-00 (Phase 2 Wave 0). Criado pacote `pipeelo-onboarding-contracts@0.1.0` em `pipeelo-onboarding-flow/contracts/` (workspace local) com Zod skeleton + `PAYLOAD_VERSION='v1'` + 4 tests verdes. Linkado em admin-pipeelo via `file:../pipeelo-onboarding-flow/contracts` + sanity test 2/2. Suite full ambos repos verde (107 onboarding-flow, 176 admin-pipeelo). 2 commits: `246f193` (onboarding-flow), `3d5a1a9` (admin-pipeelo). Deviation Rule 3: contracts/vitest.config.ts isolado (root config aponta pra setup que não existe no subpacote). Reuso vitest.config.ts admin (já existia desde Phase 3). Pronto para Plan 02-01 substituir skeleton pelo schema real do payload de `api/complete-onboarding.ts`.
 
 **Previous session:** 2026-05-08 — Executed Plan 03-03 autonomous portion (Wave 3 — Langfuse + admin panel). Task 1 (TDD) entregou `api/jarvis/_runtime/observability/langfuse.ts` no-op safe (getLangfuseClient cached, createTrace com tenant tag, withSpan best-effort, flushLangfuse) + `langfuse.test.ts` (7 tests: no-op + instance modes); integrou em `wrap-tool.ts` (spans por invoke + langfuseSpanId em recordToolCall) e `audit.ts` (novo `createRunWithTrace` que cria trace + run linked via langfuse_trace_id). Task 2 entregou painel read-only `/admin/jarvis/runs` (Server Component lista filtrada por status) + `[id]` (drill-down com tool_calls + Langfuse link) + 2 API routes (`GET /api/admin/jarvis/runs` + `GET /api/admin/jarvis/runs/[id]`). 3 commits: `46f6aa8` (RED), `251a800` (GREEN SDK + integração), `dee0443` (admin panel). Suite full: 159/159 (era 152). langfuse@3.38.20 instalado (npm latest; v4 ainda não disponível, surface API compatível). Zero erros TS. **Task 3 pending checkpoint:human-verify** — Felipe deve criar projeto Langfuse cloud EU + setar env vars + aplicar migration jarvis_audit_tables em staging + smoke run.
 **Next session:** Felipe completa checkpoint Task 3 → "approved" finaliza Plan 03-03 SUMMARY (popular completed_date + tasks_pending_checkpoint=0). Depois: Phase 4 (Jarvis Cron Pipeline) pode começar — tool layer + audit + observability prontos.
-**Stopped At:** Plan 06-00 complete (feature flag JARVIS_ENABLED + branch webhook). Pendentes paralelos: Plan 03-03 Task 3 (Langfuse cloud, Felipe), Plan 05-02 (Resend triggers), Plan 02-01 (schema real contracts). Plan 06-01 (replay) destravado mas depende Phase 4.
+**Next session:** Plan 04-01 (system-prompt + tools-registry) — primeira wave funcional do Jarvis. Pode começar com mocks (Anthropic SDK + colunas DB já estão prontos no repo; migration aplicada não é gate até Plan 04-03 lease/cron integration tests).
+**Stopped At:** Plan 04-00 complete (Wave 0 Jarvis Cron Pipeline infrastructure). Pendentes paralelos: Plan 03-03 Task 3 (Langfuse cloud, Felipe), Plan 05-02 (Resend triggers), apply manual da migration `20260509120000_jarvis_lease_columns.sql` em staging admin-pipeelo. Plan 04-01 destravado.
 
 **Files de referência viva:**
 - `.planning/PROJECT.md` — escopo dos 4 pilares
