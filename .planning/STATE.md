@@ -9,8 +9,8 @@ progress:
   total_phases: 6
   completed_phases: 0
   total_plans: 6
-  completed_plans: 2
-  percent: 33
+  completed_plans: 3
+  percent: 50
 ---
 
 # Project State: Pipeelo Onboarding Flow — v2 Upgrade
@@ -30,9 +30,9 @@ progress:
 ## Current Position
 
 - **Phase:** 1 of 6 — Hardening + Server-Side Persistence
-- **Plan:** 01-01 (next) — Wave 1 endpoints `/api/sessions/*`
-- **Status:** Plan 01-00 (Wave 0 test infra) completed 2026-05-08
-- **Progress:** [███░░░░░░░] 33%
+- **Plan:** 01-03 (next) — Wave 2 front migration (api-client + autosave + Turnstile widget)
+- **Status:** Plan 01-01 (Wave 1 endpoints `/api/sessions/*`) completed 2026-05-08
+- **Progress:** [█████░░░░░] 50% (3/6 phase 1 plans done — 01-00 infra, 01-01 endpoints, 01-02 IDV)
 
 ## Phase Index
 
@@ -56,6 +56,7 @@ progress:
 | Tool call success rate | N/A | ≥95% (gate de cutover Phase 6) |
 | Cross-tenant errors | N/A | 0 (gate inegociável) |
 | Phase 01-hardening-server-side-persistence P02 | 4m | 3 tasks | 10 files |
+| Phase 01-hardening-server-side-persistence P01 | 4m | 3 tasks | 14 created / 3 modified |
 
 ## Accumulated Context
 
@@ -70,6 +71,9 @@ progress:
 - **Tool-first design (Phase 3 antes de Phase 4):** regra inegociável — agent-first leva a `fetch` direto + perda de auditoria.
 - **Magic link com TTL 72h em vez de senha plain text:** anti-phishing, rotacionável, segue best practice 2026.
 - **Auto-process ao finalizar onboarding (sem aprovação manual no caminho feliz):** painel admin existe para revisão posterior + fallback manual.
+- **Alias `getServiceSupabase = requireSupabase` em `api/_lib/supabase.ts`:** evita rename de endpoints legacy (Plan 01-01); mantém nome canônico para Wave 1+ sem breaking changes.
+- **`send-magic-link` com `to: []` placeholder até Plan 04 (Wave 3):** schema de Identificação ainda não tem coluna email; endpoint expõe `link_preview` em dev/preview e dispara Resend só se `RESEND_API_KEY` setado.
+- **Idempotency contractual (não funcional) em testes:** validamos via spy `mock.calls` que upsert recebe mesmo `onConflict` em chamadas repetidas. Idempotency funcional real será verificada em Plan 01-05 (RLS lock + smoke staging).
 
 ### Open Todos
 
@@ -94,9 +98,9 @@ progress:
 
 ## Session Continuity
 
-**Last session:** 2026-05-08T21:21:49.708Z
-**Next session:** Execute Plan 01-01 — Wave 1: endpoints `/api/sessions/{create,get,save-resposta,advance-department}` + auth helper + Zod schemas
-**Stopped At:** Completed 01-02-PLAN.md
+**Last session:** 2026-05-08 — Executed Plan 01-01 (Wave 1 endpoints). 5 endpoints `/api/sessions/*` + auth-session helper (TTL 30d) + 2 Zod schemas + 28 testes Vitest verdes. 3 commits (`74573b4`, `5d1a974`, `1b07d90`).
+**Next session:** Execute Plan 01-03 — Wave 2 front migration: substituir `supabase.from(onboarding_*)` por `sessionApi` (`Onboarding.tsx`, `OnboardingSession.tsx`, `NovoOnboarding.tsx`). Audit script HARD-01 deve ficar exit 0 ao final.
+**Stopped At:** Completed 01-01-PLAN.md (paralelo a 01-02-PLAN.md)
 
 **Files de referência viva:**
 - `.planning/PROJECT.md` — escopo dos 4 pilares

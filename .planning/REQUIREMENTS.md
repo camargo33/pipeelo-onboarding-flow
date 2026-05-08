@@ -7,10 +7,10 @@
 
 ### Hardening (HARD)
 
-- [ ] **HARD-01**: Todas as leituras/escritas de `onboarding_sessions` passam por `/api/sessions/*` server-side com service-role (zero `supabase.from()` no `src/`)
-- [ ] **HARD-02**: Per-question autosave (debounced 500ms) salva resposta individual sem esperar conclusão de departamento
-- [ ] **HARD-03**: Cliente pode retomar sessão via magic link (`?session=slug&token=access_token`) com TTL 30 dias
-- [ ] **HARD-04**: Identificação é gate de entrada — sem CNPJ + email + WhatsApp validados, demais departamentos ficam bloqueados
+- [~] **HARD-01**: Todas as leituras/escritas de `onboarding_sessions` passam por `/api/sessions/*` server-side com service-role (zero `supabase.from()` no `src/`) — backend pronto Plan 01-01; gate verde após Plan 01-03 (front migration)
+- [~] **HARD-02**: Per-question autosave (debounced 500ms) salva resposta individual sem esperar conclusão de departamento — endpoint PUT pronto Plan 01-01; hook `useDebouncedAutosave` em Plan 01-03
+- [~] **HARD-03**: Cliente pode retomar sessão via magic link (`?session=slug&token=access_token`) com TTL 30 dias — `assertSessionAccess` (TTL 30d) + `send-magic-link` prontos Plan 01-01; smoke E2E em Plan 01-05
+- [x] **HARD-04**: Identificação é gate de entrada — sem CNPJ + email + WhatsApp validados, demais departamentos ficam bloqueados — server-side enforced Plan 01-01 (`/api/sessions/complete-department` 403 identification_gate)
 - [ ] **HARD-05**: Validações inline aplicadas: CNPJ via BrasilAPI, email RFC 5322, WhatsApp E.164 com DDD BR
 - [ ] **HARD-06**: Progress bar mostra `X/5 departamentos` (Identificação conta como departamento 1)
 - [ ] **HARD-07**: Rate limit em `/api/create-session` (5 req/IP/min) + Cloudflare Turnstile

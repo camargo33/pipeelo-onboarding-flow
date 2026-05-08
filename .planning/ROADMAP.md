@@ -31,7 +31,7 @@ Cliente termina o questionário → tenant fica vivo na Pipeelo automaticamente 
   5. Progress bar mostra `1/5` ao iniciar Identificação e `5/5` quando todos concluídos; UI inteira (logo, paleta `#000D0A` + `#01d5ac`, Inter) reflete IDV 2026 oficial
 **Plans**: 6 plans
 - [x] 01-00-PLAN.md — Wave 0: test infra (Vitest + helpers + audit script HARD-01) — completed 2026-05-08
-- [ ] 01-01-PLAN.md — Wave 1: endpoints /api/sessions/* + auth helper + Zod schemas
+- [x] 01-01-PLAN.md — Wave 1: endpoints /api/sessions/* + auth helper + Zod schemas — completed 2026-05-08
 - [ ] 01-02-PLAN.md — Wave 1: IDV 2026 (tokens Tailwind + Inter + logo SVG)
 - [ ] 01-03-PLAN.md — Wave 2: front migration (api-client + autosave + Turnstile widget)
 - [ ] 01-04-PLAN.md — Wave 3: rate-limit + Turnstile server + BrasilAPI + ProgressBar fix
