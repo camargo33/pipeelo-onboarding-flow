@@ -29,7 +29,13 @@ Cliente termina o questionário → tenant fica vivo na Pipeelo automaticamente 
   3. Tentativa de leitura/escrita em `onboarding_sessions` com anon key retorna `permission denied` (RLS reapertada validada por teste de integração)
   4. Cliente sem CNPJ + email + WhatsApp validados não consegue avançar para sac_geral/financeiro/suporte/vendas (gate enforced server-side)
   5. Progress bar mostra `1/5` ao iniciar Identificação e `5/5` quando todos concluídos; UI inteira (logo, paleta `#000D0A` + `#01d5ac`, Inter) reflete IDV 2026 oficial
-**Plans**: TBD
+**Plans**: 6 plans
+- [ ] 01-00-PLAN.md — Wave 0: test infra (Vitest + helpers + audit script HARD-01)
+- [ ] 01-01-PLAN.md — Wave 1: endpoints /api/sessions/* + auth helper + Zod schemas
+- [ ] 01-02-PLAN.md — Wave 1: IDV 2026 (tokens Tailwind + Inter + logo SVG)
+- [ ] 01-03-PLAN.md — Wave 2: front migration (api-client + autosave + Turnstile widget)
+- [ ] 01-04-PLAN.md — Wave 3: rate-limit + Turnstile server + BrasilAPI + ProgressBar fix
+- [ ] 01-05-PLAN.md — Wave 4: RLS lock migration + smoke staging + cutover prod
 
 ### Phase 2: Pipeline de Ingestão Robusta
 **Goal**: Garantir que o webhook entre `pipeelo-onboarding-flow` e `admin-pipeelo` nunca perde uma sessão, com schema versionado e validação contract-first nos dois lados.
@@ -111,7 +117,7 @@ Com `parallelization: true` no config:
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Hardening + Server-Side Persistence | 0/0 | Not started | - |
+| 1. Hardening + Server-Side Persistence | 0/6 | Not started | - |
 | 2. Pipeline de Ingestão Robusta | 0/0 | Not started | - |
 | 3. Tool Layer + Audit | 0/0 | Not started | - |
 | 4. Jarvis Cron Pipeline | 0/0 | Not started | - |
