@@ -11,9 +11,9 @@
 - [x] **HARD-02**: Per-question autosave (debounced 500ms) salva resposta individual sem esperar conclusão de departamento — completo Plan 01-03 (`useDebouncedAutosave` em Onboarding.tsx + flush em pagehide)
 - [~] **HARD-03**: Cliente pode retomar sessão via magic link (`?session=slug&token=access_token`) com TTL 30 dias — `assertSessionAccess` (TTL 30d) + `send-magic-link` prontos Plan 01-01; smoke E2E em Plan 01-05
 - [x] **HARD-04**: Identificação é gate de entrada — sem CNPJ + email + WhatsApp validados, demais departamentos ficam bloqueados — server-side enforced Plan 01-01 (`/api/sessions/complete-department` 403 identification_gate)
-- [ ] **HARD-05**: Validações inline aplicadas: CNPJ via BrasilAPI, email RFC 5322, WhatsApp E.164 com DDD BR
-- [ ] **HARD-06**: Progress bar mostra `X/5 departamentos` (Identificação conta como departamento 1)
-- [~] **HARD-07**: Rate limit em `/api/create-session` (5 req/IP/min) + Cloudflare Turnstile — TurnstileWidget client-side pronto Plan 01-03; rate-limit Upstash + verifyTurnstileToken server-side ficam em Plan 01-04
+- [x] **HARD-05**: Validações inline aplicadas: CNPJ via BrasilAPI, email RFC 5322, WhatsApp E.164 com DDD BR — completo Plan 01-04 (CnpjSchema/EmailSchema/WhatsappBrSchema + endpoint validate-cnpj com BrasilAPI+ReceitaWS+cache 24h + validateCnpj inline em NovoOnboarding). Email/WhatsApp inline ficam para tela de pergunta Identificação (schemas prontos)
+- [x] **HARD-06**: Progress bar mostra `X/5 departamentos` (Identificação conta como departamento 1) — completo Plan 01-04 (denominador = DEPARTMENT_ORDER.length em OnboardingSession.tsx)
+- [x] **HARD-07**: Rate limit em `/api/create-session` (5 req/IP/min) + Cloudflare Turnstile — completo Plan 01-04 (Upstash slidingWindow + verifyTurnstileToken siteverify + TurnstileWidget client). CI gate HARD-01 também endurecido nesta plan (continue-on-error removido)
 - [ ] **HARD-08**: RLS restrita e re-aplicada em produção, revertendo `relax_rls_for_testing.sql`
 - [ ] **HARD-09**: Anon key do Supabase não pode ler/escrever em `onboarding_sessions` (validado por teste de integração)
 - [x] **HARD-10**: IDV 2026 oficial aplicada — logo Pipeelo correto, paleta Forest Floor `#000D0A` + accent `#01d5ac`, tipografia Inter, dark-first consistente

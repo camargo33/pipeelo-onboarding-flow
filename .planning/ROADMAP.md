@@ -34,7 +34,7 @@ Cliente termina o questionário → tenant fica vivo na Pipeelo automaticamente 
 - [x] 01-01-PLAN.md — Wave 1: endpoints /api/sessions/* + auth helper + Zod schemas — completed 2026-05-08
 - [x] 01-02-PLAN.md — Wave 1: IDV 2026 (tokens Tailwind + Inter + logo SVG) — completed 2026-05-08
 - [x] 01-03-PLAN.md — Wave 2: front migration (api-client + autosave + Turnstile widget) — completed 2026-05-08 (HARD-01 audit gate verde)
-- [ ] 01-04-PLAN.md — Wave 3: rate-limit + Turnstile server + BrasilAPI + ProgressBar fix
+- [x] 01-04-PLAN.md — Wave 3: rate-limit + Turnstile server + BrasilAPI + ProgressBar fix — completed 2026-05-08 (HARD-04/05/06/07 fechados; CI gate HARD-01 enforced)
 - [ ] 01-05-PLAN.md — Wave 4: RLS lock migration + smoke staging + cutover prod
 
 ### Phase 2: Pipeline de Ingestão Robusta

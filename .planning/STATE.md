@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: in_progress
-stopped_at: Completed 01-03-PLAN.md
-last_updated: "2026-05-08T21:34:00.000Z"
+stopped_at: Completed 01-04-PLAN.md
+last_updated: "2026-05-08T21:50:00.000Z"
 progress:
   total_phases: 6
   completed_phases: 0
   total_plans: 6
-  completed_plans: 4
-  percent: 67
+  completed_plans: 5
+  percent: 83
 ---
 
 # Project State: Pipeelo Onboarding Flow — v2 Upgrade
@@ -30,9 +30,9 @@ progress:
 ## Current Position
 
 - **Phase:** 1 of 6 — Hardening + Server-Side Persistence
-- **Plan:** 01-04 (next) — Wave 3 rate-limit + Turnstile server + BrasilAPI + ProgressBar fix
-- **Status:** Plan 01-03 (Wave 2 front migration) completed 2026-05-08 — HARD-01 audit gate FECHADO
-- **Progress:** [██████░░░░] 67% (4/6 phase 1 plans done — 01-00 infra, 01-01 endpoints, 01-02 IDV, 01-03 front migration)
+- **Plan:** 01-05 (next) — Wave 4 RLS lock migration + smoke staging + cutover prod
+- **Status:** Plan 01-04 (Wave 3 anti-abuse) completed 2026-05-08 — HARD-04, HARD-05, HARD-06, HARD-07 fechados; CI gate HARD-01 endurecido (continue-on-error removido)
+- **Progress:** [████████░░] 83% (5/6 phase 1 plans done — 01-00 infra, 01-01 endpoints, 01-02 IDV, 01-03 front migration, 01-04 anti-abuse)
 
 ## Phase Index
 
@@ -55,6 +55,7 @@ progress:
 | Cache hit rate Langfuse | N/A | >70% no system prompt |
 | Tool call success rate | N/A | ≥95% (gate de cutover Phase 6) |
 | Cross-tenant errors | N/A | 0 (gate inegociável) |
+| Phase 01-hardening-server-side-persistence P04 | 6m | 3 tasks | 13 created / 9 modified |
 | Phase 01-hardening-server-side-persistence P03 | 8m | 3 tasks | 10 created / 7 modified |
 | Phase 01-hardening-server-side-persistence P02 | 4m | 3 tasks | 10 files |
 | Phase 01-hardening-server-side-persistence P01 | 4m | 3 tasks | 14 created / 3 modified |
@@ -79,6 +80,11 @@ progress:
 - **Auth admin via Bearer JWT Supabase Auth:** ainda não há RBAC role-check; pré-Phase-1 também era "qualquer user logado" via anon RLS. Phase 5 adiciona role-check explícito.
 - **vi.stubEnv para mockar import.meta.env (Vitest 4):** Vite/SWC resolve `import.meta.env.X` para literal em build time quando ausente; mutar runtime não funciona. Pattern correto é `vi.stubEnv` + `vi.unstubAllEnvs()` em afterEach.
 - **Token na querystring (sessionApi.get):** trade-off conhecido do magic link (Pitfall 3). TTL 30d + flow "reenviar link" mitigam.
+- **CnpjSchema strict (checksum) ativo em CreateSessionSchema (Plan 01-04):** quebra contratos legacy que enviam CNPJ dummy — test fixtures atualizadas para CNPJ válido (`11222333000181`).
+- **Pipeline create.ts fixo: ratelimit → parse → Turnstile → DB (Plan 01-04):** ordem importa pra economizar Turnstile call em ataque + economizar siteverify em payload bagunçado. Test "429 não chama Turnstile" garante ordem.
+- **ProgressBar component genérico mantido (Plan 01-04):** HARD-06 fix vive em OnboardingSession.tsx (denominador = DEPARTMENT_ORDER.length). ProgressBar component (current/total/percentage) é reusável p/ perguntas.
+- **CI gate HARD-01 endurecido (Plan 01-04):** removido `continue-on-error: true` do audit step. PRs futuros que reintroduzirem `supabase.from(onboarding_*)` em `src/` falham build.
+- **validate-cnpj endpoint criado mas não wired no front:** decisão consciente — front mantém validação local (checksum) pra UX rápida; lookup público fica nice-to-have pra Plan 05/Phase 2 (com rate-limit próprio).
 
 ### Open Todos
 
@@ -103,9 +109,9 @@ progress:
 
 ## Session Continuity
 
-**Last session:** 2026-05-08 — Executed Plan 01-03 (Wave 2 front migration). Migradas 4 pages (Onboarding, OnboardingSession, NovoOnboarding, AdminOnboarding) + 3 utils novos (api-client, debounced-save, TurnstileWidget) + 4 endpoints admin novos (`/api/admin/sessions-list|create|delete` + helper `assertAdminUser`). Audit script HARD-01 exit 0 ✅. 47 testes passando, build verde. 3 commits (`8ae540d`, `c534257`, `c1adc98`).
-**Next session:** Execute Plan 01-04 — Wave 3: rate-limit Upstash + Turnstile server-side verify em `/api/sessions/create`, BrasilAPI lookup CNPJ inline em NovoOnboarding (HARD-05), ProgressBar `/4`→`/5` (HARD-06), email coluna em sessions para magic link real.
-**Stopped At:** Completed 01-03-PLAN.md
+**Last session:** 2026-05-08 — Executed Plan 01-04 (Wave 3 anti-abuse + validations). Adicionado ratelimit Upstash (5/IP/min) + Turnstile siteverify em `/api/sessions/create`; criado `/api/sessions/validate-cnpj` proxy BrasilAPI+ReceitaWS+cache 24h; CnpjSchema/EmailSchema/WhatsappBrSchema; ProgressBar denominador `/4`→`/5` (HARD-06); validateCnpj inline em NovoOnboarding com formatCnpj máscara. CI: removido `continue-on-error` do audit step (HARD-01 enforced). 102 testes passando + 8 todo, audit verde, build verde. 3 commits (`f29b803`, `f715ce0`, `00e2fba`).
+**Next session:** Execute Plan 01-05 — Wave 4: aplicar migration `<ts>_lock_rls_phase1.sql` (HARD-08), validar anon key denied (HARD-09), smoke staging E2E end-to-end (HARD-03 manual gate), email coluna em sessions p/ send-magic-link real, opcional wirar validate-cnpj no front.
+**Stopped At:** Completed 01-04-PLAN.md
 
 **Files de referência viva:**
 - `.planning/PROJECT.md` — escopo dos 4 pilares
