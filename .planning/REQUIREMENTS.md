@@ -113,22 +113,67 @@ Deferred — fora do escopo desta milestone, mas trackeado.
 
 ## Traceability
 
-Será preenchida pelo gsd-roadmapper.
-
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| HARD-01 a HARD-10 | Phase 1 | Pending |
-| PIPE-01 a PIPE-08 | Phase 2 | Pending |
-| TOOL-01 a TOOL-07 | Phase 3 | Pending |
-| JARV-01 a JARV-12 | Phase 4 | Pending |
-| UI-01 a UI-09 | Phase 5 | Pending |
-| EVAL-01 a EVAL-06 | Phase 6 | Pending |
+| HARD-01 | Phase 1 | Pending |
+| HARD-02 | Phase 1 | Pending |
+| HARD-03 | Phase 1 | Pending |
+| HARD-04 | Phase 1 | Pending |
+| HARD-05 | Phase 1 | Pending |
+| HARD-06 | Phase 1 | Pending |
+| HARD-07 | Phase 1 | Pending |
+| HARD-08 | Phase 1 | Pending |
+| HARD-09 | Phase 1 | Pending |
+| HARD-10 | Phase 1 | Pending |
+| PIPE-01 | Phase 2 | Pending |
+| PIPE-02 | Phase 2 | Pending |
+| PIPE-03 | Phase 2 | Pending |
+| PIPE-04 | Phase 2 | Pending |
+| PIPE-05 | Phase 2 | Pending |
+| PIPE-06 | Phase 2 | Pending |
+| PIPE-07 | Phase 2 | Pending |
+| PIPE-08 | Phase 2 | Pending |
+| TOOL-01 | Phase 3 | Pending |
+| TOOL-02 | Phase 3 | Pending |
+| TOOL-03 | Phase 3 | Pending |
+| TOOL-04 | Phase 3 | Pending |
+| TOOL-05 | Phase 3 | Pending |
+| TOOL-06 | Phase 3 | Pending |
+| TOOL-07 | Phase 3 | Pending |
+| JARV-01 | Phase 4 | Pending |
+| JARV-02 | Phase 4 | Pending |
+| JARV-03 | Phase 4 | Pending |
+| JARV-04 | Phase 4 | Pending |
+| JARV-05 | Phase 4 | Pending |
+| JARV-06 | Phase 4 | Pending |
+| JARV-07 | Phase 4 | Pending |
+| JARV-08 | Phase 4 | Pending |
+| JARV-09 | Phase 4 | Pending |
+| JARV-10 | Phase 4 | Pending |
+| JARV-11 | Phase 4 | Pending |
+| JARV-12 | Phase 4 | Pending |
+| UI-01 | Phase 5 | Pending |
+| UI-02 | Phase 5 | Pending |
+| UI-03 | Phase 5 | Pending |
+| UI-04 | Phase 5 | Pending |
+| UI-05 | Phase 5 | Pending |
+| UI-06 | Phase 5 | Pending |
+| UI-07 | Phase 5 | Pending |
+| UI-08 | Phase 5 | Pending |
+| UI-09 | Phase 5 | Pending |
+| EVAL-01 | Phase 6 | Pending |
+| EVAL-02 | Phase 6 | Pending |
+| EVAL-03 | Phase 6 | Pending |
+| EVAL-04 | Phase 6 | Pending |
+| EVAL-05 | Phase 6 | Pending |
+| EVAL-06 | Phase 6 | Pending |
 
 **Coverage:**
 - v1 requirements: 52 total
-- Mapped to phases: 52 (preliminar)
+- Mapped to phases: 52 (100%)
 - Unmapped: 0
+- Duplicates: 0
 
 ---
 *Requirements defined: 2026-05-08*
-*Last updated: 2026-05-08 after research*
+*Last updated: 2026-05-08 after roadmap creation*
