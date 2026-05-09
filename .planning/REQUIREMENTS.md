@@ -59,11 +59,11 @@
 - [ ] **UI-01**: Painel `/onboarding-sessions` no admin com filtros (status, departamento, data) + drill-down em respostas + log de tool calls
 - [ ] **UI-02**: Botão "Process now" no painel dispara Jarvis manualmente (fallback humano)
 - [ ] **UI-03**: Botão "Use deterministic processor" preserva o `lib/onboarding-processor.ts` antigo como rede de segurança
-- [ ] **UI-04**: Email Resend de boas-vindas (CEO recebe link com token quando sessão criada)
-- [ ] **UI-05**: Email Resend de lembrete enviado se sessão fica `in_progress` >48h sem atividade
-- [ ] **UI-06**: Email Resend final (com magic link de credenciais TTL 72h, NÃO senha plain text) ao Jarvis terminar com sucesso
+- [x] **UI-04**: Email Resend de boas-vindas (CEO recebe link com token quando sessão criada) — Plan 05-02
+- [x] **UI-05**: Email Resend de lembrete enviado se sessão fica `in_progress` >48h sem atividade — Plan 05-02
+- [x] **UI-06**: Email Resend final (com magic link de credenciais TTL 72h, NÃO senha plain text) ao Jarvis terminar com sucesso — Plan 05-02
 - [ ] **UI-07**: Email + WhatsApp Felipe disparados ao Jarvis falhar definitivamente
-- [ ] **UI-08**: DNS `mail.pipeelo.com` configurado com SPF + DKIM + DMARC corretos no Resend
+- [x] **UI-08**: DNS `mail.pipeelo.com` configurado com SPF + DKIM + DMARC corretos no Resend — Plan 05-02 (código pronto; DNS humano pendente Plan 05-00)
 - [ ] **UI-09**: Templates React Email (`WelcomeCEO`, `ReminderStalled`, `CredentialsReady`, `JarvisFailedAlert`) versionados em `emails/`
 
 ### Evals + Cutover (EVAL)
@@ -155,11 +155,11 @@ Deferred — fora do escopo desta milestone, mas trackeado.
 | UI-01 | Phase 5 | Pending |
 | UI-02 | Phase 5 | Pending |
 | UI-03 | Phase 5 | Pending |
-| UI-04 | Phase 5 | Pending |
-| UI-05 | Phase 5 | Pending |
-| UI-06 | Phase 5 | Pending |
+| UI-04 | Phase 5 | Done (Plan 05-02) |
+| UI-05 | Phase 5 | Done (Plan 05-02) |
+| UI-06 | Phase 5 | Done (Plan 05-02) |
 | UI-07 | Phase 5 | Pending |
-| UI-08 | Phase 5 | Pending |
+| UI-08 | Phase 5 | Done — code (Plan 05-02); DNS pending humano (Plan 05-00) |
 | UI-09 | Phase 5 | Pending |
 | EVAL-01 | Phase 6 | Pending |
 | EVAL-02 | Phase 6 | Pending |

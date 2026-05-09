@@ -14,7 +14,7 @@ Cliente termina o questionário → tenant fica vivo na Pipeelo automaticamente 
 - [ ] **Phase 2: Pipeline de Ingestão Robusta** — Schema Zod compartilhado entre repos, outbox pattern, reconciliation cron, status state machine — webhook nunca perde tenant
 - [ ] **Phase 3: Tool Layer + Audit (sem agente)** — Tools tipadas com idempotency wrapper, `jarvis_runs`/`jarvis_tool_calls`, Langfuse — provisiona tenant deterministicamente antes do agente entrar
 - [x] **Phase 4: Jarvis Cron Pipeline (Agente)** — System prompt cacheável + tools registry + agent loop com guardas + Vercel Cron com lease pattern + prompt-injection mitigations (feature-complete 2026-05-08; smoke staging pending humano)
-- [ ] **Phase 5: Painel + Notificações** — Painel `/onboarding-sessions` revisado + manual retry + fallback determinístico + emails React Email + WhatsApp alerta + DNS Resend
+- [ ] **Phase 5: Painel + Notificações** — Painel `/onboarding-sessions` revisado + manual retry + fallback determinístico + emails React Email + WhatsApp alerta + DNS Resend (Waves 1+2 done 2026-05-08; Wave 3 painel pendente)
 - [ ] **Phase 6: Evals + Cutover** — Replay histórico, Langfuse evals com DNA tom 8 regras como scorer, feature flag `JARVIS_ENABLED`, fallback `onboarding-processor.ts` mantido
 
 ## Phase Details
@@ -96,7 +96,11 @@ Cliente termina o questionário → tenant fica vivo na Pipeelo automaticamente 
   3. Sessão parada em `in_progress` por >48h dispara automaticamente email `ReminderStalled` para o cliente
   4. Jarvis falhar definitivamente (`attempt_count >= 3`) dispara email + WhatsApp para Felipe dentro de 1 minuto, com link para a run no painel
   5. mail-tester.com pontua >=9/10 em emails enviados de `mail.pipeelo.com` — SPF + DKIM + DMARC validados, sem spam
-**Plans**: TBD
+**Plans**: 4 plans
+- [ ] 05-00-PLAN.md — Wave 0: DNS Cloudflare + Resend domain verify (humano) + react-email install
+- [x] 05-01-PLAN.md — Wave 1: 4 templates React Email (WelcomeCEO, ReminderStalled, CredentialsReady, JarvisFailedAlert) IDV 2026 — completed 2026-05-08
+- [x] 05-02-PLAN.md — Wave 2: triggers Resend (email-sender idempotente + magic link 72h + cron reminder-stalled diário 9h BRT + 2 endpoints Bearer) — completed 2026-05-08
+- [ ] 05-03-PLAN.md — Wave 3: painel admin /onboarding-sessions + UI-07 alerta WhatsApp Felipe quando Jarvis falha
 
 ### Phase 6: Evals + Cutover
 **Goal**: Validar que Jarvis não regride vs processor determinístico em sessões reais, definir thresholds via Langfuse evals com DNA tom 8 regras como scorer, e cutover controlado por feature flag com fallback instantâneo.

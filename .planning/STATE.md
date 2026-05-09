@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: in_progress
-stopped_at: Plan 04-03 complete — Wave 3 (FINAL) do Jarvis Cron Pipeline em admin-pipeelo. Pipeline cron end-to-end pronto: RPC claim_pending_sessions (SELECT FOR UPDATE SKIP LOCKED + recovery 10min) + claim-session.ts (claimPendingSessions/releaseSession/markNeedsReview com classificacao permanent/transient + threshold MAX_ATTEMPTS=3) + retry-policy.ts (shouldRetry + fireWhatsAppAlert Evolution API stub no-op safe) + /api/cron/jarvis-tick (Bearer auth + claim batch=5 + fire-and-forget dispatch <1s) + /api/jarvis/run (createJarvisRun INLINE -> runAgentLoop -> releaseSession + finalizeJarvisRun + Langfuse trace) + vercel.json (cron 15min UTC + maxDuration 30s/300s). 2 commits admin-pipeelo: bbe07af (claim-session+retry-policy+RPC), f18561a (cron+worker+vercel.json). 23/23 tests novos passando (15 claim-session + 8 cron-tick). Suite jarvis runtime + cron full: 143/143. Cobre JARV-04, JARV-05, JARV-06, JARV-07, JARV-09. Phase 4 100% feature-complete; smoke staging = checkpoint humano.
-last_updated: "2026-05-08T20:50:00.000Z"
+stopped_at: Plan 05-02 complete — Wave 2 do Painel+Notificações. Email triggers Resend prontos: api/_lib/email-sender.ts (idempotent wrapper + sha256 key derivation + 2-layer dedup app+SDK header), api/_lib/magic-link.ts (nanoid 32 + TTL 72h + verify), 2 endpoints Bearer ONBOARDING_WEBHOOK_TOKEN (send-welcome + send-credentials), cron diário 0 12 * * * UTC = 9h BRT (api/cron/reminder-stalled, escalation diária via yyyymmdd suffix), migration 20260509120000_email_log.sql (table + 3 cols em onboarding_sessions, NÃO aplicada — Felipe aplica via supabase db push pré-deploy). Wire admin/sessions-create.ts dispara WelcomeCEO async se ceo_email presente. 3 commits: 4db5fce (lib + migration), 0a2eca9 (endpoints + wire), 7b82880 (cron + vercel.json). 12/12 tests novos. Suite total: 172 passed | 5 skipped | 7 todo. Cobre UI-04, UI-05, UI-06, UI-08 (UI-08 só ativa em prod após DNS Resend humano). Próximo: Plan 05-03 painel admin + UI-07 alerta WhatsApp.
+last_updated: "2026-05-08T21:02:00.000Z"
 progress:
   total_phases: 6
   completed_phases: 0
-  total_plans: 10
-  completed_plans: 10
+  total_plans: 11
+  completed_plans: 11
   percent: 100
 ---
 
@@ -29,9 +29,9 @@ progress:
 
 ## Current Position
 
-- **Phase:** 4 of 6 — Jarvis Cron Pipeline (Waves 0+1+2+3 COMPLETE 2026-05-08; Phase 4 feature-complete)
-- **Plan:** 04-03 complete (Wave 3 FINAL — lease SKIP LOCKED + cron Vercel jarvis-tick + worker /api/jarvis/run). Próximo: Phase 5 (Painel + Notificações UI-01..09) ou checkpoints pendentes (smoke staging Phase 4 + Plan 01-05 RLS cutover + Plan 03-03 Task 3 Langfuse).
-- **Status:** Plan 04-03 entregue em ~10min: 2 tasks TDD, 8 arquivos novos, 23 tests verdes, zero TS errors em arquivos novos. Pipeline end-to-end: Vercel Cron 15min → /api/cron/jarvis-tick (Bearer ${CRON_SECRET}) → claim_pending_sessions RPC (SKIP LOCKED + recovery 10min) → fire-and-forget /api/jarvis/run → runAgentLoop → releaseSession (success=completed | permanent→needs_review+WhatsApp | transient→retry até 3x). Mitiga PITFALLS #3 (cross-tenant) e #6 (cron drift) via Postgres lease.
+- **Phase:** 5 of 6 — Painel + Notificações (Waves 1+2 done 2026-05-08; Wave 3 painel admin pendente)
+- **Plan:** 05-02 complete (Wave 2 — email triggers Resend + magic link 72h + cron diário 9h BRT). Próximo: Plan 05-03 (painel admin /onboarding-sessions + UI-07 alerta WhatsApp Felipe).
+- **Status:** Plan 05-02 entregue em ~7min: 3 tasks TDD, 10 arquivos novos + 2 modificados, 12 tests verdes, idempotency 2-camadas (email_log + Resend SDK header). Wire WelcomeCEO em api/admin/sessions-create.ts (não em legacy create-session). Migration NÃO aplicada — Felipe roda supabase db push pré-deploy.
 - **Progress:** [██████████] 100% (8/8 plans done; faltando: Plan 01-05 RLS cutover + Plan 03-03 Task 3 Langfuse + Phase 4 smoke staging — todos checkpoints humanos)
 
 ## Phase Index
@@ -42,7 +42,7 @@ progress:
 | 2 | Pipeline de Ingestão Robusta | In progress (Wave 0 done; 02-00 SHIPPED 2026-05-08) | PIPE-01..08 |
 | 3 | Tool Layer + Audit | In progress (Waves 0+1+2 done; W3 autonomous done, awaiting human checkpoint; TOOL-01..06 complete; TOOL-07 awaiting smoke) | TOOL-01..07 |
 | 4 | Jarvis Cron Pipeline | Feature-complete (Waves 0+1+2+3 done 2026-05-08; smoke staging pending humano) | JARV-01..12 |
-| 5 | Painel + Notificações | Not started | UI-01..09 |
+| 5 | Painel + Notificações | In progress (Waves 1+2 done; Wave 3 pendente) | UI-01..09 |
 | 6 | Evals + Cutover | In progress (Wave 0 done; EVAL-05/06 ✅) | EVAL-01..06 |
 
 ## Performance Metrics
