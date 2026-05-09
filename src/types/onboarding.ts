@@ -64,6 +64,8 @@ export interface Section {
   icone: string;
   descricao?: string;
   perguntas: Question[];
+  /** Expressão avaliada via evaluateConditional — se falsa, a seção inteira é ocultada. */
+  condicional_secao?: string;
 }
 
 export interface Departamento {

@@ -28,11 +28,16 @@ export function useOnboarding() {
 
   const sections = useMemo(() => {
     if (!departamentoData) return [];
-    return Object.entries(departamentoData.secoes).map(([key, section]) => ({
-      id: key,
-      ...section
-    }));
-  }, [departamentoData]);
+    return Object.entries(departamentoData.secoes)
+      .map(([key, section]) => ({
+        id: key,
+        ...section
+      }))
+      .filter((section: { condicional_secao?: string }) => {
+        if (!section.condicional_secao) return true;
+        return evaluateConditional(section.condicional_secao, state.respostas);
+      });
+  }, [departamentoData, state.respostas]);
 
   const currentSection = sections[state.currentSectionIndex];
 
