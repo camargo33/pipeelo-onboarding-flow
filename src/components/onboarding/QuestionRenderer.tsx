@@ -466,6 +466,157 @@ export function QuestionRenderer({
           </div>
         );
 
+      case 'repeater': {
+        const items: Record<string, unknown>[] = Array.isArray(localValue) ? localValue : [];
+        const campos = question.campos ?? [];
+        const minItens = question.minimo ?? 0;
+        const maxItens = question.maximo ?? Infinity;
+        const rotuloItem = question.rotulo_item ?? 'Item';
+        const rotuloAdd = question.rotulo_adicionar ?? `Adicionar ${rotuloItem.toLowerCase()}`;
+
+        const updateItem = (idx: number, patch: Record<string, unknown>) => {
+          const next = items.map((it, i) => (i === idx ? { ...it, ...patch } : it));
+          handleChange(next);
+        };
+        const addItem = () => {
+          if (items.length >= maxItens) return;
+          handleChange([...items, {}]);
+        };
+        const removeItem = (idx: number) => {
+          if (items.length <= minItens) return;
+          handleChange(items.filter((_, i) => i !== idx));
+        };
+
+        const widthClass = (w?: number) => {
+          switch (w) {
+            case 3: return 'col-span-12 md:col-span-3';
+            case 4: return 'col-span-12 md:col-span-4';
+            case 6: return 'col-span-12 md:col-span-6';
+            case 8: return 'col-span-12 md:col-span-8';
+            default: return 'col-span-12';
+          }
+        };
+
+        return (
+          <div className="space-y-4">
+            {items.length === 0 && (
+              <p className="text-sm text-muted-foreground italic">
+                Nenhum {rotuloItem.toLowerCase()} cadastrado ainda. Clique em "{rotuloAdd}" para começar.
+              </p>
+            )}
+            {items.map((item, idx) => (
+              <div key={idx} className="rounded-lg border p-4 space-y-3 bg-muted/20 relative">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm font-semibold">{rotuloItem} {idx + 1}</span>
+                  {items.length > minItens && (
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => removeItem(idx)}
+                      className="h-7 px-2 text-destructive hover:text-destructive"
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  )}
+                </div>
+                <div className="grid grid-cols-12 gap-3">
+                  {campos.map((campo) => {
+                    const fieldVal = (item as Record<string, unknown>)[campo.id];
+                    return (
+                      <div key={campo.id} className={widthClass(campo.largura)}>
+                        <Label className="text-sm mb-1 block">
+                          {campo.label}
+                          {campo.obrigatoria && <span className="text-destructive ml-1">*</span>}
+                        </Label>
+                        {(campo.tipo === 'text' || campo.tipo === 'number' || campo.tipo === 'currency') && (
+                          <Input
+                            type={campo.tipo === 'number' || campo.tipo === 'currency' ? 'number' : 'text'}
+                            step={campo.tipo === 'currency' ? '0.01' : undefined}
+                            value={(fieldVal as string | number | undefined) ?? ''}
+                            onChange={(e) => updateItem(idx, { [campo.id]: e.target.value })}
+                            placeholder={campo.placeholder}
+                            className="text-base"
+                          />
+                        )}
+                        {campo.tipo === 'textarea' && (
+                          <Textarea
+                            value={(fieldVal as string | undefined) ?? ''}
+                            onChange={(e) => updateItem(idx, { [campo.id]: e.target.value })}
+                            placeholder={campo.placeholder}
+                            className="text-base min-h-[80px]"
+                          />
+                        )}
+                        {campo.tipo === 'select' && (
+                          <select
+                            value={(fieldVal as string | undefined) ?? ''}
+                            onChange={(e) => updateItem(idx, { [campo.id]: e.target.value })}
+                            className="w-full h-10 rounded-md border border-input bg-background px-3 text-base"
+                          >
+                            <option value="">Selecione...</option>
+                            {campo.opcoes?.map((opt) => (
+                              <option key={opt.value} value={opt.value}>{opt.label}</option>
+                            ))}
+                          </select>
+                        )}
+                        {campo.tipo === 'boolean' && (
+                          <div className="flex items-center space-x-2 h-10">
+                            <Checkbox
+                              id={`${question.id}-${idx}-${campo.id}`}
+                              checked={Boolean(fieldVal)}
+                              onCheckedChange={(c) => updateItem(idx, { [campo.id]: Boolean(c) })}
+                            />
+                            <Label htmlFor={`${question.id}-${idx}-${campo.id}`} className="text-sm cursor-pointer">
+                              Sim
+                            </Label>
+                          </div>
+                        )}
+                        {campo.tipo === 'checkbox_multiple' && (() => {
+                          const arr = Array.isArray(fieldVal) ? (fieldVal as string[]) : [];
+                          return (
+                            <div className="flex flex-wrap gap-2">
+                              {campo.opcoes?.map((opt) => {
+                                const checked = arr.includes(opt.value);
+                                return (
+                                  <button
+                                    key={opt.value}
+                                    type="button"
+                                    onClick={() => {
+                                      const next = checked ? arr.filter((v) => v !== opt.value) : [...arr, opt.value];
+                                      updateItem(idx, { [campo.id]: next });
+                                    }}
+                                    className={`px-3 py-1.5 rounded-full text-sm border ${checked ? 'bg-primary text-primary-foreground border-primary' : 'bg-background border-input hover:bg-accent'}`}
+                                  >
+                                    {opt.label}
+                                  </button>
+                                );
+                              })}
+                            </div>
+                          );
+                        })()}
+                        {campo.hint && (
+                          <p className="text-xs text-muted-foreground mt-1">{campo.hint}</p>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
+            {items.length < maxItens && (
+              <Button type="button" variant="outline" onClick={addItem} className="w-full">
+                + {rotuloAdd}
+              </Button>
+            )}
+            {minItens > 0 && items.length < minItens && (
+              <p className="text-sm text-destructive">
+                Mínimo {minItens} {minItens === 1 ? 'item' : 'itens'}.
+              </p>
+            )}
+          </div>
+        );
+      }
+
       case 'info':
         // Parse numbered steps from text (e.g., "1. Step one 2. Step two")
         const parseSteps = (text: string) => {

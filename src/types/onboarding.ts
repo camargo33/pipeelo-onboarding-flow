@@ -15,7 +15,21 @@ export type QuestionType =
   | 'cnpj'
   | 'cpf'
   | 'email'
-  | 'phone';
+  | 'phone'
+  | 'repeater';
+
+/** Definição de um campo dentro de um item do repeater. */
+export interface RepeaterFieldDef {
+  id: string;
+  label: string;
+  tipo: 'text' | 'textarea' | 'number' | 'currency' | 'select' | 'checkbox_multiple' | 'boolean';
+  obrigatoria?: boolean;
+  placeholder?: string;
+  hint?: string;
+  opcoes?: QuestionOption[];
+  /** Largura em colunas no grid de 12 (default 12 = ocupa linha inteira). */
+  largura?: 3 | 4 | 6 | 8 | 12;
+}
 
 export interface QuestionOption {
   value: string;
@@ -34,6 +48,15 @@ export interface Question {
   link?: string;
   texto?: string;
   condicional?: string;
+  /** Para tipo='repeater': definição dos campos de cada item. */
+  campos?: RepeaterFieldDef[];
+  /** Para tipo='repeater': rótulo do botão "Adicionar" (default: "Adicionar"). */
+  rotulo_adicionar?: string;
+  /** Para tipo='repeater': rótulo singular do item ("Plano", "Pacote", etc). */
+  rotulo_item?: string;
+  /** Para tipo='repeater': mínimo/máximo de itens. */
+  minimo?: number;
+  maximo?: number;
 }
 
 export interface Section {

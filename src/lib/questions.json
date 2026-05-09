@@ -1216,6 +1216,205 @@
           ]
         },
 
+        "detalhe_tv": {
+          "titulo": "Detalhamento — TV",
+          "icone": "📺",
+          "condicional_secao": "outros_servicos_oferecidos contains 'tv'",
+          "perguntas": [
+            {
+              "id": "tv_tecnologia",
+              "pergunta": "Qual a tecnologia de TV oferecida?",
+              "tipo": "select",
+              "obrigatoria": true,
+              "opcoes": [
+                {"value": "iptv", "label": "IPTV (via internet)"},
+                {"value": "dth", "label": "DTH (satélite)"},
+                {"value": "cabo", "label": "Cabo (coaxial)"},
+                {"value": "ott", "label": "Streaming OTT (sem set-top box)"}
+              ]
+            },
+            {
+              "id": "tv_pacotes",
+              "pergunta": "Liste os pacotes de TV disponíveis",
+              "tipo": "repeater",
+              "obrigatoria": true,
+              "minimo": 1,
+              "rotulo_item": "Pacote",
+              "rotulo_adicionar": "Adicionar pacote",
+              "campos": [
+                {"id": "nome", "label": "Nome do pacote", "tipo": "text", "obrigatoria": true, "placeholder": "Ex: Top HD", "largura": 6},
+                {"id": "qtd_canais", "label": "Qtd canais", "tipo": "number", "placeholder": "120", "largura": 6},
+                {"id": "preco_avulso", "label": "Preço avulso (R$)", "tipo": "currency", "obrigatoria": true, "placeholder": "59.90", "largura": 6},
+                {"id": "preco_combo", "label": "Preço em combo c/ internet (R$)", "tipo": "currency", "placeholder": "39.90", "largura": 6}
+              ]
+            },
+            {
+              "id": "tv_canais_premium",
+              "pergunta": "Canais premium oferecidos (multi-seleção)",
+              "tipo": "checkbox_multiple",
+              "obrigatoria": false,
+              "opcoes": [
+                {"value": "telecine", "label": "Telecine"},
+                {"value": "hbo", "label": "HBO"},
+                {"value": "premiere", "label": "Premiere"},
+                {"value": "combate", "label": "Combate"},
+                {"value": "globoplay", "label": "Globoplay"},
+                {"value": "espn", "label": "ESPN"},
+                {"value": "discovery", "label": "Discovery"},
+                {"value": "outro", "label": "Outro"}
+              ]
+            }
+          ]
+        },
+
+        "detalhe_streaming": {
+          "titulo": "Detalhamento — Streaming",
+          "icone": "🎬",
+          "condicional_secao": "outros_servicos_oferecidos contains 'streaming'",
+          "perguntas": [
+            {
+              "id": "streaming_servicos",
+              "pergunta": "Quais serviços de streaming estão disponíveis?",
+              "tipo": "checkbox_multiple",
+              "obrigatoria": true,
+              "opcoes": [
+                {"value": "watch", "label": "Watch Brasil"},
+                {"value": "hbo_max", "label": "HBO Max"},
+                {"value": "prime_video", "label": "Prime Video"},
+                {"value": "globoplay", "label": "Globoplay"},
+                {"value": "paramount", "label": "Paramount+"},
+                {"value": "apple_tv", "label": "Apple TV+"},
+                {"value": "disney", "label": "Disney+"},
+                {"value": "skeelo", "label": "Skeelo (livros)"},
+                {"value": "deezer", "label": "Deezer"},
+                {"value": "qualifica", "label": "Qualifica AI"},
+                {"value": "outro", "label": "Outro"}
+              ]
+            },
+            {
+              "id": "streaming_inclusao",
+              "pergunta": "Como esses streamings são entregues?",
+              "tipo": "select",
+              "obrigatoria": true,
+              "opcoes": [
+                {"value": "todos_planos", "label": "Inclusos em todos os planos"},
+                {"value": "planos_superiores", "label": "Inclusos a partir de plano específico"},
+                {"value": "addon_pago", "label": "Addon pago opcional"}
+              ]
+            },
+            {
+              "id": "tv_perguntas_triagem",
+              "pergunta": "Perguntas de triagem para problemas de TV/streaming",
+              "tipo": "textarea",
+              "obrigatoria": false,
+              "placeholder": "Ex: Todos os canais ou só alguns? Aparece mensagem de erro? Já tentou desligar e ligar?",
+              "hint": "Opcional. Se vazio, a IA transfere direto pro humano."
+            }
+          ]
+        },
+
+        "detalhe_telefonia_fixa": {
+          "titulo": "Detalhamento — Telefonia Fixa",
+          "icone": "☎️",
+          "condicional_secao": "outros_servicos_oferecidos contains 'telefonia_fixa'",
+          "perguntas": [
+            {
+              "id": "fixa_carrier",
+              "pergunta": "Qual a operadora carrier?",
+              "tipo": "select",
+              "obrigatoria": true,
+              "opcoes": [
+                {"value": "propria", "label": "Própria (licença STFC)"},
+                {"value": "algar", "label": "Algar"},
+                {"value": "vivo", "label": "Vivo"},
+                {"value": "embratel", "label": "Embratel"},
+                {"value": "outro", "label": "Outra"}
+              ]
+            },
+            {
+              "id": "fixa_minutos_inclusos",
+              "pergunta": "Quantos minutos inclusos por mês?",
+              "tipo": "text",
+              "obrigatoria": true,
+              "placeholder": "Ex: 200 minutos ou Ilimitado"
+            },
+            {
+              "id": "fixa_destinos_inclusos",
+              "pergunta": "Quais destinos estão inclusos?",
+              "tipo": "checkbox_multiple",
+              "obrigatoria": true,
+              "opcoes": [
+                {"value": "fixo_local", "label": "Fixo local"},
+                {"value": "fixo_nacional", "label": "Fixo nacional (DDD)"},
+                {"value": "movel_local", "label": "Móvel local"},
+                {"value": "movel_nacional", "label": "Móvel nacional"},
+                {"value": "internacional", "label": "Internacional"}
+              ]
+            },
+            {
+              "id": "fixa_preco_avulso",
+              "pergunta": "Preço avulso da telefonia fixa (R$)",
+              "tipo": "currency",
+              "obrigatoria": true,
+              "placeholder": "29.90"
+            },
+            {
+              "id": "fixa_perguntas_triagem",
+              "pergunta": "Perguntas de triagem para problemas de telefonia fixa",
+              "tipo": "textarea",
+              "obrigatoria": false,
+              "placeholder": "Ex: A linha está muda ou só não completa? Testou outro aparelho?"
+            }
+          ]
+        },
+
+        "detalhe_telefonia_movel": {
+          "titulo": "Detalhamento — Telefonia Móvel",
+          "icone": "📱",
+          "condicional_secao": "outros_servicos_oferecidos contains 'telefonia_movel'",
+          "perguntas": [
+            {
+              "id": "movel_carrier",
+              "pergunta": "Qual a operadora MVNO/carrier?",
+              "tipo": "select",
+              "obrigatoria": true,
+              "opcoes": [
+                {"value": "mvno_surf", "label": "MVNO Surf"},
+                {"value": "mvno_algar", "label": "Algar"},
+                {"value": "claro", "label": "Claro"},
+                {"value": "vivo", "label": "Vivo"},
+                {"value": "tim", "label": "TIM"},
+                {"value": "propria", "label": "Própria (operadora autorizada)"},
+                {"value": "outro", "label": "Outra"}
+              ]
+            },
+            {
+              "id": "movel_planos",
+              "pergunta": "Liste os planos móveis disponíveis",
+              "tipo": "repeater",
+              "obrigatoria": true,
+              "minimo": 1,
+              "rotulo_item": "Plano móvel",
+              "rotulo_adicionar": "Adicionar plano móvel",
+              "campos": [
+                {"id": "nome", "label": "Nome", "tipo": "text", "obrigatoria": true, "placeholder": "Ex: Móvel 20GB", "largura": 6},
+                {"id": "gb", "label": "Internet (GB)", "tipo": "number", "obrigatoria": true, "placeholder": "20", "largura": 3},
+                {"id": "minutos", "label": "Minutos", "tipo": "text", "placeholder": "Ilimitado", "largura": 3},
+                {"id": "redes_sociais_ilimitadas", "label": "Redes sociais ilimitadas?", "tipo": "boolean", "largura": 6},
+                {"id": "preco_avulso", "label": "Preço avulso (R$)", "tipo": "currency", "obrigatoria": true, "placeholder": "39.90", "largura": 3},
+                {"id": "preco_combo", "label": "Preço combo c/ internet (R$)", "tipo": "currency", "placeholder": "29.90", "largura": 3}
+              ]
+            },
+            {
+              "id": "movel_perguntas_triagem",
+              "pergunta": "Perguntas de triagem para problemas de telefonia móvel",
+              "tipo": "textarea",
+              "obrigatoria": false,
+              "placeholder": "Ex: O chip aparece? Tem sinal? Funciona em Wi-Fi mas não na rede móvel?"
+            }
+          ]
+        },
+
         "follow_up": {
           "titulo": "Follow-up de Atendimentos",
           "icone": "🔄",
@@ -1270,12 +1469,41 @@
           "descricao": "Os planos que a IA vai recomendar e fechar. Precisa ser completo — sem isso a IA não consegue vender.",
           "perguntas": [
             {
-              "id": "tabela_planos",
-              "pergunta": "Liste TODOS os planos ativos (um por linha, separe colunas por |)",
-              "tipo": "textarea",
+              "id": "planos",
+              "pergunta": "Cadastre TODOS os planos ativos",
+              "tipo": "repeater",
               "obrigatoria": true,
-              "placeholder": "Nome | Velocidade | Simétrico? | Preço | Inclusos | Público\nConnect 500 | 500Mbps | Sim | R$ 99 | TV, Skeelo | 1-2 pessoas\nSuper 600 | 600Mbps | Sim | R$ 117 | TV, Skeelo | 2-3 pessoas\nHiper 700 | 700Mbps | Sim | R$ 144 | TV, Skeelo, Watch | 3-4 pessoas\nUltra 800 | 800Mbps | Sim | R$ 189 | TV, Skeelo, Watch, Mesh | 4+ pessoas",
-              "hint": "Uma linha por plano. Colunas: Nome | Velocidade | Simétrico? (Sim/Não) | Preço | Serviços inclusos (separe por vírgula) | Público-alvo. Inclua planos residenciais E empresariais."
+              "minimo": 1,
+              "rotulo_item": "Plano",
+              "rotulo_adicionar": "Adicionar plano",
+              "hint": "Cadastre cada plano separadamente — a IA usa esses dados pra recomendar e fechar. Inclua residenciais E empresariais.",
+              "campos": [
+                {"id": "nome", "label": "Nome do plano", "tipo": "text", "obrigatoria": true, "placeholder": "Ex: Super 600", "largura": 6},
+                {"id": "categoria", "label": "Categoria", "tipo": "select", "obrigatoria": true, "largura": 6,
+                  "opcoes": [
+                    {"value": "residencial", "label": "Residencial"},
+                    {"value": "empresarial", "label": "Empresarial"},
+                    {"value": "ambos", "label": "Ambos (residencial e empresarial)"}
+                  ]},
+                {"id": "velocidade_download", "label": "Download (Mbps)", "tipo": "number", "obrigatoria": true, "placeholder": "600", "largura": 4},
+                {"id": "velocidade_upload", "label": "Upload (Mbps)", "tipo": "number", "obrigatoria": true, "placeholder": "600", "largura": 4},
+                {"id": "simetrico", "label": "Simétrico?", "tipo": "boolean", "largura": 4},
+                {"id": "preco", "label": "Preço mensal (R$)", "tipo": "currency", "obrigatoria": true, "placeholder": "99.90", "largura": 6},
+                {"id": "publico_alvo", "label": "Público-alvo", "tipo": "text", "placeholder": "Ex: 3-4 pessoas, casa média", "largura": 6, "hint": "Quem é o cliente ideal pra esse plano"},
+                {"id": "servicos_inclusos", "label": "Serviços inclusos", "tipo": "checkbox_multiple", "largura": 12,
+                  "opcoes": [
+                    {"value": "tv", "label": "TV"},
+                    {"value": "streaming", "label": "Streaming"},
+                    {"value": "telefonia_fixa", "label": "Telefonia fixa"},
+                    {"value": "telefonia_movel", "label": "Telefonia móvel"},
+                    {"value": "mesh", "label": "Mesh"},
+                    {"value": "ip_fixo", "label": "IP fixo"},
+                    {"value": "antivirus", "label": "Antivírus"}
+                  ]},
+                {"id": "tem_promocao", "label": "Tem promoção ativa?", "tipo": "boolean", "largura": 4},
+                {"id": "valor_promocional", "label": "Valor promocional (R$)", "tipo": "currency", "placeholder": "79.90", "largura": 4},
+                {"id": "condicoes_promocao", "label": "Condições da promoção", "tipo": "text", "placeholder": "Ex: 6 primeiros meses", "largura": 4}
+              ]
             },
             {
               "id": "plano_campeao",
@@ -1422,6 +1650,49 @@
                 {"value": "retencao", "label": "Transfere para retenção (comercial) após coletar motivo"},
                 {"value": "financeiro", "label": "Transfere para financeiro"},
                 {"value": "humano_direto", "label": "Transfere para atendente humano sem triagem"}
+              ]
+            }
+          ]
+        },
+
+        "combos": {
+          "titulo": "Combos / Pacotes",
+          "icone": "🎁",
+          "descricao": "Pacotes que combinam internet com outros serviços (TV, telefonia, móvel) com desconto. A IA usa pra cross-sell.",
+          "perguntas": [
+            {
+              "id": "tem_combos",
+              "pergunta": "Vocês trabalham com combos/pacotes?",
+              "tipo": "select",
+              "obrigatoria": true,
+              "opcoes": [
+                {"value": "sim", "label": "Sim, oferecemos combos com desconto"},
+                {"value": "nao", "label": "Não, vendemos cada serviço avulso"}
+              ]
+            },
+            {
+              "id": "combos_disponiveis",
+              "pergunta": "Liste os combos disponíveis",
+              "tipo": "repeater",
+              "obrigatoria": true,
+              "condicional": "tem_combos == 'sim'",
+              "minimo": 1,
+              "rotulo_item": "Combo",
+              "rotulo_adicionar": "Adicionar combo",
+              "campos": [
+                {"id": "nome", "label": "Nome do combo", "tipo": "text", "obrigatoria": true, "placeholder": "Ex: Combo Total", "largura": 6},
+                {"id": "preco_final", "label": "Preço final mensal (R$)", "tipo": "currency", "obrigatoria": true, "placeholder": "149.90", "largura": 6},
+                {"id": "servicos_inclusos", "label": "Serviços inclusos", "tipo": "checkbox_multiple", "obrigatoria": true, "largura": 12,
+                  "opcoes": [
+                    {"value": "internet", "label": "Internet"},
+                    {"value": "tv", "label": "TV"},
+                    {"value": "streaming", "label": "Streaming"},
+                    {"value": "telefonia_fixa", "label": "Telefonia fixa"},
+                    {"value": "telefonia_movel", "label": "Telefonia móvel"},
+                    {"value": "mesh", "label": "Mesh"}
+                  ]},
+                {"id": "desconto_vs_avulso", "label": "Desconto vs avulso (%)", "tipo": "number", "placeholder": "20", "largura": 6, "hint": "Quanto economiza vs comprar separado"},
+                {"id": "publico_alvo", "label": "Público-alvo", "tipo": "text", "placeholder": "Ex: Famílias 4+ pessoas", "largura": 6}
               ]
             }
           ]
