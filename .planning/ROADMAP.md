@@ -10,12 +10,12 @@ Cliente termina o questionário → tenant fica vivo na Pipeelo automaticamente 
 
 ## Phases
 
-- [ ] **Phase 1: Hardening + Server-Side Persistence** — Fechar leak ativo de RLS, mover persistência para `/api/*` com service-role, ativar autosave + magic link + identification gate + IDV 2026
-- [ ] **Phase 2: Pipeline de Ingestão Robusta** — Schema Zod compartilhado entre repos, outbox pattern, reconciliation cron, status state machine — webhook nunca perde tenant
-- [ ] **Phase 3: Tool Layer + Audit (sem agente)** — Tools tipadas com idempotency wrapper, `jarvis_runs`/`jarvis_tool_calls`, Langfuse — provisiona tenant deterministicamente antes do agente entrar
-- [x] **Phase 4: Jarvis Cron Pipeline (Agente)** — System prompt cacheável + tools registry + agent loop com guardas + Vercel Cron com lease pattern + prompt-injection mitigations (feature-complete 2026-05-08; smoke staging pending humano)
-- [ ] **Phase 5: Painel + Notificações** — Painel `/onboarding-sessions` revisado + manual retry + fallback determinístico + emails React Email + WhatsApp alerta + DNS Resend (Waves 1+2 done 2026-05-08; Wave 3 painel pendente)
-- [ ] **Phase 6: Evals + Cutover** — Replay histórico, Langfuse evals com DNA tom 8 regras como scorer, feature flag `JARVIS_ENABLED`, fallback `onboarding-processor.ts` mantido
+- [~] **Phase 1: Hardening + Server-Side Persistence** — 5/6 done (Plan 01-05 RLS lock awaiting human cutover via RUNBOOK)
+- [x] **Phase 2: Pipeline de Ingestão Robusta** — code 100% (PIPE-01..08 done; outbox+reconciliation cron+state machine; migration awaiting humano)
+- [x] **Phase 3: Tool Layer + Audit (sem agente)** — code 100% (TOOL-01..07 done; 7 tools + Langfuse SDK; Langfuse cloud setup awaiting humano)
+- [x] **Phase 4: Jarvis Cron Pipeline (Agente)** — code 100% (JARV-01..12 done; system-prompt+agent-loop+lease+cron tick; env vars + migration awaiting humano)
+- [x] **Phase 5: Painel + Notificações** — code 100% (UI-01..09 done; 4 React Email templates + email triggers + magic link 72h + painel admin + dual alert; DNS Resend + Evolution token awaiting humano)
+- [x] **Phase 6: Evals + Cutover** — code 100% (EVAL-01..06 done; replay scripts + DNA tom rubric + threshold-check + flip-back-drill + cutover-monitor; sign-off + cutover prod awaiting humano)
 
 ## Phase Details
 
@@ -138,12 +138,12 @@ Com `parallelization: true` no config:
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Hardening + Server-Side Persistence | 4/6 | In progress | - |
-| 2. Pipeline de Ingestão Robusta | 0/4 | Not started | - |
-| 3. Tool Layer + Audit | 3/4 | In Progress|  |
-| 4. Jarvis Cron Pipeline | 0/4 | Not started | - |
-| 5. Painel + Notificações | 0/0 | Not started | - |
-| 6. Evals + Cutover | 0/4 | Not started | - |
+| 1. Hardening + Server-Side Persistence | 5/6 | Awaiting cutover | 2026-05-08 |
+| 2. Pipeline de Ingestão Robusta | 4/4 | Code complete | 2026-05-08 |
+| 3. Tool Layer + Audit | 4/4 | Code complete (Langfuse cloud pending) | 2026-05-08 |
+| 4. Jarvis Cron Pipeline | 4/4 | Code complete (env vars + migration pending) | 2026-05-08 |
+| 5. Painel + Notificações | 4/4 | Code complete (DNS Resend pending) | 2026-05-08 |
+| 6. Evals + Cutover | 4/4 | Code complete (sign-off + cutover pending) | 2026-05-08 |
 
 ## Coverage Validation
 

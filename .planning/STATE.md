@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: in_progress
-stopped_at: Plan 05-02 complete — Wave 2 do Painel+Notificações. Email triggers Resend prontos: api/_lib/email-sender.ts (idempotent wrapper + sha256 key derivation + 2-layer dedup app+SDK header), api/_lib/magic-link.ts (nanoid 32 + TTL 72h + verify), 2 endpoints Bearer ONBOARDING_WEBHOOK_TOKEN (send-welcome + send-credentials), cron diário 0 12 * * * UTC = 9h BRT (api/cron/reminder-stalled, escalation diária via yyyymmdd suffix), migration 20260509120000_email_log.sql (table + 3 cols em onboarding_sessions, NÃO aplicada — Felipe aplica via supabase db push pré-deploy). Wire admin/sessions-create.ts dispara WelcomeCEO async se ceo_email presente. 3 commits: 4db5fce (lib + migration), 0a2eca9 (endpoints + wire), 7b82880 (cron + vercel.json). 12/12 tests novos. Suite total: 172 passed | 5 skipped | 7 todo. Cobre UI-04, UI-05, UI-06, UI-08 (UI-08 só ativa em prod após DNS Resend humano). Próximo: Plan 05-03 painel admin + UI-07 alerta WhatsApp.
-last_updated: "2026-05-08T21:02:00.000Z"
+stopped_at: Todos os 24 plans (Phase 1-6) com código entregue. 5 checkpoints aguardando humano (Felipe) — RLS lock cutover Phase 1 (RUNBOOK 01-05), Langfuse cloud setup Phase 3, env vars + migrations admin Phase 4, DNS Resend + Evolution token Phase 5, sign-off + cutover prod Phase 6 (RUNBOOK 06-03). Suite cross-repo 538 testes verde (366 admin-pipeelo + 172 onboarding-flow). 39 commits ahead origin/main em admin-pipeelo, ~30 commits ahead em onboarding-flow migration/vercel — push aguardando autorização explícita.
+last_updated: "2026-05-09T01:30:00.000Z"
 progress:
   total_phases: 6
-  completed_phases: 0
-  total_plans: 11
-  completed_plans: 11
-  percent: 100
+  completed_phases: 5
+  total_plans: 24
+  completed_plans: 23
+  percent: 96
 ---
 
 # Project State: Pipeelo Onboarding Flow — v2 Upgrade
@@ -21,7 +21,7 @@ progress:
 
 **Core value:** Cliente termina o questionário → tenant fica vivo na Pipeelo automaticamente em até 24h, com prompts de qualidade auditável.
 
-**Current focus:** Phase 1 — Hardening + Server-Side Persistence (RLS afrouxado é leak ativo em prod, bloqueia tudo)
+**Current focus:** Aguardando humano destravar 5 checkpoints (RLS cutover Phase 1, Langfuse cloud Phase 3, env vars + migrations Phase 4, DNS Resend Phase 5, cutover prod Phase 6). Todo o código entregue.
 
 **Repos envolvidos:**
 - `~/Desktop/pipeelo-onboarding-flow` (este — Vite + Vercel Functions)
