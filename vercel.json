@@ -7,7 +7,8 @@
     { "source": "/((?!api|assets|favicon.ico|.*\\..*).*)", "destination": "/index.html" }
   ],
   "crons": [
-    { "path": "/api/cron/reconcile-webhooks", "schedule": "*/5 * * * *" }
+    { "path": "/api/cron/reconcile-webhooks", "schedule": "*/5 * * * *" },
+    { "path": "/api/cron/reminder-stalled", "schedule": "0 12 * * *" }
   ],
   "headers": [
     {
