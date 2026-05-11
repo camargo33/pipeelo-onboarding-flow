@@ -6,6 +6,8 @@ export default async function handler(_req: VercelRequest, res: VercelResponse) 
   const url = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL || "";
   const hasServiceRole = Boolean(process.env.SUPABASE_SERVICE_ROLE_KEY);
   const hasAnon = Boolean(process.env.VITE_SUPABASE_ANON_KEY);
+  const webhookToken = process.env.ONBOARDING_WEBHOOK_TOKEN || "";
+  const adminUrl = process.env.PIPEELO_ADMIN_API_URL || "https://admin.pipeelo.com";
 
   let host: string | null = null;
   let urlLen = url.length;
@@ -42,6 +44,10 @@ export default async function handler(_req: VercelRequest, res: VercelResponse) 
     host,
     hasServiceRole,
     hasAnon,
+    hasWebhookToken: webhookToken.length > 0,
+    webhookTokenLen: webhookToken.length,
+    webhookTokenPrefix: webhookToken ? `${webhookToken.slice(0, 4)}...${webhookToken.slice(-4)}` : null,
+    adminUrl,
     nodeVersion: process.version,
     region: process.env.VERCEL_REGION || null,
     ping: pingResult,
