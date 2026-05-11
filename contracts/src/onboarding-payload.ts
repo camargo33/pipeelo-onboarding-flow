@@ -37,8 +37,8 @@ export const SessionEnvelopeSchema = z
   .object({
     id: z.string().min(1),
     empresa_nome: z.string().min(1),
-    ceo_email: EmailSchema,
-    cnpj: CnpjSchema,
+    ceo_email: EmailSchema.nullable(),
+    cnpj: CnpjSchema.nullable(),
     created_at: IsoDateTimeSchema,
     access_token: z.string().nullable().optional(),
     tenant_id: z.string().nullable().optional(),
