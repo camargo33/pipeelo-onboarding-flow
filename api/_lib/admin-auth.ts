@@ -29,7 +29,10 @@ export async function assertAdminUser(req: VercelRequest): Promise<{ id: string;
   if (!token) throw new AdminAuthError(401, 'missing_authorization');
 
   const url = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
-  const anonKey = process.env.SUPABASE_ANON_KEY || process.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+  const anonKey =
+    process.env.SUPABASE_ANON_KEY ||
+    process.env.VITE_SUPABASE_ANON_KEY ||
+    process.env.VITE_SUPABASE_PUBLISHABLE_KEY;
   if (!url || !anonKey) throw new AdminAuthError(500, 'auth_misconfigured');
 
   const client = createClient(url, anonKey, { auth: { persistSession: false } });
