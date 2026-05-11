@@ -24,7 +24,6 @@ const routes: Array<[string, Loader]> = [
   ['/api/provision-tenant',             () => import('../api/provision-tenant.ts')],
   ['/api/send-email',                   () => import('../api/send-email.ts')],
   ['/api/sync-department',              () => import('../api/sync-department.ts')],
-  ['/api/_diag',                        () => import('../api/_diag.ts')],
   ['/api/cron/reconcile-webhooks',      () => import('../api/cron/reconcile-webhooks.ts')],
   ['/api/cron/reminder-stalled',        () => import('../api/cron/reminder-stalled.ts')],
 ];

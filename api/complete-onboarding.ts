@@ -2,7 +2,7 @@ import type { VercelRequest, VercelResponse } from "@vercel/node";
 import {
   OnboardingPayloadSchema,
   PAYLOAD_VERSION,
-} from "../contracts/src/index.js";
+} from "../contracts/src/onboarding-payload.js";
 import { requireSupabase } from "./_lib/supabase.js";
 import {
   enqueueOutbox,

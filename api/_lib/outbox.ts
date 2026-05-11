@@ -1,4 +1,4 @@
-import type { OnboardingPayload } from "../../contracts/src/index.js";
+import type { OnboardingPayload } from "../../contracts/src/onboarding-payload.js";
 import { getServiceSupabase } from "./supabase.js";
 
 /**
