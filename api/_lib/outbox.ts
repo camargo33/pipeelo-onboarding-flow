@@ -1,4 +1,4 @@
-import type { OnboardingPayload } from "pipeelo-onboarding-contracts";
+import type { OnboardingPayload } from "../../contracts/src/index.js";
 import { getServiceSupabase } from "./supabase.js";
 
 /**
