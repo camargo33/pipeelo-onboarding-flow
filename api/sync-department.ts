@@ -71,12 +71,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     const { data: respostas } = await supabase
       .from("onboarding_respostas")
-      .select("pergunta_id, resposta")
+      .select("pergunta_id, valor")
       .eq("session_id", body.sessionId)
       .eq("departamento", body.departamento);
 
     const respostasMap: Record<string, unknown> = {};
-    for (const r of respostas || []) respostasMap[r.pergunta_id] = r.resposta;
+    for (const r of respostas || []) respostasMap[r.pergunta_id] = r.valor;
 
     const cfg = CATEGORY_CONFIG[body.departamento];
 

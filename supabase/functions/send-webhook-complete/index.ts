@@ -132,7 +132,7 @@ serve(async (req: Request): Promise<Response> => {
 
     for (const resposta of respostas || []) {
       if (respostasPorDepartamento[resposta.departamento]) {
-        let valor = resposta.resposta;
+        let valor = resposta.valor;
         
         // Check if this is a horario_semanal type and expand it
         if (valor && typeof valor === 'object' && (valor.segunda_sexta || valor.sabado || valor.domingo_feriado)) {

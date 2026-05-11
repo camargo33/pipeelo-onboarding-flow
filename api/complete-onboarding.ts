@@ -68,7 +68,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     for (const r of respostas || []) {
       const bucket = respostasPorDepartamento[r.departamento];
       if (!bucket) continue;
-      let valor = r.resposta;
+      let valor = r.valor;
       if (valor && typeof valor === "object" && (valor.segunda_sexta || valor.sabado || valor.domingo_feriado)) {
         valor = expandHorarioSemanal(valor);
       }
