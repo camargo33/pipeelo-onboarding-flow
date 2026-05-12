@@ -200,17 +200,23 @@ function evaluateConditional(condicional: string, respostas: Record<string, any>
       });
     }
 
-    // Handle "includes" pattern: "departamentos_lista includes 'outro'"
-    if (condicional.includes(' includes ')) {
-      const [campo, valorRaw] = condicional.split(' includes ');
+    // Handle "includes" / "contains" pattern: "departamentos_lista includes 'outro'"
+    // 'contains' é alias de 'includes' (usado em condicional_secao do questions.json)
+    const membershipOp = condicional.includes(' includes ')
+      ? ' includes '
+      : condicional.includes(' contains ')
+        ? ' contains '
+        : null;
+    if (membershipOp) {
+      const [campo, valorRaw] = condicional.split(membershipOp);
       const valor = valorRaw.replace(/'/g, '').trim();
       const resposta = respostas[campo.trim()];
-      
+
       // Handle checkbox_multiple that stores { selected: [], outroTexto: '' }
       if (resposta && typeof resposta === 'object' && 'selected' in resposta) {
         return Array.isArray(resposta.selected) && resposta.selected.includes(valor);
       }
-      
+
       if (Array.isArray(resposta)) {
         return resposta.includes(valor);
       }
@@ -228,6 +234,14 @@ function evaluateConditional(condicional: string, respostas: Record<string, any>
       const [campo, valorRaw] = condicional.split(' == ');
       const valor = valorRaw.replace(/'/g, '').trim();
       const resposta = respostas[campo.trim()];
+      // checkbox_multiple armazena { selected: [...] } — comparar contra selected
+      if (resposta && typeof resposta === 'object' && 'selected' in resposta) {
+        const selected: unknown[] = Array.isArray(resposta.selected) ? resposta.selected : [];
+        return selected.length === 1 && selected[0] === valor;
+      }
+      if (Array.isArray(resposta)) {
+        return resposta.length === 1 && resposta[0] === valor;
+      }
       return resposta === valor;
     }
 
@@ -236,6 +250,14 @@ function evaluateConditional(condicional: string, respostas: Record<string, any>
       const [campo, valorRaw] = condicional.split(' != ');
       const valor = valorRaw.replace(/'/g, '').trim();
       const resposta = respostas[campo.trim()];
+      // checkbox_multiple: "!= 'nenhum'" significa "selecionou algo além de 'nenhum'"
+      if (resposta && typeof resposta === 'object' && 'selected' in resposta) {
+        const selected: unknown[] = Array.isArray(resposta.selected) ? resposta.selected : [];
+        return selected.some(v => v !== valor);
+      }
+      if (Array.isArray(resposta)) {
+        return resposta.some(v => v !== valor);
+      }
       return resposta !== valor;
     }
 
