@@ -194,20 +194,8 @@ export default function Onboarding() {
 
     const resposta = state.respostas[currentQuestion.id];
 
-    if (currentQuestion.obrigatoria) {
-      if (resposta === undefined || resposta === '' || resposta === null) {
-        setError('Este campo é obrigatório');
-        return false;
-      }
-
-      if (currentQuestion.tipo === 'checkbox_multiple') {
-        const selectedValues = resposta?.selected || (Array.isArray(resposta) ? resposta : []);
-        if (selectedValues.length === 0) {
-          setError('Selecione pelo menos uma opção');
-          return false;
-        }
-      }
-    }
+    // Nenhuma pergunta trava o avanço — cliente sempre pode pular.
+    // Mantemos apenas validações de formato (URL/min) que só rodam se preencheu.
 
     if (currentQuestion.tipo === 'url' && resposta) {
       try {
