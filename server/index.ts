@@ -13,6 +13,7 @@ const routes: Array<[string, Loader]> = [
   ['/api/admin/sessions-list',          () => import('../api/admin/sessions-list.ts')],
   ['/api/admin/sessions-create',        () => import('../api/admin/sessions-create.ts')],
   ['/api/admin/sessions-delete',        () => import('../api/admin/sessions-delete.ts')],
+  ['/api/admin/short-links-create',     () => import('../api/admin/short-links-create.ts')],
   ['/api/sessions/create',              () => import('../api/sessions/create.ts')],
   ['/api/sessions/get',                 () => import('../api/sessions/get.ts')],
   ['/api/sessions/save-resposta',       () => import('../api/sessions/save-resposta.ts')],
@@ -44,6 +45,17 @@ for (const [route, loader] of routes) {
     }
   });
 }
+
+// Encurtador público: GET /s/:code → 302 pro target_url
+app.get('/s/:code', async (req, res) => {
+  try {
+    const mod = await import('../api/s/redirect.ts');
+    await mod.default(req, res);
+  } catch (e) {
+    console.error('[server] unhandled error in /s/:code:', e);
+    if (!res.headersSent) res.redirect(302, '/');
+  }
+});
 
 const distDir = path.resolve(__dirname, '..', 'dist');
 app.use(express.static(distDir, { index: false, maxAge: '1y' }));

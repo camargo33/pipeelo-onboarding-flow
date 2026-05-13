@@ -179,4 +179,17 @@ export const adminSessionApi = {
       method: 'POST',
       body: JSON.stringify({ session_id }),
     }),
+
+  createShortLink: (
+    authToken: string,
+    input: { session_id: string; modo: 'completo' | 'comercial'; target_url: string }
+  ) =>
+    adminApi<{ code: string; short_url: string }>(
+      '/api/admin/short-links-create',
+      authToken,
+      {
+        method: 'POST',
+        body: JSON.stringify(input),
+      }
+    ),
 };

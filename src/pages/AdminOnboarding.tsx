@@ -379,6 +379,9 @@ const AdminOnboarding = () => {
     }
   };
 
+  // Cache local de shortlinks já gerados pra evitar chamada repetida
+  const [shortLinkCache, setShortLinkCache] = useState<Record<string, string>>({});
+
   const getOnboardingUrl = (session: OnboardingSession, tipo: OnboardingTipo = 'completo') => {
     const accessToken = (session as { access_token?: string }).access_token;
     const path = tipo === 'comercial' ? `comercial/${session.slug}` : session.slug;
@@ -386,9 +389,44 @@ const AdminOnboarding = () => {
     return accessToken ? `${base}?token=${accessToken}` : base;
   };
 
-  const copyLink = (session: OnboardingSession, tipo: OnboardingTipo = 'completo') => {
-    navigator.clipboard.writeText(getOnboardingUrl(session, tipo));
+  const resolveShortLink = async (
+    session: OnboardingSession,
+    tipo: OnboardingTipo
+  ): Promise<string> => {
+    const cacheKey = `${session.id}:${tipo}`;
+    if (shortLinkCache[cacheKey]) return shortLinkCache[cacheKey];
+
+    const targetUrl = getOnboardingUrl(session, tipo);
+    try {
+      const authToken = await getAuthToken();
+      if (!authToken) {
+        toast.error('Sessão expirada — faça login novamente');
+        setIsAuthenticated(false);
+        return targetUrl;
+      }
+      const { short_url } = await adminSessionApi.createShortLink(authToken, {
+        session_id: session.id,
+        modo: tipo,
+        target_url: targetUrl,
+      });
+      setShortLinkCache((prev) => ({ ...prev, [cacheKey]: short_url }));
+      return short_url;
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.error('Erro ao gerar shortlink, caindo no link completo:', e);
+      return targetUrl;
+    }
+  };
+
+  const copyLink = async (session: OnboardingSession, tipo: OnboardingTipo = 'completo') => {
+    const url = await resolveShortLink(session, tipo);
+    await navigator.clipboard.writeText(url);
     toast.success(`Link copiado — ${TIPO_LABEL[tipo]}`);
+  };
+
+  const openLink = async (session: OnboardingSession, tipo: OnboardingTipo = 'completo') => {
+    const url = await resolveShortLink(session, tipo);
+    window.open(url, '_blank');
   };
 
   const getStatusBadge = (status: string | null, label: string) => {
@@ -670,10 +708,10 @@ const AdminOnboarding = () => {
                           <DropdownMenuContent align="end" className="w-56">
                             <DropdownMenuLabel className="text-xs">Abrir como</DropdownMenuLabel>
                             <DropdownMenuSeparator />
-                            <DropdownMenuItem onClick={() => window.open(getOnboardingUrl(session, 'completo'), '_blank')}>
+                            <DropdownMenuItem onClick={() => openLink(session, 'completo')}>
                               Onboarding Completo
                             </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => window.open(getOnboardingUrl(session, 'comercial'), '_blank')}>
+                            <DropdownMenuItem onClick={() => openLink(session, 'comercial')}>
                               Apenas CRM
                             </DropdownMenuItem>
                           </DropdownMenuContent>
