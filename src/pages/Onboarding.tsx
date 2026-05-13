@@ -339,17 +339,20 @@ export default function Onboarding() {
       }
 
       // 3. Webhook final se TUDO concluído (calculado a partir do estado local
-      // pós-completeDepartment: o departamento atual acaba de virar 'concluido')
+      // pós-completeDepartment: o departamento atual acaba de virar 'concluido').
+      // Modo comercial: só Identificação + Vendas são obrigatórios.
       const updatedStatuses = {
         ...allStatuses,
         [`status_${state.departamento}`]: 'concluido',
       };
-      const allDeptsCompleted =
-        updatedStatuses.status_identificacao === 'concluido' &&
-        updatedStatuses.status_sac_geral === 'concluido' &&
-        updatedStatuses.status_financeiro === 'concluido' &&
-        updatedStatuses.status_suporte === 'concluido' &&
-        updatedStatuses.status_vendas === 'concluido';
+      const allDeptsCompleted = isComercial
+        ? updatedStatuses.status_identificacao === 'concluido' &&
+          updatedStatuses.status_vendas === 'concluido'
+        : updatedStatuses.status_identificacao === 'concluido' &&
+          updatedStatuses.status_sac_geral === 'concluido' &&
+          updatedStatuses.status_financeiro === 'concluido' &&
+          updatedStatuses.status_suporte === 'concluido' &&
+          updatedStatuses.status_vendas === 'concluido';
 
       if (allDeptsCompleted) {
         postJson('/api/complete-onboarding', { sessionId });
