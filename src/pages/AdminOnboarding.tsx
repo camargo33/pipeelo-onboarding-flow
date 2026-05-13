@@ -14,6 +14,7 @@ import {
   ERP_OPTIONS,
   MAPAS_OPTIONS,
   REDE_OPTIONS,
+  GATEWAY_OPTIONS,
   type SessionDTO,
 } from '@/lib/api-client';
 import {
@@ -61,10 +62,11 @@ type StackPatch = {
   erp?: string | null;
   mapas?: string | null;
   gerenciamento_rede?: string | null;
+  gateway_pagamento?: string | null;
 };
 
 const STACK_FIELDS: Array<{
-  key: 'erp' | 'mapas' | 'gerenciamento_rede';
+  key: 'erp' | 'mapas' | 'gerenciamento_rede' | 'gateway_pagamento';
   label: string;
   chip: string;
   options: readonly string[];
@@ -72,6 +74,7 @@ const STACK_FIELDS: Array<{
   { key: 'erp', label: 'ERP', chip: 'ERP', options: ERP_OPTIONS },
   { key: 'mapas', label: 'Mapas', chip: 'Mapas', options: MAPAS_OPTIONS },
   { key: 'gerenciamento_rede', label: 'Gerenciamento de Rede', chip: 'Rede', options: REDE_OPTIONS },
+  { key: 'gateway_pagamento', label: 'Gateway de Pagamentos', chip: 'Gateway', options: GATEWAY_OPTIONS },
 ];
 
 function StackEditor({
@@ -85,6 +88,7 @@ function StackEditor({
   const [erp, setErp] = useState<string>(session.erp ?? '');
   const [mapas, setMapas] = useState<string>(session.mapas ?? '');
   const [rede, setRede] = useState<string>(session.gerenciamento_rede ?? '');
+  const [gateway, setGateway] = useState<string>(session.gateway_pagamento ?? '');
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
@@ -92,10 +96,13 @@ function StackEditor({
       setErp(session.erp ?? '');
       setMapas(session.mapas ?? '');
       setRede(session.gerenciamento_rede ?? '');
+      setGateway(session.gateway_pagamento ?? '');
     }
-  }, [open, session.erp, session.mapas, session.gerenciamento_rede]);
+  }, [open, session.erp, session.mapas, session.gerenciamento_rede, session.gateway_pagamento]);
 
-  const hasStack = Boolean(session.erp || session.mapas || session.gerenciamento_rede);
+  const hasStack = Boolean(
+    session.erp || session.mapas || session.gerenciamento_rede || session.gateway_pagamento
+  );
 
   const handleSave = async () => {
     setSaving(true);
@@ -104,6 +111,7 @@ function StackEditor({
         erp: erp || null,
         mapas: mapas || null,
         gerenciamento_rede: rede || null,
+        gateway_pagamento: gateway || null,
       });
       setOpen(false);
     } finally {
@@ -115,6 +123,7 @@ function StackEditor({
     session.erp ? { label: 'ERP', value: session.erp } : null,
     session.mapas ? { label: 'Mapas', value: session.mapas } : null,
     session.gerenciamento_rede ? { label: 'Rede', value: session.gerenciamento_rede } : null,
+    session.gateway_pagamento ? { label: 'Gateway', value: session.gateway_pagamento } : null,
   ].filter(Boolean) as Array<{ label: string; value: string }>;
 
   return (
@@ -153,13 +162,14 @@ function StackEditor({
           <p className="text-[11px] uppercase tracking-wider text-muted-foreground font-medium">
             Stack Tecnológica
           </p>
-          {(erp || mapas || rede) && (
+          {(erp || mapas || rede || gateway) && (
             <button
               type="button"
               onClick={() => {
                 setErp('');
                 setMapas('');
                 setRede('');
+                setGateway('');
               }}
               className="text-[10px] text-muted-foreground hover:text-foreground flex items-center gap-1"
             >
@@ -169,9 +179,15 @@ function StackEditor({
         </div>
         {STACK_FIELDS.map((f) => {
           const value =
-            f.key === 'erp' ? erp : f.key === 'mapas' ? mapas : rede;
+            f.key === 'erp' ? erp
+            : f.key === 'mapas' ? mapas
+            : f.key === 'gerenciamento_rede' ? rede
+            : gateway;
           const setValue =
-            f.key === 'erp' ? setErp : f.key === 'mapas' ? setMapas : setRede;
+            f.key === 'erp' ? setErp
+            : f.key === 'mapas' ? setMapas
+            : f.key === 'gerenciamento_rede' ? setRede
+            : setGateway;
           return (
             <div key={f.key} className="space-y-1">
               <label className="text-xs text-muted-foreground">{f.label}</label>
@@ -228,6 +244,7 @@ const AdminOnboarding = () => {
   const [erp, setErp] = useState<string>('');
   const [mapas, setMapas] = useState<string>('');
   const [rede, setRede] = useState<string>('');
+  const [gateway, setGateway] = useState<string>('');
   const [sessions, setSessions] = useState<OnboardingSession[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -319,6 +336,7 @@ const AdminOnboarding = () => {
         erp: erp || undefined,
         mapas: mapas || undefined,
         gerenciamento_rede: rede || undefined,
+        gateway_pagamento: gateway || undefined,
       });
       toast.success('Link criado com sucesso!');
       setEmpresaNome('');
@@ -326,6 +344,7 @@ const AdminOnboarding = () => {
       setErp('');
       setMapas('');
       setRede('');
+      setGateway('');
       fetchSessions();
     } catch (e) {
       // eslint-disable-next-line no-console
@@ -339,7 +358,7 @@ const AdminOnboarding = () => {
 
   const updateSessionStack = async (
     sessionId: string,
-    patch: { erp?: string | null; mapas?: string | null; gerenciamento_rede?: string | null }
+    patch: { erp?: string | null; mapas?: string | null; gerenciamento_rede?: string | null; gateway_pagamento?: string | null }
   ) => {
     const token = await getAuthToken();
     if (!token) {
@@ -590,7 +609,7 @@ const AdminOnboarding = () => {
                   </span>
                 </p>
               </div>
-              <div className="grid gap-3 sm:grid-cols-3">
+              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
                 <Select value={erp} onValueChange={setErp}>
                   <SelectTrigger className="h-10">
                     <SelectValue placeholder="ERP" />
@@ -621,6 +640,18 @@ const AdminOnboarding = () => {
                   </SelectTrigger>
                   <SelectContent>
                     {REDE_OPTIONS.map((v) => (
+                      <SelectItem key={v} value={v}>
+                        {v}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <Select value={gateway} onValueChange={setGateway}>
+                  <SelectTrigger className="h-10">
+                    <SelectValue placeholder="Gateway de Pagamentos" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {GATEWAY_OPTIONS.map((v) => (
                       <SelectItem key={v} value={v}>
                         {v}
                       </SelectItem>

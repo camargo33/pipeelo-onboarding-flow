@@ -108,6 +108,80 @@
               "hint": "Número onde seus clientes conversam com a IA."
             }
           ]
+        },
+
+        "acessos_integracoes": {
+          "titulo": "Acessos das Integrações",
+          "icone": "🔌",
+          "descricao": "Credenciais dos sistemas que você marcou ao gerar o link. Só aparecem perguntas pros sistemas selecionados — se faltar algum, fale com o time pra ajustar.",
+          "condicional_secao": "_session_erp != '' || _session_mapas != '' || _session_gerenciamento_rede != '' || _session_gateway_pagamento != ''",
+          "perguntas": [
+            { "id": "_int_erp_header", "pergunta": "ERP / Sistema de gestão", "tipo": "info", "condicional": "_session_erp != ''" },
+
+            { "id": "erp_ixc_url", "pergunta": "URL da API do IXC", "tipo": "url", "placeholder": "https://ixc.suaempresa.com.br", "condicional": "_session_erp == 'IXC'" },
+            { "id": "erp_ixc_token", "pergunta": "Token do IXC", "tipo": "password", "condicional": "_session_erp == 'IXC'" },
+
+            { "id": "erp_mk_url", "pergunta": "URL da API do MK Solution", "tipo": "url", "placeholder": "https://mk.suaempresa.com.br", "condicional": "_session_erp == 'MK Solution'" },
+            { "id": "erp_mk_token", "pergunta": "Token MK Solution", "tipo": "password", "condicional": "_session_erp == 'MK Solution'" },
+            { "id": "erp_mk_senha", "pergunta": "Senha MK Solution", "tipo": "password", "condicional": "_session_erp == 'MK Solution'" },
+
+            { "id": "erp_voalle_url", "pergunta": "URL Voalle", "tipo": "url", "placeholder": "https://voalle.suaempresa.com.br", "condicional": "_session_erp == 'Voalle'" },
+            { "id": "erp_voalle_client_id", "pergunta": "Client ID Voalle", "tipo": "text", "condicional": "_session_erp == 'Voalle'" },
+            { "id": "erp_voalle_client_secret", "pergunta": "Client Secret Voalle", "tipo": "password", "condicional": "_session_erp == 'Voalle'" },
+            { "id": "erp_voalle_syndata", "pergunta": "Syndata Voalle", "tipo": "text", "condicional": "_session_erp == 'Voalle'" },
+
+            { "id": "erp_outros_nome", "pergunta": "Qual ERP / sistema vocês usam?", "tipo": "text", "placeholder": "Ex: Hubsoft, SGP, RBX, Topp Sap, etc.", "condicional": "_session_erp == 'Hubsoft' || _session_erp == 'SGP' || _session_erp == 'RBX' || _session_erp == 'Topp Sap' || _session_erp == 'Outros'", "hint": "Se for um ERP da lista (Hubsoft/SGP/RBX/Topp Sap), pode repetir aqui — só pra confirmar." },
+            { "id": "erp_outros_url", "pergunta": "URL da API do ERP", "tipo": "url", "condicional": "_session_erp == 'Hubsoft' || _session_erp == 'SGP' || _session_erp == 'RBX' || _session_erp == 'Topp Sap' || _session_erp == 'Outros'" },
+            { "id": "erp_outros_token", "pergunta": "Token / API Key", "tipo": "password", "condicional": "_session_erp == 'Hubsoft' || _session_erp == 'SGP' || _session_erp == 'RBX' || _session_erp == 'Topp Sap' || _session_erp == 'Outros'", "hint": "Se não usar token, pode deixar em branco e preencher usuário/senha abaixo." },
+            { "id": "erp_outros_usuario", "pergunta": "Usuário do ERP (se aplicável)", "tipo": "text", "condicional": "_session_erp == 'Hubsoft' || _session_erp == 'SGP' || _session_erp == 'RBX' || _session_erp == 'Topp Sap' || _session_erp == 'Outros'" },
+            { "id": "erp_outros_senha", "pergunta": "Senha do ERP (se aplicável)", "tipo": "password", "condicional": "_session_erp == 'Hubsoft' || _session_erp == 'SGP' || _session_erp == 'RBX' || _session_erp == 'Topp Sap' || _session_erp == 'Outros'" },
+
+            { "id": "_int_gateway_header", "pergunta": "Gateway de pagamentos", "tipo": "info", "condicional": "_session_gateway_pagamento != ''" },
+
+            { "id": "gateway_7az_token", "pergunta": "Token 7AZ (Bemobi)", "tipo": "password", "condicional": "_session_gateway_pagamento == '7AZ (Bemobi)'" },
+
+            { "id": "gateway_outros_nome", "pergunta": "Qual gateway de pagamentos vocês usam?", "tipo": "text", "placeholder": "Ex: Asaas, Iugu, Pagar.me, Cielo…", "condicional": "_session_gateway_pagamento == 'Outros'" },
+            { "id": "gateway_outros_token", "pergunta": "Token / API Key do gateway", "tipo": "password", "condicional": "_session_gateway_pagamento == 'Outros'" },
+            { "id": "gateway_outros_credenciais", "pergunta": "Outras credenciais (usuário, senha, endpoint, etc.)", "tipo": "textarea", "placeholder": "Liste o que for necessário pra acessar o gateway", "condicional": "_session_gateway_pagamento == 'Outros'" },
+
+            { "id": "_int_rede_header", "pergunta": "Gerenciador de rede", "tipo": "info", "condicional": "_session_gerenciamento_rede != ''" },
+
+            { "id": "rede_oltcloud_url", "pergunta": "URL OLT Cloud", "tipo": "url", "placeholder": "https://oltcloud.suaempresa.com.br", "condicional": "_session_gerenciamento_rede == 'OLT Cloud'" },
+            { "id": "rede_oltcloud_usuario", "pergunta": "Usuário OLT Cloud", "tipo": "text", "condicional": "_session_gerenciamento_rede == 'OLT Cloud'" },
+            { "id": "rede_oltcloud_senha", "pergunta": "Senha OLT Cloud", "tipo": "password", "condicional": "_session_gerenciamento_rede == 'OLT Cloud'" },
+
+            { "id": "rede_anlix_url", "pergunta": "URL Anlix", "tipo": "url", "placeholder": "https://anlix.suaempresa.com.br", "condicional": "_session_gerenciamento_rede == 'Anlix'" },
+            { "id": "rede_anlix_usuario", "pergunta": "Usuário Anlix", "tipo": "text", "condicional": "_session_gerenciamento_rede == 'Anlix'" },
+            { "id": "rede_anlix_senha", "pergunta": "Senha Anlix", "tipo": "password", "condicional": "_session_gerenciamento_rede == 'Anlix'" },
+
+            { "id": "rede_smartolt_url", "pergunta": "URL Smart OLT", "tipo": "url", "placeholder": "https://smartolt.suaempresa.com.br", "condicional": "_session_gerenciamento_rede == 'Smart OLT'" },
+            { "id": "rede_smartolt_usuario", "pergunta": "Usuário Smart OLT", "tipo": "text", "condicional": "_session_gerenciamento_rede == 'Smart OLT'" },
+            { "id": "rede_smartolt_senha", "pergunta": "Senha Smart OLT", "tipo": "password", "condicional": "_session_gerenciamento_rede == 'Smart OLT'" },
+
+            { "id": "rede_outros_nome", "pergunta": "Qual gerenciador de rede vocês usam?", "tipo": "text", "placeholder": "Ex: Mikrotik, UNMS, próprio…", "condicional": "_session_gerenciamento_rede == 'Outros'" },
+            { "id": "rede_outros_url", "pergunta": "URL do gerenciador", "tipo": "url", "condicional": "_session_gerenciamento_rede == 'Outros'" },
+            { "id": "rede_outros_usuario", "pergunta": "Usuário", "tipo": "text", "condicional": "_session_gerenciamento_rede == 'Outros'" },
+            { "id": "rede_outros_senha", "pergunta": "Senha", "tipo": "password", "condicional": "_session_gerenciamento_rede == 'Outros'" },
+
+            { "id": "_int_mapas_header", "pergunta": "Mapas / Geo", "tipo": "info", "condicional": "_session_mapas != ''" },
+
+            { "id": "mapas_geogrid_url", "pergunta": "URL Geogrid", "tipo": "url", "placeholder": "https://geogrid.suaempresa.com.br", "condicional": "_session_mapas == 'Geogrid'" },
+            { "id": "mapas_geogrid_token", "pergunta": "Token Geogrid", "tipo": "password", "condicional": "_session_mapas == 'Geogrid'" },
+
+            { "id": "mapas_geosite_usuario", "pergunta": "Usuário Geosite", "tipo": "text", "condicional": "_session_mapas == 'Geosite'" },
+            { "id": "mapas_geosite_senha", "pergunta": "Senha Geosite", "tipo": "password", "condicional": "_session_mapas == 'Geosite'" },
+
+            { "id": "mapas_ozmap_url", "pergunta": "URL OZMap", "tipo": "url", "placeholder": "https://ozmap.suaempresa.com.br", "condicional": "_session_mapas == 'OZMap'" },
+            { "id": "mapas_ozmap_token", "pergunta": "Token OZMap", "tipo": "password", "condicional": "_session_mapas == 'OZMap'" },
+            { "id": "mapas_ozmap_usuario", "pergunta": "Usuário OZMap", "tipo": "text", "condicional": "_session_mapas == 'OZMap'" },
+            { "id": "mapas_ozmap_senha", "pergunta": "Senha OZMap", "tipo": "password", "condicional": "_session_mapas == 'OZMap'" },
+
+            { "id": "mapas_outros_nome", "pergunta": "Qual sistema de mapas/geo vocês usam?", "tipo": "text", "placeholder": "Ex: Google Maps interno, planilha, próprio…", "condicional": "_session_mapas == 'Outros'" },
+            { "id": "mapas_outros_url", "pergunta": "URL do sistema", "tipo": "url", "condicional": "_session_mapas == 'Outros'" },
+            { "id": "mapas_outros_token", "pergunta": "Token / API Key (se houver)", "tipo": "password", "condicional": "_session_mapas == 'Outros'" },
+            { "id": "mapas_outros_usuario", "pergunta": "Usuário (se houver)", "tipo": "text", "condicional": "_session_mapas == 'Outros'" },
+            { "id": "mapas_outros_senha", "pergunta": "Senha (se houver)", "tipo": "password", "condicional": "_session_mapas == 'Outros'" }
+          ]
         }
       }
     },

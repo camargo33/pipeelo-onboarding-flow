@@ -3,9 +3,10 @@ import { z } from 'zod';
 import { assertAdminUser, AdminAuthError } from '../_lib/admin-auth';
 import { getServiceSupabase } from '../_lib/supabase';
 
-const ERP_OPTIONS = ['IXC', 'SGP', 'MK Solution', 'RBX', 'Topp Sap', 'Hubsoft', 'Voalle'] as const;
-const MAPAS_OPTIONS = ['OZMap', 'Geogrid', 'Geosite'] as const;
-const REDE_OPTIONS = ['Smart OLT', 'Anlix', 'OLT Cloud'] as const;
+const ERP_OPTIONS = ['IXC', 'SGP', 'MK Solution', 'RBX', 'Topp Sap', 'Hubsoft', 'Voalle', 'Outros'] as const;
+const MAPAS_OPTIONS = ['OZMap', 'Geogrid', 'Geosite', 'Outros'] as const;
+const REDE_OPTIONS = ['Smart OLT', 'Anlix', 'OLT Cloud', 'Outros'] as const;
+const GATEWAY_OPTIONS = ['7AZ (Bemobi)', 'Outros'] as const;
 
 const nullableEnum = <T extends readonly [string, ...string[]]>(vals: T) =>
   z.enum(vals).nullable().or(z.literal('').transform(() => null));
@@ -15,6 +16,7 @@ const Body = z.object({
   erp: nullableEnum(ERP_OPTIONS).optional(),
   mapas: nullableEnum(MAPAS_OPTIONS).optional(),
   gerenciamento_rede: nullableEnum(REDE_OPTIONS).optional(),
+  gateway_pagamento: nullableEnum(GATEWAY_OPTIONS).optional(),
 });
 
 /**
@@ -39,6 +41,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     if ('erp' in body) patch.erp = body.erp ?? null;
     if ('mapas' in body) patch.mapas = body.mapas ?? null;
     if ('gerenciamento_rede' in body) patch.gerenciamento_rede = body.gerenciamento_rede ?? null;
+    if ('gateway_pagamento' in body) patch.gateway_pagamento = body.gateway_pagamento ?? null;
 
     if (Object.keys(patch).length === 0) {
       return res.status(400).json({ error: 'no_fields_to_update' });

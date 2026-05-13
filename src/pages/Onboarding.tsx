@@ -116,6 +116,21 @@ export default function Onboarding() {
           status_vendas: session.status_vendas,
         });
 
+        // Injeta a stack tecnológica da sessão como pseudo-respostas `_session_*`.
+        // Usadas em condicional_secao / condicional pra mostrar só as perguntas
+        // de credenciais dos sistemas que o admin marcou. Pseudo-fields nunca
+        // são salvas no DB (não existem como pergunta em questions.json).
+        const s = session as {
+          erp?: string | null;
+          mapas?: string | null;
+          gerenciamento_rede?: string | null;
+          gateway_pagamento?: string | null;
+        };
+        setResposta('_session_erp', s.erp ?? '');
+        setResposta('_session_mapas', s.mapas ?? '');
+        setResposta('_session_gerenciamento_rede', s.gerenciamento_rede ?? '');
+        setResposta('_session_gateway_pagamento', s.gateway_pagamento ?? '');
+
         // Hidratar respostas existentes do departamento atual
         const ofDept = respostas.filter((r) => r.departamento === urlDepartamento);
         ofDept.forEach((r) => {
@@ -165,6 +180,8 @@ export default function Onboarding() {
   const saver = useCallback(
     async (v: unknown) => {
       if (!slug || !token || !state.departamento || !currentQuestionId) return;
+      // pseudo-respostas (stack injetada da sessão) nunca vão pra DB
+      if (currentQuestionId.startsWith('_session_')) return;
       if (v === undefined || v === null || v === '') return;
       try {
         await sessionApi.saveResposta({

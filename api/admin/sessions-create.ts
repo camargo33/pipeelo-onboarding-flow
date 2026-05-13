@@ -5,9 +5,10 @@ import { assertAdminUser, AdminAuthError } from '../_lib/admin-auth';
 import { getServiceSupabase } from '../_lib/supabase';
 import { sendTransactionalEmail } from '../_lib/email-sender';
 
-const ERP_OPTIONS = ['IXC', 'SGP', 'MK Solution', 'RBX', 'Topp Sap', 'Hubsoft', 'Voalle'] as const;
-const MAPAS_OPTIONS = ['OZMap', 'Geogrid', 'Geosite'] as const;
-const REDE_OPTIONS = ['Smart OLT', 'Anlix', 'OLT Cloud'] as const;
+const ERP_OPTIONS = ['IXC', 'SGP', 'MK Solution', 'RBX', 'Topp Sap', 'Hubsoft', 'Voalle', 'Outros'] as const;
+const MAPAS_OPTIONS = ['OZMap', 'Geogrid', 'Geosite', 'Outros'] as const;
+const REDE_OPTIONS = ['Smart OLT', 'Anlix', 'OLT Cloud', 'Outros'] as const;
+const GATEWAY_OPTIONS = ['7AZ (Bemobi)', 'Outros'] as const;
 
 const optionalEnum = <T extends readonly [string, ...string[]]>(vals: T) =>
   z.enum(vals).optional().or(z.literal('').transform(() => undefined)).or(z.null().transform(() => undefined));
@@ -18,6 +19,7 @@ const Body = z.object({
   erp: optionalEnum(ERP_OPTIONS),
   mapas: optionalEnum(MAPAS_OPTIONS),
   gerenciamento_rede: optionalEnum(REDE_OPTIONS),
+  gateway_pagamento: optionalEnum(GATEWAY_OPTIONS),
 });
 
 /**
@@ -51,6 +53,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         erp: body.erp ?? null,
         mapas: body.mapas ?? null,
         gerenciamento_rede: body.gerenciamento_rede ?? null,
+        gateway_pagamento: body.gateway_pagamento ?? null,
         status_identificacao: 'pendente',
         status_sac_geral: 'pendente',
         status_financeiro: 'pendente',

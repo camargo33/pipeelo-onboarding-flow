@@ -94,6 +94,21 @@ export function QuestionRenderer({
           />
         );
 
+      case 'password':
+        return (
+          <Input
+            type="password"
+            value={localValue}
+            onChange={(e) => handleChange(e.target.value)}
+            onKeyPress={handleKeyPress}
+            placeholder={question.placeholder ?? '••••••••'}
+            className="text-lg py-6"
+            autoComplete="new-password"
+            spellCheck={false}
+            autoFocus
+          />
+        );
+
       case 'email':
         return (
           <Input

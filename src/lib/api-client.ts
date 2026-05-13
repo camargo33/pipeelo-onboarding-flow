@@ -54,6 +54,7 @@ export type SessionDTO = {
   erp?: string | null;
   mapas?: string | null;
   gerenciamento_rede?: string | null;
+  gateway_pagamento?: string | null;
   created_at?: string;
   updated_at?: string;
   [k: string]: unknown;
@@ -143,11 +144,13 @@ export type StackPatch = {
   erp?: string | null;
   mapas?: string | null;
   gerenciamento_rede?: string | null;
+  gateway_pagamento?: string | null;
 };
 
-export const ERP_OPTIONS = ['IXC', 'SGP', 'MK Solution', 'RBX', 'Topp Sap', 'Hubsoft', 'Voalle'] as const;
-export const MAPAS_OPTIONS = ['OZMap', 'Geogrid', 'Geosite'] as const;
-export const REDE_OPTIONS = ['Smart OLT', 'Anlix', 'OLT Cloud'] as const;
+export const ERP_OPTIONS = ['IXC', 'SGP', 'MK Solution', 'RBX', 'Topp Sap', 'Hubsoft', 'Voalle', 'Outros'] as const;
+export const MAPAS_OPTIONS = ['OZMap', 'Geogrid', 'Geosite', 'Outros'] as const;
+export const REDE_OPTIONS = ['Smart OLT', 'Anlix', 'OLT Cloud', 'Outros'] as const;
+export const GATEWAY_OPTIONS = ['7AZ (Bemobi)', 'Outros'] as const;
 
 export const adminSessionApi = {
   list: (authToken: string) =>
@@ -161,6 +164,7 @@ export const adminSessionApi = {
       erp?: string;
       mapas?: string;
       gerenciamento_rede?: string;
+      gateway_pagamento?: string;
     }
   ) =>
     adminApi<{ session: SessionDTO }>('/api/admin/sessions-create', authToken, {
