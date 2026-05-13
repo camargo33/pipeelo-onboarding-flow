@@ -1466,43 +1466,131 @@
         "portfolio_planos": {
           "titulo": "Portfólio de Planos",
           "icone": "📦",
-          "descricao": "Os planos que a IA vai recomendar e fechar. Precisa ser completo — sem isso a IA não consegue vender.",
+          "descricao": "Cadastre os planos por categoria. A IA usa nome, velocidade, preço, benefícios e argumento de venda diretamente no atendimento. Quanto mais completo, melhor a IA fecha — preencha apenas as categorias que vocês oferecem.",
           "perguntas": [
             {
-              "id": "planos",
-              "pergunta": "Cadastre TODOS os planos ativos",
+              "id": "planos_internet_residencial",
+              "pergunta": "📶 Planos de Internet Residencial (Fibra)",
               "tipo": "repeater",
-              "obrigatoria": true,
-              "minimo": 1,
-              "rotulo_item": "Plano",
-              "rotulo_adicionar": "Adicionar plano",
-              "hint": "Cadastre cada plano separadamente — a IA usa esses dados pra recomendar e fechar. Inclua residenciais E empresariais.",
+              "minimo": 0,
+              "rotulo_item": "Plano residencial",
+              "rotulo_adicionar": "Adicionar plano residencial",
+              "hint": "Planos de fibra para residências. Siga o padrão da KB Techy — preencha benefícios e argumento de venda completos pra IA usar literalmente no atendimento.",
               "campos": [
-                {"id": "nome", "label": "Nome do plano", "tipo": "text", "obrigatoria": true, "placeholder": "Ex: Super 600", "largura": 6},
-                {"id": "categoria", "label": "Categoria", "tipo": "select", "obrigatoria": true, "largura": 6,
+                {"id": "nome", "label": "Nome do plano", "tipo": "text", "placeholder": "Ex: Techy Light 350Mbps", "largura": 6},
+                {"id": "preco", "label": "Preço mensal (R$)", "tipo": "currency", "placeholder": "Ex: 114.90", "largura": 3},
+                {"id": "taxa_instalacao", "label": "Taxa de instalação (R$)", "tipo": "currency", "placeholder": "0 = grátis", "largura": 3},
+                {"id": "velocidade_download", "label": "Download (Mbps)", "tipo": "number", "placeholder": "Ex: 350", "largura": 3},
+                {"id": "velocidade_upload", "label": "Upload (Mbps)", "tipo": "number", "placeholder": "Ex: 350", "largura": 3},
+                {"id": "simetrico", "label": "Simétrico (mesma vel. download/upload)?", "tipo": "boolean", "largura": 6},
+                {"id": "publico_alvo", "label": "Para quem é ideal", "tipo": "text", "placeholder": "Ex: 3-4 pessoas, uso intermediário, casa média", "largura": 12, "hint": "A IA usa pra recomendar baseado no perfil do lead"},
+                {"id": "beneficios", "label": "Benefícios completos", "tipo": "textarea", "largura": 12, "placeholder": "Liste TUDO que o cliente recebe. Ex: 100% fibra óptica até dentro do ambiente (FTTH), 1x roteador Wi-Fi 6 incluso, velocidade REAL simétrica, dados ilimitados, instalação gratuita em até 72h, suporte humanizado via WhatsApp/telefone/presencial, monitoramento proativo 24h, App incluso, Wi-Fi Mesh integrado, expansão com roteadores adicionais a partir de R$19,90/mês.", "hint": "Não economize — quanto mais detalhe, mais a IA tem munição pra fechar"},
+                {"id": "argumento_venda", "label": "Argumento de venda", "tipo": "textarea", "largura": 12, "placeholder": "Frase de efeito que a IA usa pra apresentar o plano. Ex: 'Ideal para quem busca estabilidade no dia a dia sem complicação. Com fibra 100% até dentro do ambiente, velocidade real, Wi-Fi 6 incluso e cobertura completa com Mesh, você navega com qualidade — com suporte próximo e disponível sempre que precisar.'"},
+                {"id": "disponibilidade", "label": "Disponibilidade geográfica (se restrita)", "tipo": "text", "largura": 12, "placeholder": "Deixe vazio se vale pra toda a área. Ex: APENAS em São Miguel do Oeste e Maravilha"},
+                {"id": "is_promocional_campanha", "label": "É plano promocional EXCLUSIVO de campanha?", "tipo": "boolean", "largura": 6, "hint": "Marque se o plano só pode ser ofertado quando o lead vem de anúncio (Meta/Google). A IA NÃO oferta espontaneamente."},
+                {"id": "regra_uso_promocional", "label": "Regra de uso (se promocional)", "tipo": "textarea", "largura": 12, "placeholder": "Como a IA deve tratar esse plano. Ex: NUNCA ofertar espontaneamente. Se cliente perguntar pelo plano de R$89,90, transferir IMEDIATAMENTE para o time comercial via send_to_department, sem argumentar nem oferecer alternativas."}
+              ]
+            },
+            {
+              "id": "planos_internet_pme",
+              "pergunta": "🏢 Planos de Internet Empresarial / PME",
+              "tipo": "repeater",
+              "minimo": 0,
+              "rotulo_item": "Plano empresarial",
+              "rotulo_adicionar": "Adicionar plano empresarial",
+              "hint": "Planos voltados pra empresas — geralmente com SLA, IP fixo opcional, suporte prioritário.",
+              "campos": [
+                {"id": "nome", "label": "Nome do plano", "tipo": "text", "placeholder": "Ex: Techy Business 450Mbps (PME)", "largura": 6},
+                {"id": "preco", "label": "Preço mensal (R$)", "tipo": "currency", "placeholder": "Ex: 179.90", "largura": 3},
+                {"id": "taxa_instalacao", "label": "Taxa de instalação (R$)", "tipo": "currency", "placeholder": "0 = grátis", "largura": 3},
+                {"id": "velocidade_download", "label": "Download (Mbps)", "tipo": "number", "placeholder": "Ex: 450", "largura": 3},
+                {"id": "velocidade_upload", "label": "Upload (Mbps)", "tipo": "number", "placeholder": "Ex: 450", "largura": 3},
+                {"id": "sla", "label": "SLA de atendimento", "tipo": "text", "placeholder": "Ex: até 4 horas / até 2 horas / 24/7", "largura": 6},
+                {"id": "publico_alvo", "label": "Para quem é ideal", "tipo": "text", "placeholder": "Ex: PME com até 20 colaboradores, escritório com VPN", "largura": 12},
+                {"id": "beneficios", "label": "Benefícios completos", "tipo": "textarea", "largura": 12, "placeholder": "Ex: 100% fibra (FTTH), Wi-Fi 6 + Mikrotik incluso, velocidade simétrica, dados ilimitados, SLA até 4h, segmentação de rede, controle de acessos, VPN opcional, monitoramento proativo, atendimento via WhatsApp/telefone/presencial. Inclua IP fixo, telefonia, gestão dedicada se houver."},
+                {"id": "argumento_venda", "label": "Argumento de venda", "tipo": "textarea", "largura": 12, "placeholder": "Ex: Mais controle, segurança e suporte próximo para o ambiente corporativo. Sua empresa ganha estabilidade com atendimento acessível sempre que precisar."},
+                {"id": "disponibilidade", "label": "Disponibilidade geográfica (se restrita)", "tipo": "text", "largura": 12, "placeholder": "Deixe vazio se vale pra toda a área de cobertura"}
+              ]
+            },
+            {
+              "id": "planos_internet_radio",
+              "pergunta": "📡 Planos de Internet via Rádio",
+              "tipo": "repeater",
+              "minimo": 0,
+              "rotulo_item": "Plano via rádio",
+              "rotulo_adicionar": "Adicionar plano via rádio",
+              "hint": "Para áreas onde a fibra ainda não chegou. Pula essa categoria se vocês só oferecem fibra.",
+              "campos": [
+                {"id": "nome", "label": "Nome do plano", "tipo": "text", "placeholder": "Ex: Plano Via Rádio 15 Mega", "largura": 6},
+                {"id": "preco", "label": "Preço mensal (R$)", "tipo": "currency", "placeholder": "Ex: 109.90", "largura": 3},
+                {"id": "taxa_instalacao", "label": "Taxa de instalação (R$)", "tipo": "currency", "placeholder": "0 = grátis", "largura": 3},
+                {"id": "velocidade_download", "label": "Download (Mbps)", "tipo": "number", "placeholder": "Ex: 15", "largura": 6},
+                {"id": "velocidade_upload", "label": "Upload (Mbps)", "tipo": "number", "placeholder": "Ex: 15", "largura": 6},
+                {"id": "publico_alvo", "label": "Para quem é ideal", "tipo": "text", "placeholder": "Ex: zona rural, sítios sem cobertura de fibra, uso básico de internet", "largura": 12},
+                {"id": "beneficios", "label": "Benefícios", "tipo": "textarea", "largura": 12, "placeholder": "Ex: Tecnologia rádio, instalação especializada com torre/antena, suporte humanizado, monitoramento, App incluso. Indique limitações conhecidas (ex: depende de visada)."},
+                {"id": "argumento_venda", "label": "Argumento de venda", "tipo": "textarea", "largura": 12, "placeholder": "Ex: Conexão estável onde a fibra ainda não chegou — ideal pra propriedades rurais que precisam de internet de qualidade pra trabalho remoto, vigilância e streaming básico."},
+                {"id": "disponibilidade", "label": "Onde atendem", "tipo": "text", "largura": 12, "placeholder": "Ex: Zonas rurais de São Miguel do Oeste e municípios vizinhos"}
+              ]
+            },
+            {
+              "id": "planos_telefonia_fixa",
+              "pergunta": "☎️ Planos de Telefonia Fixa",
+              "tipo": "repeater",
+              "minimo": 0,
+              "rotulo_item": "Plano de telefonia fixa",
+              "rotulo_adicionar": "Adicionar plano de telefonia fixa",
+              "hint": "Telefonia fixa avulsa ou combinada. Pula se vocês não oferecem telefonia.",
+              "campos": [
+                {"id": "nome", "label": "Nome do plano", "tipo": "text", "placeholder": "Ex: Telefonia Fixa Local / Telefonia Fixa Ilimitada", "largura": 8},
+                {"id": "preco", "label": "Preço mensal (R$)", "tipo": "currency", "placeholder": "Ex: 89.90", "largura": 4},
+                {"id": "minutos_inclusos", "label": "Minutos inclusos", "tipo": "text", "placeholder": "Ex: Ilimitado pra fixos da região / Ilimitado pra fixo e móvel Brasil / 100 min", "largura": 12},
+                {"id": "tarifas_extras", "label": "Tarifas para chamadas fora do plano", "tipo": "textarea", "largura": 12, "placeholder": "Ex: Fixo Brasil R$0,25/min | Móvel R$0,75/min. Use | para separar cada faixa."},
+                {"id": "beneficios", "label": "Benefícios", "tipo": "textarea", "largura": 12, "placeholder": "Ex: Telefonia digital, portabilidade do mesmo número, identificador de chamadas, ligações ilimitadas pra fixos da região, suporte humanizado."},
+                {"id": "argumento_venda", "label": "Argumento de venda", "tipo": "textarea", "largura": 12, "placeholder": "Ex: Mantenha o número de sempre com qualidade digital — sem perder ligações importantes."}
+              ]
+            },
+            {
+              "id": "planos_chip_movel",
+              "pergunta": "📱 Planos de Chip / Telefonia Móvel",
+              "tipo": "repeater",
+              "minimo": 0,
+              "rotulo_item": "Plano de chip móvel",
+              "rotulo_adicionar": "Adicionar plano de chip móvel",
+              "hint": "Planos de chip operadora própria ou MVNO. Pula se vocês não oferecem.",
+              "campos": [
+                {"id": "nome", "label": "Nome do plano", "tipo": "text", "placeholder": "Ex: Techy Chip Móvel 7GB + 1GB portabilidade", "largura": 8},
+                {"id": "preco", "label": "Preço mensal (R$)", "tipo": "currency", "placeholder": "Ex: 59.90", "largura": 4},
+                {"id": "franquia_dados_gb", "label": "Franquia de dados (GB)", "tipo": "number", "placeholder": "Ex: 7", "largura": 3},
+                {"id": "bonus_portabilidade_gb", "label": "Bônus portabilidade (GB)", "tipo": "number", "placeholder": "Ex: 1", "largura": 3},
+                {"id": "minutos_ligacao", "label": "Minutos de ligação", "tipo": "text", "placeholder": "Ex: 100 minutos Brasil / Ilimitado / 50 min", "largura": 6},
+                {"id": "apps_ilimitados", "label": "Apps ilimitados (não consomem franquia)", "tipo": "text", "placeholder": "Ex: WhatsApp ilimitado, Instagram ilimitado", "largura": 12},
+                {"id": "beneficios", "label": "Benefícios extras", "tipo": "textarea", "largura": 12, "placeholder": "Ex: 50 SMS, plataforma de livros digitais Skeelo inclusa, app próprio pra gerenciar consumo, portabilidade do número, sem fidelidade."},
+                {"id": "argumento_venda", "label": "Argumento de venda", "tipo": "textarea", "largura": 12, "placeholder": "Ex: Plano completo pra quem usa muito WhatsApp e quer ligar à vontade, sem se preocupar com saldo."}
+              ]
+            },
+            {
+              "id": "planos_tv_streaming",
+              "pergunta": "📺 Planos de TV / Streaming",
+              "tipo": "repeater",
+              "minimo": 0,
+              "rotulo_item": "Plano TV/Streaming",
+              "rotulo_adicionar": "Adicionar plano TV/Streaming",
+              "hint": "TV por assinatura (IPTV/cabo) ou pacotes de streaming combinados. Pula se vocês não oferecem.",
+              "campos": [
+                {"id": "nome", "label": "Nome do plano", "tipo": "text", "placeholder": "Ex: Techy TV Plus 165 canais / Pacote Streaming Premium", "largura": 8},
+                {"id": "preco", "label": "Preço mensal (R$)", "tipo": "currency", "placeholder": "Ex: 49.90", "largura": 4},
+                {"id": "tipo_servico", "label": "Tipo", "tipo": "select", "largura": 6,
                   "opcoes": [
-                    {"value": "residencial", "label": "Residencial"},
-                    {"value": "empresarial", "label": "Empresarial"},
-                    {"value": "ambos", "label": "Ambos (residencial e empresarial)"}
-                  ]},
-                {"id": "velocidade_download", "label": "Download (Mbps)", "tipo": "number", "obrigatoria": true, "placeholder": "600", "largura": 4},
-                {"id": "velocidade_upload", "label": "Upload (Mbps)", "tipo": "number", "obrigatoria": true, "placeholder": "600", "largura": 4},
-                {"id": "simetrico", "label": "Simétrico?", "tipo": "boolean", "largura": 4},
-                {"id": "preco", "label": "Preço mensal (R$)", "tipo": "currency", "obrigatoria": true, "placeholder": "99.90", "largura": 6},
-                {"id": "publico_alvo", "label": "Público-alvo", "tipo": "text", "placeholder": "Ex: 3-4 pessoas, casa média", "largura": 6, "hint": "Quem é o cliente ideal pra esse plano"},
-                {"id": "servicos_inclusos", "label": "Serviços inclusos", "tipo": "checkbox_multiple", "largura": 12,
-                  "opcoes": [
-                    {"value": "tv", "label": "TV"},
-                    {"value": "streaming", "label": "Streaming"},
-                    {"value": "telefonia_fixa", "label": "Telefonia fixa"},
-                    {"value": "telefonia_movel", "label": "Telefonia móvel"},
-                    {"value": "mesh", "label": "Mesh"},
-                    {"value": "ip_fixo", "label": "IP fixo"},
-                    {"value": "antivirus", "label": "Antivírus"}
-                  ]},
-                {"id": "tem_promocao", "label": "Tem promoção ativa?", "tipo": "boolean", "largura": 4},
-                {"id": "valor_promocional", "label": "Valor promocional (R$)", "tipo": "currency", "placeholder": "79.90", "largura": 4},
-                {"id": "condicoes_promocao", "label": "Condições da promoção", "tipo": "text", "placeholder": "Ex: 6 primeiros meses", "largura": 4}
+                    {"value": "iptv", "label": "IPTV"},
+                    {"value": "cabo", "label": "TV a cabo"},
+                    {"value": "streaming", "label": "Streaming (HBO, Prime, etc.)"},
+                    {"value": "combo", "label": "Combo TV + Streaming"}
+                  ]
+                },
+                {"id": "qtd_canais_apps", "label": "Qtd canais ou apps inclusos", "tipo": "text", "placeholder": "Ex: 165 canais / Watch + HBO Max + Prime Video", "largura": 6},
+                {"id": "beneficios", "label": "Benefícios", "tipo": "textarea", "largura": 12, "placeholder": "Ex: 165 canais, 30 em HD, 5 dispositivos simultâneos, app pra mobile, gravação na nuvem, controle parental, instalação inclusa."},
+                {"id": "argumento_venda", "label": "Argumento de venda", "tipo": "textarea", "largura": 12, "placeholder": "Ex: Toda a família entretida — TV ao vivo, streaming e mobile sem precisar contratar várias assinaturas separadas."},
+                {"id": "exige_internet_combo", "label": "Exige contratar internet junto?", "tipo": "boolean", "largura": 12}
               ]
             },
             {
