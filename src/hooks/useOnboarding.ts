@@ -169,36 +169,31 @@ export function useOnboarding() {
 
 function evaluateConditional(condicional: string, respostas: Record<string, any>): boolean {
   try {
-    // Handle "&&" pattern first (needs to be checked before other patterns)
-    if (condicional.includes(' && ')) {
-      // Split by && but preserve content inside parentheses
-      const parts: string[] = [];
-      let current = '';
-      let parenDepth = 0;
-      
-      for (let i = 0; i < condicional.length; i++) {
-        const char = condicional[i];
-        if (char === '(') parenDepth++;
-        if (char === ')') parenDepth--;
-        
-        if (parenDepth === 0 && condicional.slice(i, i + 4) === ' && ') {
-          parts.push(current.trim());
-          current = '';
-          i += 3; // Skip ' && '
-        } else {
-          current += char;
-        }
-      }
-      parts.push(current.trim());
-      
-      return parts.every(part => {
-        // Remove outer parentheses if present
-        const cleanPart = part.startsWith('(') && part.endsWith(')') 
-          ? part.slice(1, -1) 
-          : part;
-        return evaluateConditional(cleanPart, respostas);
-      });
+    // Tira parens externas redundantes pra evitar loop em ((expr)).
+    let trimmed = condicional.trim();
+    while (
+      trimmed.startsWith('(') &&
+      trimmed.endsWith(')') &&
+      isBalancedAtBoundary(trimmed)
+    ) {
+      trimmed = trimmed.slice(1, -1).trim();
     }
+
+    // OR tem precedência MENOR que AND, então split por || primeiro
+    // (paren-aware). Cada parte é uma sub-expressão que pode conter &&.
+    const orParts = splitTopLevel(trimmed, ' || ');
+    if (orParts.length > 1) {
+      return orParts.some(p => evaluateConditional(p, respostas));
+    }
+
+    // AND no mesmo nível. Split paren-aware.
+    const andParts = splitTopLevel(trimmed, ' && ');
+    if (andParts.length > 1) {
+      return andParts.every(p => evaluateConditional(p, respostas));
+    }
+
+    // Atom: usa `trimmed` daqui pra frente.
+    condicional = trimmed;
 
     // Handle "includes" / "contains" pattern: "departamentos_lista includes 'outro'"
     // 'contains' é alias de 'includes' (usado em condicional_secao do questions.json)
@@ -223,11 +218,7 @@ function evaluateConditional(condicional: string, respostas: Record<string, any>
       return false;
     }
 
-    // Handle "||" pattern: "taxa_instalacao == 'sim' || taxa_instalacao == 'promocional'"
-    if (condicional.includes(' || ')) {
-      const conditions = condicional.split(' || ');
-      return conditions.some(cond => evaluateConditional(cond.trim(), respostas));
-    }
+    // OR/AND já tratados no topo da função (paren-aware).
 
     // Handle "==" pattern: "tem_plantao == 'sim'"
     if (condicional.includes(' == ')) {
@@ -266,4 +257,47 @@ function evaluateConditional(condicional: string, respostas: Record<string, any>
     console.warn('Error evaluating conditional:', condicional, error);
     return true;
   }
+}
+
+/**
+ * Split paren-aware: divide `s` por `op` (ex: " || ", " && ") apenas
+ * quando o operador está no nível 0 de parênteses. Retorna [s] se não
+ * encontrar nenhum operador no top-level.
+ */
+function splitTopLevel(s: string, op: string): string[] {
+  const parts: string[] = [];
+  let current = '';
+  let parenDepth = 0;
+  for (let i = 0; i < s.length; i++) {
+    const ch = s[i];
+    if (ch === '(') parenDepth++;
+    if (ch === ')') parenDepth--;
+    if (parenDepth === 0 && s.slice(i, i + op.length) === op) {
+      parts.push(current.trim());
+      current = '';
+      i += op.length - 1;
+    } else {
+      current += ch;
+    }
+  }
+  parts.push(current.trim());
+  return parts;
+}
+
+/**
+ * Confirma que a string `s` começa com `(` e o paren que abre na posição 0
+ * só fecha na última posição. Evita strip indevido em casos como
+ * "(A) || (B)".
+ */
+function isBalancedAtBoundary(s: string): boolean {
+  if (!s.startsWith('(') || !s.endsWith(')')) return false;
+  let depth = 0;
+  for (let i = 0; i < s.length; i++) {
+    if (s[i] === '(') depth++;
+    else if (s[i] === ')') {
+      depth--;
+      if (depth === 0 && i < s.length - 1) return false;
+    }
+  }
+  return depth === 0;
 }

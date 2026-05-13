@@ -42,7 +42,7 @@ export type EvolutionGroup = {
 function normalize(s: string): string {
   return s
     .normalize('NFD')
-    .replace(/[̀-ͯ]/g, '') // remove acentos
+    .replace(/\p{M}/gu, '') // remove TODOS os combining marks (Unicode-aware)
     .toLowerCase()
     .replace(/\s+/g, ' ')
     .trim();
