@@ -192,4 +192,18 @@ export const adminSessionApi = {
         body: JSON.stringify(input),
       }
     ),
+
+  sendWelcomeWhatsApp: (
+    authToken: string,
+    input: { session_id: string; modo: 'completo' | 'comercial' }
+  ) =>
+    adminApi<{
+      ok: true;
+      group: { id: string; name: string; size?: number };
+      short_url: string;
+      message_preview: string;
+    }>('/api/admin/whatsapp-send-welcome', authToken, {
+      method: 'POST',
+      body: JSON.stringify(input),
+    }),
 };

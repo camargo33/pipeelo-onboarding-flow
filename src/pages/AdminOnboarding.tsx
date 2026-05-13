@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
-import { Copy, Plus, Building2, ExternalLink, Check, Clock, RefreshCw, Trash2, Loader2, LogOut, Layers, X, ChevronDown } from 'lucide-react';
+import { Copy, Plus, Building2, ExternalLink, Check, Clock, RefreshCw, Trash2, Loader2, LogOut, Layers, X, ChevronDown, Send } from 'lucide-react';
 import { PipeeloLogo } from '@/components/PipeeloLogo';
 import { AdminLogin } from '@/components/AdminLogin';
 import {
@@ -429,6 +429,49 @@ const AdminOnboarding = () => {
     window.open(url, '_blank');
   };
 
+  const [sendingWelcome, setSendingWelcome] = useState<string | null>(null);
+
+  const sendWelcomeWhatsApp = async (
+    session: OnboardingSession,
+    tipo: OnboardingTipo
+  ) => {
+    const key = `${session.id}:${tipo}`;
+    setSendingWelcome(key);
+    try {
+      const authToken = await getAuthToken();
+      if (!authToken) {
+        toast.error('Sessão expirada — faça login novamente');
+        setIsAuthenticated(false);
+        return;
+      }
+      const result = await adminSessionApi.sendWelcomeWhatsApp(authToken, {
+        session_id: session.id,
+        modo: tipo,
+      });
+      toast.success(
+        `Boas-vindas enviadas pro grupo "${result.group.name}" (${TIPO_LABEL[tipo]})`
+      );
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.error('Erro ao enviar boas-vindas WhatsApp:', e);
+      if (e instanceof ApiError) {
+        if (e.code === 'group_not_found' || e.message?.includes('grupo')) {
+          toast.error(
+            `Grupo WhatsApp "${session.empresa_nome}" não encontrado. Confirme que o nome do grupo é idêntico ao nome da empresa.`
+          );
+        } else if (e.message?.includes('evolution')) {
+          toast.error('Erro na Evolution API — verifique a config (env vars).');
+        } else {
+          toast.error(e.message || 'Erro ao enviar mensagem');
+        }
+      } else {
+        toast.error('Erro ao enviar mensagem');
+      }
+    } finally {
+      setSendingWelcome(null);
+    }
+  };
+
   const getStatusBadge = (status: string | null, label: string) => {
     if (status === 'concluido') {
       return <Badge className="bg-green-500/20 text-green-500 border-green-500/30"><Check className="w-3 h-3 mr-1" />{label}</Badge>;
@@ -695,6 +738,45 @@ const AdminOnboarding = () => {
                               <div className="flex flex-col">
                                 <span className="text-sm">Apenas CRM</span>
                                 <span className="text-[11px] text-muted-foreground">Só departamento de Vendas</span>
+                              </div>
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              disabled={sendingWelcome?.startsWith(session.id) ?? false}
+                              className="bg-green-500/10 hover:bg-green-500/20 border-green-500/30 text-green-600 dark:text-green-400"
+                            >
+                              {sendingWelcome?.startsWith(session.id) ? (
+                                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                              ) : (
+                                <Send className="w-4 h-4 mr-2" />
+                              )}
+                              Enviar WhatsApp
+                              <ChevronDown className="w-3.5 h-3.5 ml-1.5 opacity-70" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end" className="w-64">
+                            <DropdownMenuLabel className="text-xs">
+                              Disparar boas-vindas no grupo
+                              <div className="text-[10px] text-muted-foreground font-normal mt-0.5 normal-case">
+                                Grupo deve se chamar "{session.empresa_nome}"
+                              </div>
+                            </DropdownMenuLabel>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem onClick={() => sendWelcomeWhatsApp(session, 'completo')}>
+                              <div className="flex flex-col">
+                                <span className="text-sm">Onboarding Completo</span>
+                                <span className="text-[11px] text-muted-foreground">Link com todos departamentos</span>
+                              </div>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => sendWelcomeWhatsApp(session, 'comercial')}>
+                              <div className="flex flex-col">
+                                <span className="text-sm">Apenas CRM</span>
+                                <span className="text-[11px] text-muted-foreground">Link só com Vendas</span>
                               </div>
                             </DropdownMenuItem>
                           </DropdownMenuContent>

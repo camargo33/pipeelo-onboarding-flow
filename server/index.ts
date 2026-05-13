@@ -14,6 +14,7 @@ const routes: Array<[string, Loader]> = [
   ['/api/admin/sessions-create',        () => import('../api/admin/sessions-create.ts')],
   ['/api/admin/sessions-delete',        () => import('../api/admin/sessions-delete.ts')],
   ['/api/admin/short-links-create',     () => import('../api/admin/short-links-create.ts')],
+  ['/api/admin/whatsapp-send-welcome',  () => import('../api/admin/whatsapp-send-welcome.ts')],
   ['/api/sessions/create',              () => import('../api/sessions/create.ts')],
   ['/api/sessions/get',                 () => import('../api/sessions/get.ts')],
   ['/api/sessions/save-resposta',       () => import('../api/sessions/save-resposta.ts')],
