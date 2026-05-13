@@ -355,13 +355,21 @@ export default function Onboarding() {
         postJson('/api/complete-onboarding', { sessionId });
       }
 
-      // 4. Email de notificação
+      // 4. Email de notificação — filtra pseudo-respostas e credenciais sensíveis.
+      // Prefixos `_session_`, `erp_`, `gateway_`, `rede_`, `mapas_` são da seção
+      // Acessos das Integrações: tokens, senhas e config interna. Não vão no email.
+      const SENSITIVE_PREFIXES = ['_session_', 'erp_', 'gateway_', 'rede_', 'mapas_'];
+      const respostasSafe = Object.fromEntries(
+        Object.entries(state.respostas).filter(
+          ([k]) => !SENSITIVE_PREFIXES.some((p) => k.startsWith(p))
+        )
+      );
       postJson('/api/send-email', {
         empresaNome,
         departamento: state.departamento,
         departamentoNome: departamentoData.nome,
         responsavelNome: state.responsavelNome,
-        respostas: state.respostas,
+        respostas: respostasSafe,
         sessionId,
       });
     } catch (err) {

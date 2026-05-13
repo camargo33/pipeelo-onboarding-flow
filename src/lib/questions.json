@@ -116,7 +116,7 @@
           "descricao": "Credenciais dos sistemas que você marcou ao gerar o link. Só aparecem perguntas pros sistemas selecionados — se faltar algum, fale com o time pra ajustar.",
           "condicional_secao": "_session_erp != '' || _session_mapas != '' || _session_gerenciamento_rede != '' || _session_gateway_pagamento != ''",
           "perguntas": [
-            { "id": "_int_erp_header", "pergunta": "ERP / Sistema de gestão", "tipo": "info", "condicional": "_session_erp != ''" },
+            { "id": "_int_erp_header", "pergunta": "ERP / Sistema de gestão", "tipo": "info", "texto": "Agora os acessos do seu ERP. A IA usa isso pra consultar planos, faturas, contratos e dados do cliente em tempo real — sem isso, o atendimento fica limitado.", "condicional": "_session_erp != ''" },
 
             { "id": "erp_ixc_url", "pergunta": "URL da API do IXC", "tipo": "url", "placeholder": "https://ixc.suaempresa.com.br", "condicional": "_session_erp == 'IXC'" },
             { "id": "erp_ixc_token", "pergunta": "Token do IXC", "tipo": "password", "condicional": "_session_erp == 'IXC'" },
@@ -136,7 +136,7 @@
             { "id": "erp_outros_usuario", "pergunta": "Usuário do ERP (se aplicável)", "tipo": "text", "condicional": "_session_erp == 'Hubsoft' || _session_erp == 'SGP' || _session_erp == 'RBX' || _session_erp == 'Topp Sap' || _session_erp == 'Outros'" },
             { "id": "erp_outros_senha", "pergunta": "Senha do ERP (se aplicável)", "tipo": "password", "condicional": "_session_erp == 'Hubsoft' || _session_erp == 'SGP' || _session_erp == 'RBX' || _session_erp == 'Topp Sap' || _session_erp == 'Outros'" },
 
-            { "id": "_int_gateway_header", "pergunta": "Gateway de pagamentos", "tipo": "info", "condicional": "_session_gateway_pagamento != ''" },
+            { "id": "_int_gateway_header", "pergunta": "Gateway de pagamentos", "tipo": "info", "texto": "Credenciais do seu gateway de cobrança. Permite que a IA confirme pagamentos, gere segunda via e responda dúvidas financeiras com dado real.", "condicional": "_session_gateway_pagamento != ''" },
 
             { "id": "gateway_7az_token", "pergunta": "Token 7AZ (Bemobi)", "tipo": "password", "condicional": "_session_gateway_pagamento == '7AZ (Bemobi)'" },
 
@@ -144,7 +144,7 @@
             { "id": "gateway_outros_token", "pergunta": "Token / API Key do gateway", "tipo": "password", "condicional": "_session_gateway_pagamento == 'Outros'" },
             { "id": "gateway_outros_credenciais", "pergunta": "Outras credenciais (usuário, senha, endpoint, etc.)", "tipo": "textarea", "placeholder": "Liste o que for necessário pra acessar o gateway", "condicional": "_session_gateway_pagamento == 'Outros'" },
 
-            { "id": "_int_rede_header", "pergunta": "Gerenciador de rede", "tipo": "info", "condicional": "_session_gerenciamento_rede != ''" },
+            { "id": "_int_rede_header", "pergunta": "Gerenciador de rede", "tipo": "info", "texto": "Acessos do gerenciador de rede. A IA usa pra checar status do CPE, reiniciar equipamento e diagnosticar problemas de conexão sem precisar passar pro suporte.", "condicional": "_session_gerenciamento_rede != ''" },
 
             { "id": "rede_oltcloud_url", "pergunta": "URL OLT Cloud", "tipo": "url", "placeholder": "https://oltcloud.suaempresa.com.br", "condicional": "_session_gerenciamento_rede == 'OLT Cloud'" },
             { "id": "rede_oltcloud_usuario", "pergunta": "Usuário OLT Cloud", "tipo": "text", "condicional": "_session_gerenciamento_rede == 'OLT Cloud'" },
@@ -163,7 +163,7 @@
             { "id": "rede_outros_usuario", "pergunta": "Usuário", "tipo": "text", "condicional": "_session_gerenciamento_rede == 'Outros'" },
             { "id": "rede_outros_senha", "pergunta": "Senha", "tipo": "password", "condicional": "_session_gerenciamento_rede == 'Outros'" },
 
-            { "id": "_int_mapas_header", "pergunta": "Mapas / Geo", "tipo": "info", "condicional": "_session_mapas != ''" },
+            { "id": "_int_mapas_header", "pergunta": "Mapas / Geo", "tipo": "info", "texto": "Acessos do sistema de mapas. A IA consulta cobertura por endereço, identifica se o lead está em área atendida e qualifica novos contratos sem humano.", "condicional": "_session_mapas != ''" },
 
             { "id": "mapas_geogrid_url", "pergunta": "URL Geogrid", "tipo": "url", "placeholder": "https://geogrid.suaempresa.com.br", "condicional": "_session_mapas == 'Geogrid'" },
             { "id": "mapas_geogrid_token", "pergunta": "Token Geogrid", "tipo": "password", "condicional": "_session_mapas == 'Geogrid'" },
