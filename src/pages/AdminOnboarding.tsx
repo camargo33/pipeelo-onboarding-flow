@@ -5,10 +5,29 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
-import { Copy, Plus, Building2, ExternalLink, Check, Clock, RefreshCw, Trash2, Loader2, LogOut } from 'lucide-react';
+import { Copy, Plus, Building2, ExternalLink, Check, Clock, RefreshCw, Trash2, Loader2, LogOut, Layers, X } from 'lucide-react';
 import { PipeeloLogo } from '@/components/PipeeloLogo';
 import { AdminLogin } from '@/components/AdminLogin';
-import { adminSessionApi, ApiError, type SessionDTO } from '@/lib/api-client';
+import {
+  adminSessionApi,
+  ApiError,
+  ERP_OPTIONS,
+  MAPAS_OPTIONS,
+  REDE_OPTIONS,
+  type SessionDTO,
+} from '@/lib/api-client';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -23,9 +42,177 @@ import {
 
 type OnboardingSession = SessionDTO;
 
+type StackPatch = {
+  erp?: string | null;
+  mapas?: string | null;
+  gerenciamento_rede?: string | null;
+};
+
+const STACK_FIELDS: Array<{
+  key: 'erp' | 'mapas' | 'gerenciamento_rede';
+  label: string;
+  chip: string;
+  options: readonly string[];
+}> = [
+  { key: 'erp', label: 'ERP', chip: 'ERP', options: ERP_OPTIONS },
+  { key: 'mapas', label: 'Mapas', chip: 'Mapas', options: MAPAS_OPTIONS },
+  { key: 'gerenciamento_rede', label: 'Gerenciamento de Rede', chip: 'Rede', options: REDE_OPTIONS },
+];
+
+function StackEditor({
+  session,
+  onSave,
+}: {
+  session: OnboardingSession;
+  onSave: (sessionId: string, patch: StackPatch) => Promise<void>;
+}) {
+  const [open, setOpen] = useState(false);
+  const [erp, setErp] = useState<string>(session.erp ?? '');
+  const [mapas, setMapas] = useState<string>(session.mapas ?? '');
+  const [rede, setRede] = useState<string>(session.gerenciamento_rede ?? '');
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    if (open) {
+      setErp(session.erp ?? '');
+      setMapas(session.mapas ?? '');
+      setRede(session.gerenciamento_rede ?? '');
+    }
+  }, [open, session.erp, session.mapas, session.gerenciamento_rede]);
+
+  const hasStack = Boolean(session.erp || session.mapas || session.gerenciamento_rede);
+
+  const handleSave = async () => {
+    setSaving(true);
+    try {
+      await onSave(session.id, {
+        erp: erp || null,
+        mapas: mapas || null,
+        gerenciamento_rede: rede || null,
+      });
+      setOpen(false);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const chips = [
+    session.erp ? { label: 'ERP', value: session.erp } : null,
+    session.mapas ? { label: 'Mapas', value: session.mapas } : null,
+    session.gerenciamento_rede ? { label: 'Rede', value: session.gerenciamento_rede } : null,
+  ].filter(Boolean) as Array<{ label: string; value: string }>;
+
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        {hasStack ? (
+          <button
+            type="button"
+            className="group flex flex-wrap gap-1.5 mt-2 cursor-pointer"
+            aria-label="Editar stack"
+          >
+            {chips.map((c) => (
+              <span
+                key={c.label}
+                className="px-2 py-0.5 rounded-md text-[10px] font-medium bg-muted/50 text-muted-foreground border border-border/40 group-hover:border-primary/40 group-hover:text-foreground transition-colors"
+              >
+                <span className="text-muted-foreground/60 mr-1">{c.label}</span>
+                {c.value}
+              </span>
+            ))}
+          </button>
+        ) : (
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            className="h-6 px-2 mt-2 -ml-2 text-[11px] text-muted-foreground hover:text-foreground"
+          >
+            <Layers className="w-3 h-3 mr-1" />
+            Adicionar stack
+          </Button>
+        )}
+      </PopoverTrigger>
+      <PopoverContent className="w-80 p-4 space-y-3" align="start">
+        <div className="flex items-center justify-between">
+          <p className="text-[11px] uppercase tracking-wider text-muted-foreground font-medium">
+            Stack Tecnológica
+          </p>
+          {(erp || mapas || rede) && (
+            <button
+              type="button"
+              onClick={() => {
+                setErp('');
+                setMapas('');
+                setRede('');
+              }}
+              className="text-[10px] text-muted-foreground hover:text-foreground flex items-center gap-1"
+            >
+              <X className="w-3 h-3" /> Limpar
+            </button>
+          )}
+        </div>
+        {STACK_FIELDS.map((f) => {
+          const value =
+            f.key === 'erp' ? erp : f.key === 'mapas' ? mapas : rede;
+          const setValue =
+            f.key === 'erp' ? setErp : f.key === 'mapas' ? setMapas : setRede;
+          return (
+            <div key={f.key} className="space-y-1">
+              <label className="text-xs text-muted-foreground">{f.label}</label>
+              <div className="flex items-center gap-1">
+                <Select value={value} onValueChange={setValue}>
+                  <SelectTrigger className="h-9 flex-1">
+                    <SelectValue placeholder={`Selecionar ${f.label.toLowerCase()}`} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {f.options.map((o) => (
+                      <SelectItem key={o} value={o}>
+                        {o}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {value && (
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="h-9 w-9 p-0 text-muted-foreground hover:text-foreground"
+                    onClick={() => setValue('')}
+                    aria-label={`Limpar ${f.label}`}
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </Button>
+                )}
+              </div>
+            </div>
+          );
+        })}
+        <div className="flex justify-end gap-2 pt-1">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setOpen(false)}
+            disabled={saving}
+          >
+            Cancelar
+          </Button>
+          <Button size="sm" onClick={handleSave} disabled={saving}>
+            {saving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : 'Salvar'}
+          </Button>
+        </div>
+      </PopoverContent>
+    </Popover>
+  );
+}
+
 const AdminOnboarding = () => {
   const [empresaNome, setEmpresaNome] = useState('');
   const [ceoEmail, setCeoEmail] = useState('');
+  const [erp, setErp] = useState<string>('');
+  const [mapas, setMapas] = useState<string>('');
+  const [rede, setRede] = useState<string>('');
   const [sessions, setSessions] = useState<OnboardingSession[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -114,10 +301,16 @@ const AdminOnboarding = () => {
       await adminSessionApi.create(token, {
         empresa_nome: empresaNome.trim(),
         ceo_email: ceoEmail.trim() || undefined,
+        erp: erp || undefined,
+        mapas: mapas || undefined,
+        gerenciamento_rede: rede || undefined,
       });
       toast.success('Link criado com sucesso!');
       setEmpresaNome('');
       setCeoEmail('');
+      setErp('');
+      setMapas('');
+      setRede('');
       fetchSessions();
     } catch (e) {
       // eslint-disable-next-line no-console
@@ -126,6 +319,26 @@ const AdminOnboarding = () => {
       toast.error(msg);
     } finally {
       setCreating(false);
+    }
+  };
+
+  const updateSessionStack = async (
+    sessionId: string,
+    patch: { erp?: string | null; mapas?: string | null; gerenciamento_rede?: string | null }
+  ) => {
+    const token = await getAuthToken();
+    if (!token) {
+      toast.error('Sessão expirada — faça login novamente');
+      setIsAuthenticated(false);
+      return;
+    }
+    try {
+      const { session } = await adminSessionApi.update(token, sessionId, patch);
+      setSessions((prev) => prev.map((s) => (s.id === sessionId ? { ...s, ...session } : s)));
+      toast.success('Stack atualizada');
+    } catch (e) {
+      const msg = e instanceof ApiError ? e.message : 'Erro ao atualizar stack';
+      toast.error(msg);
     }
   };
 
@@ -270,6 +483,55 @@ const AdminOnboarding = () => {
                 />
               </div>
             </div>
+            <div className="space-y-2 pt-1">
+              <div className="flex items-center gap-2">
+                <Layers className="w-3.5 h-3.5 text-muted-foreground/70" />
+                <p className="text-[11px] uppercase tracking-wider text-muted-foreground/70 font-medium">
+                  Stack Tecnológica
+                  <span className="ml-1 normal-case tracking-normal text-muted-foreground/50">
+                    · opcional
+                  </span>
+                </p>
+              </div>
+              <div className="grid gap-3 sm:grid-cols-3">
+                <Select value={erp} onValueChange={setErp}>
+                  <SelectTrigger className="h-10">
+                    <SelectValue placeholder="ERP" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {ERP_OPTIONS.map((v) => (
+                      <SelectItem key={v} value={v}>
+                        {v}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <Select value={mapas} onValueChange={setMapas}>
+                  <SelectTrigger className="h-10">
+                    <SelectValue placeholder="Mapas" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {MAPAS_OPTIONS.map((v) => (
+                      <SelectItem key={v} value={v}>
+                        {v}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <Select value={rede} onValueChange={setRede}>
+                  <SelectTrigger className="h-10">
+                    <SelectValue placeholder="Gerenciamento de Rede" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {REDE_OPTIONS.map((v) => (
+                      <SelectItem key={v} value={v}>
+                        {v}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
             <Button
               onClick={createSession}
               disabled={creating || !empresaNome.trim()}
@@ -353,6 +615,8 @@ const AdminOnboarding = () => {
                             </>
                           )}
                         </div>
+
+                        <StackEditor session={session} onSave={updateSessionStack} />
                       </div>
 
                       <div className="flex items-center gap-2">

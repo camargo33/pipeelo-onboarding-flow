@@ -51,6 +51,9 @@ export type SessionDTO = {
   concluido_vendas_at?: string | null;
   tenant_id?: string | null;
   ceo_email?: string | null;
+  erp?: string | null;
+  mapas?: string | null;
+  gerenciamento_rede?: string | null;
   created_at?: string;
   updated_at?: string;
   [k: string]: unknown;
@@ -136,14 +139,39 @@ async function adminApi<T>(
   return r.json() as Promise<T>;
 }
 
+export type StackPatch = {
+  erp?: string | null;
+  mapas?: string | null;
+  gerenciamento_rede?: string | null;
+};
+
+export const ERP_OPTIONS = ['IXC', 'SGP', 'MK Solution', 'RBX', 'Topp Sap', 'Hubsoft', 'Voalle'] as const;
+export const MAPAS_OPTIONS = ['OZMap', 'Geogrid', 'Geosite'] as const;
+export const REDE_OPTIONS = ['Smart OLT', 'Anlix', 'OLT Cloud'] as const;
+
 export const adminSessionApi = {
   list: (authToken: string) =>
     adminApi<{ sessions: SessionDTO[] }>('/api/admin/sessions-list', authToken),
 
-  create: (authToken: string, input: { empresa_nome: string; ceo_email?: string }) =>
+  create: (
+    authToken: string,
+    input: {
+      empresa_nome: string;
+      ceo_email?: string;
+      erp?: string;
+      mapas?: string;
+      gerenciamento_rede?: string;
+    }
+  ) =>
     adminApi<{ session: SessionDTO }>('/api/admin/sessions-create', authToken, {
       method: 'POST',
       body: JSON.stringify(input),
+    }),
+
+  update: (authToken: string, session_id: string, patch: StackPatch) =>
+    adminApi<{ session: SessionDTO }>('/api/admin/sessions-update', authToken, {
+      method: 'POST',
+      body: JSON.stringify({ session_id, ...patch }),
     }),
 
   delete: (authToken: string, session_id: string) =>
