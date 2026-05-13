@@ -50,6 +50,7 @@ export default function Onboarding() {
   const { slug, departamento: urlDepartamento } = useParams<{ slug: string; departamento: string }>();
   const [searchParams] = useSearchParams();
   const token = searchParams.get('token') ?? '';
+  const isComercial = searchParams.get('modo') === 'comercial';
   const navigate = useNavigate();
   const { toast } = useToast();
   const [step, setStep] = useState<Step>('perguntas');
@@ -242,6 +243,8 @@ export default function Onboarding() {
     setError('');
     if (step === 'perguntas') {
       if (isFirstQuestion) {
+        // No modo comercial não existe lista de departamentos pra voltar.
+        if (isComercial) return;
         const tokenSuffix = token ? `?token=${encodeURIComponent(token)}` : '';
         navigate(`/${slug}${tokenSuffix}`);
       } else {
@@ -608,30 +611,40 @@ export default function Onboarding() {
               </div>
 
               <div className="space-y-2">
-                <h1 className="text-3xl font-bold">Departamento concluído!</h1>
+                <h1 className="text-3xl font-bold">
+                  {isComercial ? 'Onboarding CRM concluído!' : 'Departamento concluído!'}
+                </h1>
                 <p className="text-muted-foreground">
-                  O departamento <strong>{departamentoData?.nome}</strong> foi preenchido com sucesso.
+                  {isComercial ? (
+                    <>Suas configurações comerciais foram salvas. Nosso time de implantação vai ativar seu CRM Pipeelo em breve.</>
+                  ) : (
+                    <>O departamento <strong>{departamentoData?.nome}</strong> foi preenchido com sucesso.</>
+                  )}
                 </p>
               </div>
 
-              <div className="bg-muted/50 rounded-xl p-6 space-y-4">
-                <p className="text-sm text-muted-foreground">
-                  Você pode compartilhar o link do onboarding com outros responsáveis da sua empresa para que eles preencham os demais departamentos.
-                </p>
-              </div>
+              {!isComercial && (
+                <div className="bg-muted/50 rounded-xl p-6 space-y-4">
+                  <p className="text-sm text-muted-foreground">
+                    Você pode compartilhar o link do onboarding com outros responsáveis da sua empresa para que eles preencham os demais departamentos.
+                  </p>
+                </div>
+              )}
 
-              <div className="flex flex-col gap-3">
-                <Button
-                  onClick={() => {
-                    const tokenSuffix = token ? `?token=${encodeURIComponent(token)}` : '';
-                    navigate(`/${slug}${tokenSuffix}`);
-                  }}
-                  className="bg-pipeelo-green hover:bg-pipeelo-green/90"
-                  size="lg"
-                >
-                  Ver status dos departamentos
-                </Button>
-              </div>
+              {!isComercial && (
+                <div className="flex flex-col gap-3">
+                  <Button
+                    onClick={() => {
+                      const tokenSuffix = token ? `?token=${encodeURIComponent(token)}` : '';
+                      navigate(`/${slug}${tokenSuffix}`);
+                    }}
+                    className="bg-pipeelo-green hover:bg-pipeelo-green/90"
+                    size="lg"
+                  >
+                    Ver status dos departamentos
+                  </Button>
+                </div>
+              )}
             </motion.div>
           )}
         </AnimatePresence>
