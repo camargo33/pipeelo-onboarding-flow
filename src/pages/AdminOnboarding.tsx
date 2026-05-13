@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
-import { Copy, Plus, Building2, ExternalLink, Check, Clock, RefreshCw, Trash2, Loader2, LogOut, Layers, X } from 'lucide-react';
+import { Copy, Plus, Building2, ExternalLink, Check, Clock, RefreshCw, Trash2, Loader2, LogOut, Layers, X, ChevronDown } from 'lucide-react';
 import { PipeeloLogo } from '@/components/PipeeloLogo';
 import { AdminLogin } from '@/components/AdminLogin';
 import {
@@ -39,6 +39,21 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+
+type OnboardingTipo = 'completo' | 'comercial';
+
+const TIPO_LABEL: Record<OnboardingTipo, string> = {
+  completo: 'Onboarding Completo',
+  comercial: 'Apenas CRM (Vendas)',
+};
 
 type OnboardingSession = SessionDTO;
 
@@ -364,15 +379,16 @@ const AdminOnboarding = () => {
     }
   };
 
-  const getOnboardingUrl = (session: OnboardingSession) => {
+  const getOnboardingUrl = (session: OnboardingSession, tipo: OnboardingTipo = 'completo') => {
     const accessToken = (session as { access_token?: string }).access_token;
-    const base = `https://onboarding.pipeelo.com/${session.slug}`;
+    const path = tipo === 'comercial' ? `comercial/${session.slug}` : session.slug;
+    const base = `https://onboarding.pipeelo.com/${path}`;
     return accessToken ? `${base}?token=${accessToken}` : base;
   };
 
-  const copyLink = (session: OnboardingSession) => {
-    navigator.clipboard.writeText(getOnboardingUrl(session));
-    toast.success('Link copiado!');
+  const copyLink = (session: OnboardingSession, tipo: OnboardingTipo = 'completo') => {
+    navigator.clipboard.writeText(getOnboardingUrl(session, tipo));
+    toast.success(`Link copiado — ${TIPO_LABEL[tipo]}`);
   };
 
   const getStatusBadge = (status: string | null, label: string) => {
@@ -620,21 +636,48 @@ const AdminOnboarding = () => {
                       </div>
 
                       <div className="flex items-center gap-2">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => copyLink(session)}
-                        >
-                          <Copy className="w-4 h-4 mr-2" />
-                          Copiar Link
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => window.open(getOnboardingUrl(session), '_blank')}
-                        >
-                          <ExternalLink className="w-4 h-4" />
-                        </Button>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="outline" size="sm">
+                              <Copy className="w-4 h-4 mr-2" />
+                              Copiar Link
+                              <ChevronDown className="w-3.5 h-3.5 ml-1.5 opacity-70" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end" className="w-56">
+                            <DropdownMenuLabel className="text-xs">Tipo de onboarding</DropdownMenuLabel>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem onClick={() => copyLink(session, 'completo')}>
+                              <div className="flex flex-col">
+                                <span className="text-sm">Completo</span>
+                                <span className="text-[11px] text-muted-foreground">Todos departamentos (IA + CRM)</span>
+                              </div>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => copyLink(session, 'comercial')}>
+                              <div className="flex flex-col">
+                                <span className="text-sm">Apenas CRM</span>
+                                <span className="text-[11px] text-muted-foreground">Só departamento de Vendas</span>
+                              </div>
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="sm" aria-label="Abrir link">
+                              <ExternalLink className="w-4 h-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end" className="w-56">
+                            <DropdownMenuLabel className="text-xs">Abrir como</DropdownMenuLabel>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem onClick={() => window.open(getOnboardingUrl(session, 'completo'), '_blank')}>
+                              Onboarding Completo
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => window.open(getOnboardingUrl(session, 'comercial'), '_blank')}>
+                              Apenas CRM
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
                         <AlertDialog>
                           <AlertDialogTrigger asChild>
                             <Button
