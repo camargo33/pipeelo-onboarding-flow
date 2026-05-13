@@ -83,26 +83,25 @@ export async function maybeNotifyOnboardingComplete(
     return { skipped: true, reason: 'not_finished_yet' };
   }
 
-  // Marca ANTES de mandar pra evitar dupla notificação em race condition.
-  // Se o envio falhar, ficaremos sem notificação (preferível a duplicar).
-  const { error: markErr } = await supabase
-    .from('onboarding_sessions')
-    .update({ notificacao_conclusao_enviada_at: new Date().toISOString() })
-    .eq('id', sessionId)
-    .is('notificacao_conclusao_enviada_at', null);
-
-  if (markErr) {
-    return { skipped: true, reason: `mark_failed: ${markErr.message}` };
+  // RPC atômica: marca notificacao_conclusao_enviada_at = now() se ainda for
+  // NULL e retorna true. Resolve race condition (2 deptos concluídos quase
+  // simultaneamente) — apenas UM caller recebe true e segue pro envio.
+  const { data: claimed, error: claimErr } = await supabase.rpc(
+    'claim_notification_send',
+    { p_session_id: sessionId }
+  );
+  if (claimErr) {
+    return { skipped: true, reason: `claim_failed: ${claimErr.message}` };
+  }
+  if (!claimed) {
+    return { skipped: true, reason: 'already_sent_or_claimed' };
   }
 
   try {
     const group = await findGroupByName(data.empresa_nome);
     if (!group) {
-      // Reverte o marker pra permitir retry futuro
-      await supabase
-        .from('onboarding_sessions')
-        .update({ notificacao_conclusao_enviada_at: null })
-        .eq('id', sessionId);
+      // Sem grupo: libera o claim pra permitir retry futuro (ex: admin cria o grupo depois).
+      await supabase.rpc('release_notification_claim', { p_session_id: sessionId });
       return { skipped: true, reason: 'group_not_found' };
     }
 
@@ -115,13 +114,16 @@ export async function maybeNotifyOnboardingComplete(
     return { sent: true, group: { id: group.id, name: group.subject } };
   } catch (e) {
     if (e instanceof EvolutionConfigError) {
-      // Sem config: rollback do marker pra permitir retry quando configurar
-      await supabase
-        .from('onboarding_sessions')
-        .update({ notificacao_conclusao_enviada_at: null })
-        .eq('id', sessionId);
+      // Config faltando: libera o claim pra reenviar quando configurar.
+      // Esse caminho só dispara antes de qualquer chamada HTTP — não há risco
+      // de mensagem entregue.
+      await supabase.rpc('release_notification_claim', { p_session_id: sessionId });
       return { skipped: true, reason: 'evolution_unconfigured' };
     }
+    // sendText falhou (Evolution 5xx, rede, etc). NÃO libera o claim:
+    // Evolution às vezes retorna 5xx com mensagem JÁ entregue. Preferimos
+    // perder uma notificação a mandar duas. Admin pode disparar manualmente
+    // se necessário via /api/admin/whatsapp-send-welcome.
     console.error('[whatsapp-notify] sendText falhou:', e);
     return { skipped: true, reason: 'send_failed' };
   }
