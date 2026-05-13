@@ -43,6 +43,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     const supabase = getServiceSupabase();
 
+    // Atualiza o modo da sessão (último link gerado define qual mensagem
+    // de conclusão será disparada quando o cliente terminar).
+    await supabase
+      .from('onboarding_sessions')
+      .update({ modo })
+      .eq('id', session_id);
+
     // Idempotência: já existe shortlink pra esse (session_id, modo)?
     const { data: existing, error: existingErr } = await supabase
       .from('short_links')

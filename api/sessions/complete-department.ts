@@ -2,6 +2,7 @@ import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { CompleteDepartmentSchema } from '../_lib/schemas/resposta';
 import { assertSessionAccess, HttpError } from '../_lib/auth-session';
 import { getServiceSupabase } from '../_lib/supabase';
+import { maybeNotifyOnboardingComplete } from '../_lib/whatsapp-notify';
 
 const GATED = ['sac_geral', 'financeiro', 'suporte', 'vendas'] as const;
 
@@ -39,6 +40,20 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       .update(updateCols)
       .eq('id', session.id);
     if (error) throw new HttpError(500, error.message);
+
+    // Fire-and-forget: dispara mensagem WhatsApp de conclusão se onboarding
+    // fechou (modo comercial=vendas concluído; modo completo=todos concluídos).
+    // Idempotente via coluna notificacao_conclusao_enviada_at.
+    void maybeNotifyOnboardingComplete(session.id).then((result) => {
+      if ('sent' in result) {
+        console.log(`[complete-department] notificação WhatsApp enviada → grupo "${result.group.name}"`);
+      } else if (result.reason !== 'not_finished_yet' && result.reason !== 'already_sent') {
+        console.warn(`[complete-department] notificação WhatsApp pulada: ${result.reason}`);
+      }
+    }).catch((e) => {
+      console.error('[complete-department] erro inesperado em maybeNotifyOnboardingComplete:', e);
+    });
+
     return res.status(200).json({ ok: true });
   } catch (e: unknown) {
     if (e instanceof HttpError)

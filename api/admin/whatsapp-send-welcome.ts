@@ -71,6 +71,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(404).json({ error: 'session_not_found' });
     }
 
+    // Atualiza modo da sessão (último link enviado define qual mensagem
+    // de conclusão será disparada quando o cliente terminar).
+    await supabase
+      .from('onboarding_sessions')
+      .update({ modo })
+      .eq('id', session_id);
+
     const accessToken = (session as { access_token?: string }).access_token;
     const path = modo === 'comercial' ? `comercial/${session.slug}` : session.slug;
     const targetUrl = accessToken
