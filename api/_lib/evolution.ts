@@ -39,10 +39,30 @@ export type EvolutionGroup = {
   size?: number;
 };
 
+function normalize(s: string): string {
+  return s
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '') // remove acentos
+    .toLowerCase()
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
 /**
- * Busca todos os grupos da instância e filtra por nome (case-insensitive).
- * Estratégia: primeiro tenta match exato, depois startsWith, depois includes.
- * Retorna o primeiro match ou null.
+ * Busca grupo WhatsApp pelo nome da empresa.
+ *
+ * Convenção dos grupos Pipeelo: o nome do grupo SEMPRE segue o padrão
+ * "Pipeelo & {empresa}" (ou variantes "Pipeelo e {empresa}",
+ * "Pipeelo - {empresa}"). O matcher tenta nessa ordem:
+ *
+ *   1. Match exato com "Pipeelo & {empresa}"
+ *   2. Match exato com variantes ("e", "-", "&", "+")
+ *   3. startsWith "pipeelo & {empresa}"
+ *   4. includes "{empresa}" como palavra (regex word boundary)
+ *   5. includes "{empresa}" simples (último recurso)
+ *
+ * Retorna o primeiro match ou null. Comparações são case-insensitive
+ * e ignoram acentos.
  */
 export async function findGroupByName(name: string): Promise<EvolutionGroup | null> {
   const { baseUrl, instance, apiKey } = getConfig();
@@ -52,17 +72,44 @@ export async function findGroupByName(name: string): Promise<EvolutionGroup | nu
     throw new EvolutionApiError(r.status, await r.text());
   }
   const groups = (await r.json()) as Array<{ id: string; subject?: string; size?: number }>;
-  const normalized = name.trim().toLowerCase();
-  if (!normalized) return null;
+  const empresa = normalize(name);
+  if (!empresa) return null;
 
-  const exact = groups.find((g) => (g.subject ?? '').trim().toLowerCase() === normalized);
-  if (exact) return { id: exact.id, subject: exact.subject ?? '', size: exact.size };
+  type G = { id: string; subject: string; norm: string };
+  const list: G[] = groups.map((g) => ({
+    id: g.id,
+    subject: g.subject ?? '',
+    norm: normalize(g.subject ?? ''),
+  }));
 
-  const starts = groups.find((g) => (g.subject ?? '').trim().toLowerCase().startsWith(normalized));
-  if (starts) return { id: starts.id, subject: starts.subject ?? '', size: starts.size };
+  const candidates = [
+    `pipeelo & ${empresa}`,
+    `pipeelo e ${empresa}`,
+    `pipeelo - ${empresa}`,
+    `pipeelo + ${empresa}`,
+    empresa,
+  ];
 
-  const incl = groups.find((g) => (g.subject ?? '').trim().toLowerCase().includes(normalized));
-  if (incl) return { id: incl.id, subject: incl.subject ?? '', size: incl.size };
+  // 1. exact match em qualquer candidato
+  for (const c of candidates) {
+    const hit = list.find((g) => g.norm === c);
+    if (hit) return { id: hit.id, subject: hit.subject };
+  }
+
+  // 2. startsWith em qualquer candidato
+  for (const c of candidates) {
+    const hit = list.find((g) => g.norm.startsWith(c));
+    if (hit) return { id: hit.id, subject: hit.subject };
+  }
+
+  // 3. word-boundary includes do nome da empresa
+  const wordRe = new RegExp(`\\b${empresa.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`);
+  const wordHit = list.find((g) => wordRe.test(g.norm));
+  if (wordHit) return { id: wordHit.id, subject: wordHit.subject };
+
+  // 4. includes simples (último recurso)
+  const incl = list.find((g) => g.norm.includes(empresa));
+  if (incl) return { id: incl.id, subject: incl.subject };
 
   return null;
 }

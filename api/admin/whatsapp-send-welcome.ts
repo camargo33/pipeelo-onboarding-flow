@@ -124,7 +124,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     if (!group) {
       return res.status(404).json({
         error: 'group_not_found',
-        message: `Nenhum grupo WhatsApp encontrado com o nome "${session.empresa_nome}". Verifique se o grupo existe na instância e tem nome igual ao da sessão.`,
+        message: `Nenhum grupo WhatsApp encontrado pra "${session.empresa_nome}". Esperado padrão "Pipeelo & ${session.empresa_nome}" (ou variantes "e", "-", "+"). Confira o nome do grupo na instância Avisos.`,
       });
     }
 
