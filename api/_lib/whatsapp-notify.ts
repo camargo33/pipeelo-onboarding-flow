@@ -36,7 +36,8 @@ type SessionRow = {
 function isOnboardingFinished(s: SessionRow): boolean {
   const modo = s.modo ?? 'completo';
   if (modo === 'comercial') {
-    return s.status_vendas === 'concluido';
+    // Comercial: exige Identificação (dados da empresa) + Vendas (CRM).
+    return s.status_identificacao === 'concluido' && s.status_vendas === 'concluido';
   }
   return (
     s.status_identificacao === 'concluido' &&

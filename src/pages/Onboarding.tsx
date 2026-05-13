@@ -273,7 +273,16 @@ export default function Onboarding() {
         title: 'Respostas salvas!',
         description: `O departamento ${departamentoData.nome} foi salvo com sucesso. Você pode editar a qualquer momento.`,
       });
-      setStep('sucesso');
+
+      // Modo comercial: Identificação → Vendas. Só mostra tela final após Vendas.
+      if (isComercial && state.departamento === 'identificacao') {
+        const params = new URLSearchParams();
+        if (token) params.set('token', token);
+        params.set('modo', 'comercial');
+        navigate(`/${slug}/vendas?${params.toString()}`, { replace: true });
+      } else {
+        setStep('sucesso');
+      }
       setIsSubmitting(false);
 
       // Disparar integrações em background (Vercel Functions).

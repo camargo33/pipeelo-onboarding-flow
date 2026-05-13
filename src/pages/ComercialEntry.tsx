@@ -5,8 +5,12 @@ import { Loader2 } from 'lucide-react';
 /**
  * Entrada do onboarding comercial-only (CRM Pipeelo).
  *
- * Reaproveita 100% o fluxo de Vendas existente — apenas redireciona pro
- * departamento `vendas` adicionando `?modo=comercial` que ajusta UI/copy.
+ * Fluxo comercial: Identificação (dados da empresa, cria tenant) → Vendas (CRM).
+ * Os outros 3 departamentos (sac_geral, financeiro, suporte) são pulados.
+ *
+ * Redireciona pra Identificação adicionando `?modo=comercial` que ajusta UI/copy.
+ * Após concluir Identificação, o Onboarding.tsx redireciona pra Vendas mantendo
+ * `modo=comercial`.
  *
  * URL: /comercial/{slug}?token={magic_token}
  */
@@ -24,7 +28,7 @@ export default function ComercialEntry() {
     const params = new URLSearchParams();
     if (token) params.set('token', token);
     params.set('modo', 'comercial');
-    navigate(`/${slug}/vendas?${params.toString()}`, { replace: true });
+    navigate(`/${slug}/identificacao?${params.toString()}`, { replace: true });
   }, [slug, searchParams, navigate]);
 
   return (
