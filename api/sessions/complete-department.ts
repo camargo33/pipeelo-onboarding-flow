@@ -3,6 +3,7 @@ import { CompleteDepartmentSchema } from '../_lib/schemas/resposta';
 import { assertSessionAccess, HttpError } from '../_lib/auth-session';
 import { getServiceSupabase } from '../_lib/supabase';
 import { maybeNotifyOnboardingComplete } from '../_lib/whatsapp-notify';
+import { maybePromoteToBoard } from '../_lib/promote-to-board';
 
 const GATED = ['sac_geral', 'financeiro', 'suporte', 'vendas'] as const;
 
@@ -47,6 +48,18 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     void maybeNotifyOnboardingComplete(session.id).then((result) => {
       if ('sent' in result) {
         console.log(`[complete-department] notificação WhatsApp enviada → grupo "${result.group.name}"`);
+        // Promove pro client_board (coluna "Novo Cliente") só APÓS WhatsApp OK.
+        // Idempotente via card_created_at. Garante que admin só vê o card
+        // depois que cliente já recebeu mensagem de conclusão.
+        void maybePromoteToBoard(session.id).then((promo) => {
+          if ('promoted' in promo) {
+            console.log(`[complete-department] card promovido → column_id=${promo.column_id} (already_on_board=${promo.already_on_board})`);
+          } else {
+            console.warn(`[complete-department] promote-to-board pulado: ${promo.reason}`);
+          }
+        }).catch((e) => {
+          console.error('[complete-department] erro inesperado em maybePromoteToBoard:', e);
+        });
       } else if (result.reason !== 'not_finished_yet' && result.reason !== 'already_sent') {
         console.warn(`[complete-department] notificação WhatsApp pulada: ${result.reason}`);
       }
