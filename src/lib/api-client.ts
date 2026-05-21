@@ -39,6 +39,7 @@ export type SessionDTO = {
   status_financeiro: string | null;
   status_suporte: string | null;
   status_vendas: string | null;
+  modo?: 'completo' | 'comercial' | null;
   responsavel_identificacao?: string | null;
   responsavel_sac_geral?: string | null;
   responsavel_financeiro?: string | null;
@@ -165,6 +166,7 @@ export const adminSessionApi = {
       mapas?: string;
       gerenciamento_rede?: string;
       gateway_pagamento?: string;
+      modo?: 'completo' | 'comercial';
     }
   ) =>
     adminApi<{ session: SessionDTO }>('/api/admin/sessions-create', authToken, {

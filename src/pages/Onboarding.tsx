@@ -130,6 +130,7 @@ export default function Onboarding() {
         setResposta('_session_mapas', s.mapas ?? '');
         setResposta('_session_gerenciamento_rede', s.gerenciamento_rede ?? '');
         setResposta('_session_gateway_pagamento', s.gateway_pagamento ?? '');
+        setResposta('_session_modo', isComercial ? 'comercial' : 'completo');
 
         // Hidratar respostas existentes do departamento atual
         const ofDept = respostas.filter((r) => r.departamento === urlDepartamento);

@@ -1537,16 +1537,53 @@
       "ordem_execucao": 4,
       "secoes": {
 
+        "fluxo_pos_pre_cadastro": {
+          "titulo": "Fluxo Pós Pré-cadastro",
+          "icone": "🔀",
+          "descricao": "Como a IA deve agir depois de qualificar o lead e gerar o pré-cadastro. Diferencia quem vai usar a Pipeelo pra atender o lead de quem só vai receber o pré-cadastro no CRM/ERP.",
+          "condicional_secao": "_session_modo == 'comercial'",
+          "perguntas": [
+            {
+              "id": "destino_pos_pre_cadastro",
+              "pergunta": "Depois que a IA faz o pré-cadastro do lead, o que deve acontecer?",
+              "tipo": "select",
+              "obrigatoria": true,
+              "condicional": "_session_modo == 'comercial'",
+              "opcoes": [
+                {"value": "transferir_pipeelo", "label": "Transferir a conversa pro time comercial dentro da Pipeelo (vamos atender pela plataforma)"},
+                {"value": "apenas_crm", "label": "Apenas registrar no CRM/ERP — IA encerra a conversa e o time atende pelo nosso sistema"}
+              ],
+              "hint": "Se escolher 'apenas CRM', a IA finaliza o atendimento educadamente após o pré-cadastro. Se 'transferir', a conversa segue dentro da Pipeelo com o time comercial."
+            }
+          ]
+        },
+
         "portfolio_planos": {
           "titulo": "Portfólio de Planos",
           "icone": "📦",
-          "descricao": "Cadastre os planos por categoria. A IA usa nome, velocidade, preço, benefícios e argumento de venda diretamente no atendimento. Quanto mais completo, melhor a IA fecha — preencha apenas as categorias que vocês oferecem.",
+          "descricao": "Cadastre os planos por categoria. A IA usa nome, velocidade, preço, benefícios e argumento de venda diretamente no atendimento. Marque os serviços que vocês oferecem — pra cada serviço marcado, é obrigatório cadastrar ao menos 1 plano.",
           "perguntas": [
+            {
+              "id": "servicos_oferecidos",
+              "pergunta": "Quais serviços vocês oferecem? (marque todos)",
+              "tipo": "checkbox_multiple",
+              "obrigatoria": true,
+              "hint": "Pra cada serviço marcado abaixo, vai aparecer a lista correspondente — é obrigatório cadastrar pelo menos 1 plano em cada serviço marcado.",
+              "opcoes": [
+                {"value": "internet_residencial", "label": "📶 Internet Residencial (Fibra)"},
+                {"value": "internet_pme", "label": "🏢 Internet Empresarial / PME"},
+                {"value": "internet_radio", "label": "📡 Internet via Rádio"},
+                {"value": "telefonia_fixa", "label": "☎️ Telefonia Fixa"},
+                {"value": "chip_movel", "label": "📱 Chip / Telefonia Móvel"},
+                {"value": "tv_streaming", "label": "📺 TV / Streaming"}
+              ]
+            },
             {
               "id": "planos_internet_residencial",
               "pergunta": "📶 Planos de Internet Residencial (Fibra)",
               "tipo": "repeater",
-              "minimo": 0,
+              "minimo": 1,
+              "condicional": "servicos_oferecidos includes 'internet_residencial'",
               "rotulo_item": "Plano residencial",
               "rotulo_adicionar": "Adicionar plano residencial",
               "hint": "Planos de fibra para residências. Siga o padrão da KB Techy — preencha benefícios e argumento de venda completos pra IA usar literalmente no atendimento.",
@@ -1569,7 +1606,8 @@
               "id": "planos_internet_pme",
               "pergunta": "🏢 Planos de Internet Empresarial / PME",
               "tipo": "repeater",
-              "minimo": 0,
+              "minimo": 1,
+              "condicional": "servicos_oferecidos includes 'internet_pme'",
               "rotulo_item": "Plano empresarial",
               "rotulo_adicionar": "Adicionar plano empresarial",
               "hint": "Planos voltados pra empresas — geralmente com SLA, IP fixo opcional, suporte prioritário.",
@@ -1590,7 +1628,8 @@
               "id": "planos_internet_radio",
               "pergunta": "📡 Planos de Internet via Rádio",
               "tipo": "repeater",
-              "minimo": 0,
+              "minimo": 1,
+              "condicional": "servicos_oferecidos includes 'internet_radio'",
               "rotulo_item": "Plano via rádio",
               "rotulo_adicionar": "Adicionar plano via rádio",
               "hint": "Para áreas onde a fibra ainda não chegou. Pula essa categoria se vocês só oferecem fibra.",
@@ -1610,7 +1649,8 @@
               "id": "planos_telefonia_fixa",
               "pergunta": "☎️ Planos de Telefonia Fixa",
               "tipo": "repeater",
-              "minimo": 0,
+              "minimo": 1,
+              "condicional": "servicos_oferecidos includes 'telefonia_fixa'",
               "rotulo_item": "Plano de telefonia fixa",
               "rotulo_adicionar": "Adicionar plano de telefonia fixa",
               "hint": "Telefonia fixa avulsa ou combinada. Pula se vocês não oferecem telefonia.",
@@ -1627,7 +1667,8 @@
               "id": "planos_chip_movel",
               "pergunta": "📱 Planos de Chip / Telefonia Móvel",
               "tipo": "repeater",
-              "minimo": 0,
+              "minimo": 1,
+              "condicional": "servicos_oferecidos includes 'chip_movel'",
               "rotulo_item": "Plano de chip móvel",
               "rotulo_adicionar": "Adicionar plano de chip móvel",
               "hint": "Planos de chip operadora própria ou MVNO. Pula se vocês não oferecem.",
@@ -1646,7 +1687,8 @@
               "id": "planos_tv_streaming",
               "pergunta": "📺 Planos de TV / Streaming",
               "tipo": "repeater",
-              "minimo": 0,
+              "minimo": 1,
+              "condicional": "servicos_oferecidos includes 'tv_streaming'",
               "rotulo_item": "Plano TV/Streaming",
               "rotulo_adicionar": "Adicionar plano TV/Streaming",
               "hint": "TV por assinatura (IPTV/cabo) ou pacotes de streaming combinados. Pula se vocês não oferecem.",

@@ -245,6 +245,7 @@ const AdminOnboarding = () => {
   const [mapas, setMapas] = useState<string>('');
   const [rede, setRede] = useState<string>('');
   const [gateway, setGateway] = useState<string>('');
+  const [tipo, setTipo] = useState<OnboardingTipo>('completo');
   const [sessions, setSessions] = useState<OnboardingSession[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -337,14 +338,16 @@ const AdminOnboarding = () => {
         mapas: mapas || undefined,
         gerenciamento_rede: rede || undefined,
         gateway_pagamento: gateway || undefined,
+        modo: tipo,
       });
-      toast.success('Link criado com sucesso!');
+      toast.success(`Link ${TIPO_LABEL[tipo]} criado com sucesso!`);
       setEmpresaNome('');
       setCeoEmail('');
       setErp('');
       setMapas('');
       setRede('');
       setGateway('');
+      setTipo('completo');
       fetchSessions();
     } catch (e) {
       // eslint-disable-next-line no-console
@@ -498,7 +501,16 @@ const AdminOnboarding = () => {
     return <Badge className="bg-red-500/20 text-red-500 border-red-500/30"><Clock className="w-3 h-3 mr-1" />{label}</Badge>;
   };
 
+  const isComercialSession = (session: OnboardingSession) =>
+    session.modo === 'comercial';
+
+  const getTotalDeptosCount = (session: OnboardingSession) =>
+    isComercialSession(session) ? 1 : 4;
+
   const getCompletedCount = (session: OnboardingSession) => {
+    if (isComercialSession(session)) {
+      return session.status_vendas === 'concluido' ? 1 : 0;
+    }
     let count = 0;
     if (session.status_sac_geral === 'concluido') count++;
     if (session.status_financeiro === 'concluido') count++;
@@ -530,7 +542,7 @@ const AdminOnboarding = () => {
   };
 
   const isAllCompleted = (session: OnboardingSession) => {
-    return getCompletedCount(session) === 4;
+    return getCompletedCount(session) === getTotalDeptosCount(session);
   };
 
   if (isAuthenticated === null) {
@@ -574,6 +586,41 @@ const AdminOnboarding = () => {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
+            <div>
+              <label className="text-sm font-medium text-muted-foreground mb-2 block">
+                Tipo de Onboarding *
+              </label>
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  type="button"
+                  onClick={() => setTipo('completo')}
+                  className={`text-left rounded-md border px-3 py-2.5 transition-colors ${
+                    tipo === 'completo'
+                      ? 'border-primary bg-primary/10 text-foreground'
+                      : 'border-border bg-card hover:bg-card/70 text-muted-foreground'
+                  }`}
+                >
+                  <div className="text-sm font-medium">Onboarding Completo</div>
+                  <div className="text-[11px] text-muted-foreground mt-0.5">
+                    IA + CRM — todos departamentos (4 formulários)
+                  </div>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setTipo('comercial')}
+                  className={`text-left rounded-md border px-3 py-2.5 transition-colors ${
+                    tipo === 'comercial'
+                      ? 'border-primary bg-primary/10 text-foreground'
+                      : 'border-border bg-card hover:bg-card/70 text-muted-foreground'
+                  }`}
+                >
+                  <div className="text-sm font-medium">Apenas CRM (Vendas)</div>
+                  <div className="text-[11px] text-muted-foreground mt-0.5">
+                    Só Identificação + Vendas (2 formulários)
+                  </div>
+                </button>
+              </div>
+            </div>
             <div className="grid gap-4 sm:grid-cols-2">
               <div>
                 <label className="text-sm font-medium text-muted-foreground mb-2 block">
@@ -711,18 +758,27 @@ const AdminOnboarding = () => {
                   <CardContent className="p-4">
                     <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
                       <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-2">
+                        <div className="flex items-center gap-2 mb-2 flex-wrap">
                           <Building2 className="w-4 h-4 text-primary" />
                           <span className="font-semibold text-foreground">{session.empresa_nome}</span>
                           <Badge variant="outline" className="text-xs">
-                            {getCompletedCount(session)}/4
+                            {getCompletedCount(session)}/{getTotalDeptosCount(session)}
                           </Badge>
+                          {isComercialSession(session) && (
+                            <Badge className="text-xs bg-blue-500/20 text-blue-400 border-blue-500/30">
+                              Apenas CRM
+                            </Badge>
+                          )}
                         </div>
 
                         <div className="flex flex-wrap gap-2 mb-3">
-                          {getStatusBadge(session.status_sac_geral, 'SAC/Geral')}
-                          {getStatusBadge(session.status_financeiro, 'Financeiro')}
-                          {getStatusBadge(session.status_suporte, 'Suporte')}
+                          {!isComercialSession(session) && (
+                            <>
+                              {getStatusBadge(session.status_sac_geral, 'SAC/Geral')}
+                              {getStatusBadge(session.status_financeiro, 'Financeiro')}
+                              {getStatusBadge(session.status_suporte, 'Suporte')}
+                            </>
+                          )}
                           {getStatusBadge(session.status_vendas, 'Vendas')}
                         </div>
 
@@ -748,87 +804,44 @@ const AdminOnboarding = () => {
                       </div>
 
                       <div className="flex items-center gap-2">
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button variant="outline" size="sm">
-                              <Copy className="w-4 h-4 mr-2" />
-                              Copiar Link
-                              <ChevronDown className="w-3.5 h-3.5 ml-1.5 opacity-70" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end" className="w-56">
-                            <DropdownMenuLabel className="text-xs">Tipo de onboarding</DropdownMenuLabel>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem onClick={() => copyLink(session, 'completo')}>
-                              <div className="flex flex-col">
-                                <span className="text-sm">Completo</span>
-                                <span className="text-[11px] text-muted-foreground">Todos departamentos (IA + CRM)</span>
-                              </div>
-                            </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => copyLink(session, 'comercial')}>
-                              <div className="flex flex-col">
-                                <span className="text-sm">Apenas CRM</span>
-                                <span className="text-[11px] text-muted-foreground">Só departamento de Vendas</span>
-                              </div>
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              disabled={sendingWelcome?.startsWith(session.id) ?? false}
-                              className="bg-green-500/10 hover:bg-green-500/20 border-green-500/30 text-green-600 dark:text-green-400"
-                            >
-                              {sendingWelcome?.startsWith(session.id) ? (
-                                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                              ) : (
-                                <Send className="w-4 h-4 mr-2" />
-                              )}
-                              Enviar WhatsApp
-                              <ChevronDown className="w-3.5 h-3.5 ml-1.5 opacity-70" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end" className="w-64">
-                            <DropdownMenuLabel className="text-xs">
-                              Disparar boas-vindas no grupo
-                              <div className="text-[10px] text-muted-foreground font-normal mt-0.5 normal-case">
-                                Grupo deve se chamar "{session.empresa_nome}"
-                              </div>
-                            </DropdownMenuLabel>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem onClick={() => sendWelcomeWhatsApp(session, 'completo')}>
-                              <div className="flex flex-col">
-                                <span className="text-sm">Onboarding Completo</span>
-                                <span className="text-[11px] text-muted-foreground">Link com todos departamentos</span>
-                              </div>
-                            </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => sendWelcomeWhatsApp(session, 'comercial')}>
-                              <div className="flex flex-col">
-                                <span className="text-sm">Apenas CRM</span>
-                                <span className="text-[11px] text-muted-foreground">Link só com Vendas</span>
-                              </div>
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="sm" aria-label="Abrir link">
-                              <ExternalLink className="w-4 h-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end" className="w-56">
-                            <DropdownMenuLabel className="text-xs">Abrir como</DropdownMenuLabel>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem onClick={() => openLink(session, 'completo')}>
-                              Onboarding Completo
-                            </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => openLink(session, 'comercial')}>
-                              Apenas CRM
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
+                        {(() => {
+                          const sessionTipo: OnboardingTipo =
+                            session.modo === 'comercial' ? 'comercial' : 'completo';
+                          return (
+                            <>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => copyLink(session, sessionTipo)}
+                              >
+                                <Copy className="w-4 h-4 mr-2" />
+                                Copiar Link
+                              </Button>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => sendWelcomeWhatsApp(session, sessionTipo)}
+                                disabled={sendingWelcome?.startsWith(session.id) ?? false}
+                                className="bg-green-500/10 hover:bg-green-500/20 border-green-500/30 text-green-600 dark:text-green-400"
+                              >
+                                {sendingWelcome?.startsWith(session.id) ? (
+                                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                                ) : (
+                                  <Send className="w-4 h-4 mr-2" />
+                                )}
+                                Enviar WhatsApp
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                aria-label="Abrir link"
+                                onClick={() => openLink(session, sessionTipo)}
+                              >
+                                <ExternalLink className="w-4 h-4" />
+                              </Button>
+                            </>
+                          );
+                        })()}
                         <AlertDialog>
                           <AlertDialogTrigger asChild>
                             <Button

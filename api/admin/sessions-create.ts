@@ -20,6 +20,7 @@ const Body = z.object({
   mapas: optionalEnum(MAPAS_OPTIONS),
   gerenciamento_rede: optionalEnum(REDE_OPTIONS),
   gateway_pagamento: optionalEnum(GATEWAY_OPTIONS),
+  modo: z.enum(['completo', 'comercial']).optional().default('completo'),
 });
 
 /**
@@ -43,6 +44,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const slug = nanoid(12);
     const access_token = nanoid(32);
 
+    const isComercial = body.modo === 'comercial';
+    // Modo comercial só pede Identificação + Vendas; outros 3 deptos
+    // ficam como 'nao_aplicavel' e não entram na contagem de progresso.
+    const statusDeptoExtra = isComercial ? 'nao_aplicavel' : 'pendente';
+
     const { data, error } = await supabase
       .from('onboarding_sessions')
       .insert({
@@ -54,10 +60,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         mapas: body.mapas ?? null,
         gerenciamento_rede: body.gerenciamento_rede ?? null,
         gateway_pagamento: body.gateway_pagamento ?? null,
+        modo: body.modo,
         status_identificacao: 'pendente',
-        status_sac_geral: 'pendente',
-        status_financeiro: 'pendente',
-        status_suporte: 'pendente',
+        status_sac_geral: statusDeptoExtra,
+        status_financeiro: statusDeptoExtra,
+        status_suporte: statusDeptoExtra,
         status_vendas: 'pendente',
       })
       .select('*')
