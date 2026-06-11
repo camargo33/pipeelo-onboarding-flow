@@ -10,6 +10,7 @@
 
 import { findGroupByName, sendText, EvolutionConfigError } from './evolution';
 import { getServiceSupabase } from './supabase';
+import { buildIntegrationRequestMessage } from './integration-request';
 
 const TEMPLATE_COMPLETO = (empresa: string) => `✅ *Onboarding concluído!*
 
@@ -111,6 +112,17 @@ export async function maybeNotifyOnboardingComplete(
         : TEMPLATE_COMPLETO(data.empresa_nome);
 
     await sendText(group.id, text);
+
+    // Segunda mensagem: pedido de liberação de IPs + cliente de testes +
+    // credenciais faltantes (só modo completo). Falha aqui não desfaz o claim —
+    // a notificação principal já foi entregue; admin reenvia manualmente se precisar.
+    try {
+      const integrationMsg = await buildIntegrationRequestMessage(supabase, sessionId, data.modo);
+      if (integrationMsg) await sendText(group.id, integrationMsg);
+    } catch (e) {
+      console.error('[whatsapp-notify] pedido de integração falhou:', e);
+    }
+
     return { sent: true, group: { id: group.id, name: group.subject } };
   } catch (e) {
     if (e instanceof EvolutionConfigError) {
