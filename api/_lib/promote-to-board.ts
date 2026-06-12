@@ -41,7 +41,7 @@ type RespostaRow = {
  */
 const EXPECTED_FIELDS: Record<string, Record<string, string[]>> = {
   erp: {
-    IXC: ['erp_ixc_url', 'erp_ixc_token'],
+    IXC: ['erp_ixc_url', 'erp_ixc_userid', 'erp_ixc_token'],
     'MK Solution': ['erp_mk_url', 'erp_mk_token', 'erp_mk_senha'],
     Voalle: [
       'erp_voalle_url',
@@ -49,9 +49,15 @@ const EXPECTED_FIELDS: Record<string, Record<string, string[]>> = {
       'erp_voalle_client_secret',
       'erp_voalle_syndata',
     ],
-    Hubsoft: ['erp_outros_url', 'erp_outros_token', 'erp_outros_usuario', 'erp_outros_senha'],
-    SGP: ['erp_outros_url', 'erp_outros_token', 'erp_outros_usuario', 'erp_outros_senha'],
-    RBX: ['erp_outros_url', 'erp_outros_token', 'erp_outros_usuario', 'erp_outros_senha'],
+    Hubsoft: [
+      'erp_hubsoft_url',
+      'erp_hubsoft_usuario',
+      'erp_hubsoft_senha',
+      'erp_hubsoft_client_id',
+      'erp_hubsoft_client_secret',
+    ],
+    SGP: ['erp_sgp_url', 'erp_sgp_token', 'erp_sgp_app'],
+    RBX: ['erp_rbx_url', 'erp_rbx_token', 'erp_rbx_usuario', 'erp_rbx_senha'],
     'Topp Sap': ['erp_outros_url', 'erp_outros_token', 'erp_outros_usuario', 'erp_outros_senha'],
     Outros: ['erp_outros_nome', 'erp_outros_url', 'erp_outros_token'],
   },
@@ -63,6 +69,12 @@ const EXPECTED_FIELDS: Record<string, Record<string, string[]>> = {
     'OLT Cloud': ['rede_oltcloud_url', 'rede_oltcloud_usuario', 'rede_oltcloud_senha'],
     Anlix: ['rede_anlix_url', 'rede_anlix_usuario', 'rede_anlix_senha'],
     'Smart OLT': ['rede_smartolt_url', 'rede_smartolt_usuario', 'rede_smartolt_senha'],
+    'Made 4 Graph': [
+      'rede_made4graph_url',
+      'rede_made4graph_email',
+      'rede_made4graph_senha',
+      'rede_made4graph_token',
+    ],
     Outros: ['rede_outros_nome', 'rede_outros_url', 'rede_outros_usuario', 'rede_outros_senha'],
   },
   mapas: {

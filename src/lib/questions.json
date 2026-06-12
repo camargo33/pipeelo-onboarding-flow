@@ -119,6 +119,7 @@
             { "id": "_int_erp_header", "pergunta": "ERP / Sistema de gestão", "tipo": "info", "texto": "Agora os acessos do seu ERP. A IA usa isso pra consultar planos, faturas, contratos e dados do cliente em tempo real — sem isso, o atendimento fica limitado.", "condicional": "_session_erp != ''" },
 
             { "id": "erp_ixc_url", "pergunta": "URL da API do IXC", "tipo": "url", "placeholder": "https://ixc.suaempresa.com.br", "condicional": "_session_erp == 'IXC'" },
+            { "id": "erp_ixc_userid", "pergunta": "userID do IXC", "tipo": "text", "condicional": "_session_erp == 'IXC'", "hint": "ID do usuário de API dentro do IXC." },
             { "id": "erp_ixc_token", "pergunta": "Token do IXC", "tipo": "password", "condicional": "_session_erp == 'IXC'" },
 
             { "id": "erp_mk_url", "pergunta": "URL da API do MK Solution", "tipo": "url", "placeholder": "https://mk.suaempresa.com.br", "condicional": "_session_erp == 'MK Solution'" },
@@ -130,11 +131,26 @@
             { "id": "erp_voalle_client_secret", "pergunta": "Client Secret Voalle", "tipo": "password", "condicional": "_session_erp == 'Voalle'" },
             { "id": "erp_voalle_syndata", "pergunta": "Syndata Voalle", "tipo": "text", "condicional": "_session_erp == 'Voalle'" },
 
-            { "id": "erp_outros_nome", "pergunta": "Qual ERP / sistema vocês usam?", "tipo": "text", "placeholder": "Ex: Hubsoft, SGP, RBX, Topp Sap, etc.", "condicional": "_session_erp == 'Hubsoft' || _session_erp == 'SGP' || _session_erp == 'RBX' || _session_erp == 'Topp Sap' || _session_erp == 'Outros'", "hint": "Se for um ERP da lista (Hubsoft/SGP/RBX/Topp Sap), pode repetir aqui — só pra confirmar." },
-            { "id": "erp_outros_url", "pergunta": "URL da API do ERP", "tipo": "url", "condicional": "_session_erp == 'Hubsoft' || _session_erp == 'SGP' || _session_erp == 'RBX' || _session_erp == 'Topp Sap' || _session_erp == 'Outros'" },
-            { "id": "erp_outros_token", "pergunta": "Token / API Key", "tipo": "password", "condicional": "_session_erp == 'Hubsoft' || _session_erp == 'SGP' || _session_erp == 'RBX' || _session_erp == 'Topp Sap' || _session_erp == 'Outros'", "hint": "Se não usar token, pode deixar em branco e preencher usuário/senha abaixo." },
-            { "id": "erp_outros_usuario", "pergunta": "Usuário do ERP (se aplicável)", "tipo": "text", "condicional": "_session_erp == 'Hubsoft' || _session_erp == 'SGP' || _session_erp == 'RBX' || _session_erp == 'Topp Sap' || _session_erp == 'Outros'" },
-            { "id": "erp_outros_senha", "pergunta": "Senha do ERP (se aplicável)", "tipo": "password", "condicional": "_session_erp == 'Hubsoft' || _session_erp == 'SGP' || _session_erp == 'RBX' || _session_erp == 'Topp Sap' || _session_erp == 'Outros'" },
+            { "id": "erp_hubsoft_url", "pergunta": "URL da API do Hubsoft", "tipo": "url", "placeholder": "https://api.suaempresa.hubsoft.com.br", "condicional": "_session_erp == 'Hubsoft'" },
+            { "id": "erp_hubsoft_usuario", "pergunta": "Usuário Hubsoft", "tipo": "text", "condicional": "_session_erp == 'Hubsoft'" },
+            { "id": "erp_hubsoft_senha", "pergunta": "Senha Hubsoft", "tipo": "password", "condicional": "_session_erp == 'Hubsoft'" },
+            { "id": "erp_hubsoft_client_id", "pergunta": "Client ID Hubsoft", "tipo": "text", "condicional": "_session_erp == 'Hubsoft'" },
+            { "id": "erp_hubsoft_client_secret", "pergunta": "Client Secret Hubsoft", "tipo": "password", "condicional": "_session_erp == 'Hubsoft'" },
+
+            { "id": "erp_rbx_url", "pergunta": "URL da API do RBX", "tipo": "url", "placeholder": "https://rbx.suaempresa.com.br", "condicional": "_session_erp == 'RBX'" },
+            { "id": "erp_rbx_token", "pergunta": "Token RBX", "tipo": "password", "condicional": "_session_erp == 'RBX'" },
+            { "id": "erp_rbx_usuario", "pergunta": "Usuário RBX", "tipo": "text", "condicional": "_session_erp == 'RBX'" },
+            { "id": "erp_rbx_senha", "pergunta": "Senha RBX", "tipo": "password", "condicional": "_session_erp == 'RBX'" },
+
+            { "id": "erp_sgp_url", "pergunta": "URL da API do SGP", "tipo": "url", "placeholder": "https://sgp.suaempresa.com.br", "condicional": "_session_erp == 'SGP'" },
+            { "id": "erp_sgp_token", "pergunta": "Token SGP", "tipo": "password", "condicional": "_session_erp == 'SGP'" },
+            { "id": "erp_sgp_app", "pergunta": "App SGP", "tipo": "text", "condicional": "_session_erp == 'SGP'", "hint": "Nome do app configurado no SGP pra liberar a API." },
+
+            { "id": "erp_outros_nome", "pergunta": "Qual ERP / sistema vocês usam?", "tipo": "text", "placeholder": "Ex: Topp Sap, Integrator, etc.", "condicional": "_session_erp == 'Topp Sap' || _session_erp == 'Outros'", "hint": "Se for Topp Sap, pode repetir aqui — só pra confirmar." },
+            { "id": "erp_outros_url", "pergunta": "URL da API do ERP", "tipo": "url", "condicional": "_session_erp == 'Topp Sap' || _session_erp == 'Outros'" },
+            { "id": "erp_outros_token", "pergunta": "Token / API Key", "tipo": "password", "condicional": "_session_erp == 'Topp Sap' || _session_erp == 'Outros'", "hint": "Se não usar token, pode deixar em branco e preencher usuário/senha abaixo." },
+            { "id": "erp_outros_usuario", "pergunta": "Usuário do ERP (se aplicável)", "tipo": "text", "condicional": "_session_erp == 'Topp Sap' || _session_erp == 'Outros'" },
+            { "id": "erp_outros_senha", "pergunta": "Senha do ERP (se aplicável)", "tipo": "password", "condicional": "_session_erp == 'Topp Sap' || _session_erp == 'Outros'" },
 
             { "id": "_int_gateway_header", "pergunta": "Gateway de pagamentos", "tipo": "info", "texto": "Credenciais do seu gateway de cobrança. Permite que a IA confirme pagamentos, gere segunda via e responda dúvidas financeiras com dado real.", "condicional": "_session_gateway_pagamento != ''" },
 
@@ -157,6 +173,11 @@
             { "id": "rede_smartolt_url", "pergunta": "URL Smart OLT", "tipo": "url", "placeholder": "https://smartolt.suaempresa.com.br", "condicional": "_session_gerenciamento_rede == 'Smart OLT'" },
             { "id": "rede_smartolt_usuario", "pergunta": "Usuário Smart OLT", "tipo": "text", "condicional": "_session_gerenciamento_rede == 'Smart OLT'" },
             { "id": "rede_smartolt_senha", "pergunta": "Senha Smart OLT", "tipo": "password", "condicional": "_session_gerenciamento_rede == 'Smart OLT'" },
+
+            { "id": "rede_made4graph_url", "pergunta": "URL Made 4 Graph", "tipo": "url", "placeholder": "https://made4graph.suaempresa.com.br", "condicional": "_session_gerenciamento_rede == 'Made 4 Graph'" },
+            { "id": "rede_made4graph_email", "pergunta": "Email Made 4 Graph", "tipo": "text", "placeholder": "email@suaempresa.com.br", "condicional": "_session_gerenciamento_rede == 'Made 4 Graph'" },
+            { "id": "rede_made4graph_senha", "pergunta": "Senha Made 4 Graph", "tipo": "password", "condicional": "_session_gerenciamento_rede == 'Made 4 Graph'" },
+            { "id": "rede_made4graph_token", "pergunta": "Token Made 4 Graph", "tipo": "password", "condicional": "_session_gerenciamento_rede == 'Made 4 Graph'" },
 
             { "id": "rede_outros_nome", "pergunta": "Qual gerenciador de rede vocês usam?", "tipo": "text", "placeholder": "Ex: Mikrotik, UNMS, próprio…", "condicional": "_session_gerenciamento_rede == 'Outros'" },
             { "id": "rede_outros_url", "pergunta": "URL do gerenciador", "tipo": "url", "condicional": "_session_gerenciamento_rede == 'Outros'" },

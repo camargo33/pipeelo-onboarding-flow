@@ -29,6 +29,7 @@ const ERP_LABELS: Record<string, string> = {
 const ERP_CREDENTIALS: Record<string, Array<{ id: string; label: string }>> = {
   ixc: [
     { id: 'erp_ixc_url', label: 'URL da API' },
+    { id: 'erp_ixc_userid', label: 'userID do usuário de API' },
     { id: 'erp_ixc_token', label: 'Token de autenticação (gerado em *Configurações → Integrações → API* dentro do IXC)' },
   ],
   mk_solutions: [
@@ -42,7 +43,27 @@ const ERP_CREDENTIALS: Record<string, Array<{ id: string; label: string }>> = {
     { id: 'erp_voalle_client_secret', label: 'Client Secret' },
     { id: 'erp_voalle_syndata', label: 'Syndata' },
   ],
+  hubsoft: [
+    { id: 'erp_hubsoft_url', label: 'URL da API' },
+    { id: 'erp_hubsoft_usuario', label: 'Usuário' },
+    { id: 'erp_hubsoft_senha', label: 'Senha' },
+    { id: 'erp_hubsoft_client_id', label: 'Client ID' },
+    { id: 'erp_hubsoft_client_secret', label: 'Client Secret' },
+  ],
+  sgp: [
+    { id: 'erp_sgp_url', label: 'URL da API' },
+    { id: 'erp_sgp_token', label: 'Token' },
+    { id: 'erp_sgp_app', label: 'App (nome do app de API no SGP)' },
+  ],
 };
+
+/** RBX não existe como opção em erp_utilizado (cai em "outro"), mas tem campos dedicados. */
+const ERP_CREDENTIALS_RBX: Array<{ id: string; label: string }> = [
+  { id: 'erp_rbx_url', label: 'URL da API' },
+  { id: 'erp_rbx_token', label: 'Token' },
+  { id: 'erp_rbx_usuario', label: 'Usuário' },
+  { id: 'erp_rbx_senha', label: 'Senha' },
+];
 
 /** ERPs sem campos dedicados no formulário caem nos campos "outros". */
 const ERP_CREDENTIALS_OUTROS: Array<{ id: string; label: string }> = [
@@ -87,7 +108,11 @@ export async function buildIntegrationRequestMessage(
   // Credenciais faltantes por sistema
   const faltantes: Array<{ sistema: string; itens: string[] }> = [];
 
-  const erpCreds = ERP_CREDENTIALS[erpValue] ?? ERP_CREDENTIALS_OUTROS;
+  const erpCreds =
+    ERP_CREDENTIALS[erpValue] ??
+    (respostas.get('erp_rbx_url') || respostas.get('erp_rbx_token')
+      ? ERP_CREDENTIALS_RBX
+      : ERP_CREDENTIALS_OUTROS);
   const erpFaltando = erpCreds.filter((c) => !respostas.get(c.id)).map((c) => c.label);
   if (erpFaltando.length > 0) faltantes.push({ sistema: erpLabel, itens: erpFaltando });
 
