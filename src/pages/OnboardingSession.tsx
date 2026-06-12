@@ -17,9 +17,6 @@ const departmentConfig: Record<DepartmentId, {
   description: string;
   suggestedPerson: string;
   estimatedTime: string;
-  color: string;
-  bgColor: string;
-  borderColor: string;
   bloqueante?: boolean;
 }> = {
   identificacao: {
@@ -28,9 +25,6 @@ const departmentConfig: Record<DepartmentId, {
     description: 'Dados cadastrais que criam seu tenant Pipeelo. Preencha primeiro.',
     suggestedPerson: 'CEO ou sócio-administrador',
     estimatedTime: '~5 min',
-    color: 'text-slate-300',
-    bgColor: 'bg-slate-500/10',
-    borderColor: 'border-slate-500/30',
     bloqueante: true,
   },
   sac_geral: {
@@ -39,9 +33,6 @@ const departmentConfig: Record<DepartmentId, {
     description: 'Informações gerais da empresa, processos e identidade',
     suggestedPerson: 'Gestor ou Sócio',
     estimatedTime: '~15 min',
-    color: 'text-purple-400',
-    bgColor: 'bg-purple-500/10',
-    borderColor: 'border-purple-500/30',
   },
   financeiro: {
     icon: DollarSign,
@@ -49,9 +40,6 @@ const departmentConfig: Record<DepartmentId, {
     description: 'Cobrança, pagamentos e regras financeiras',
     suggestedPerson: 'Responsável Financeiro',
     estimatedTime: '~10 min',
-    color: 'text-green-400',
-    bgColor: 'bg-green-500/10',
-    borderColor: 'border-green-500/30',
   },
   suporte: {
     icon: Wrench,
@@ -59,9 +47,6 @@ const departmentConfig: Record<DepartmentId, {
     description: 'Diagnósticos técnicos e gestão de rede',
     suggestedPerson: 'Técnico ou NOC',
     estimatedTime: '~10 min',
-    color: 'text-blue-400',
-    bgColor: 'bg-blue-500/10',
-    borderColor: 'border-blue-500/30',
   },
   vendas: {
     icon: TrendingUp,
@@ -69,9 +54,6 @@ const departmentConfig: Record<DepartmentId, {
     description: 'Planos, qualificação e processo comercial',
     suggestedPerson: 'Gerente Comercial',
     estimatedTime: '~10 min',
-    color: 'text-amber-400',
-    bgColor: 'bg-amber-500/10',
-    borderColor: 'border-amber-500/30',
   },
 };
 
@@ -216,7 +198,7 @@ const OnboardingSession = () => {
             <h1 className="text-2xl md:text-3xl font-bold text-foreground mb-2">
               Bem-vindo ao Onboarding Pipeelo
             </h1>
-            <p className="text-lg text-primary font-medium mb-1">
+            <p className="text-lg text-accent font-medium mb-1">
               {session.empresa_nome}
             </p>
             <p className="text-muted-foreground">
@@ -271,7 +253,7 @@ const OnboardingSession = () => {
             </div>
             <div className="h-2 bg-muted rounded-full overflow-hidden">
               <motion.div
-                className="h-full bg-primary rounded-full"
+                className="h-full bg-accent rounded-full"
                 initial={{ width: 0 }}
                 animate={{ width: `${progressPct}%` }}
                 transition={{ duration: 0.5, delay: 0.3 }}
@@ -294,18 +276,18 @@ const OnboardingSession = () => {
                   transition={{ delay: 0.3 + index * 0.1 }}
                 >
                   <Card
-                    className={`${config.bgColor} ${config.borderColor} border transition-all ${
+                    className={`bg-card border transition-[border-color,transform,box-shadow] duration-200 ease-out ${
                       status.completed
-                        ? 'opacity-75'
-                        : 'hover:scale-[1.01] hover:shadow-lg cursor-pointer'
+                        ? 'border-accent/25 opacity-80'
+                        : 'border-border hover:border-accent/40 hover:-translate-y-0.5 hover:shadow-lg cursor-pointer'
                     }`}
                     onClick={() => !status.completed && startDepartment(deptId)}
                   >
                     <CardContent className="p-5">
                       <div className="flex items-start justify-between gap-4">
                         <div className="flex items-start gap-4">
-                          <div className={`p-3 rounded-full ${config.bgColor} shrink-0`}>
-                            <Icon className={`w-6 h-6 ${config.color}`} />
+                          <div className={`p-3 rounded-xl shrink-0 ${status.completed ? 'bg-accent/15' : 'bg-accent/10'}`}>
+                            <Icon className="w-6 h-6 text-accent" />
                           </div>
                           <div className="min-w-0">
                             <h3 className="font-semibold text-foreground">{config.label}</h3>
@@ -313,7 +295,7 @@ const OnboardingSession = () => {
 
                             {status.completed ? (
                               <div className="text-sm text-muted-foreground">
-                                <span className="text-green-400 font-medium">✓ Concluído</span>
+                                <span className="text-accent font-medium">✓ Concluído</span>
                                 {status.responsavel && (
                                   <span> por {status.responsavel}</span>
                                 )}
@@ -347,7 +329,7 @@ const OnboardingSession = () => {
                             <Button
                                 variant="ghost"
                                 size="sm"
-                                className="text-amber-500 hover:text-amber-600 hover:bg-amber-500/10"
+                                className="text-muted-foreground hover:text-foreground"
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   const tokenSuffix = token ? `?token=${encodeURIComponent(token)}` : '';
@@ -357,12 +339,12 @@ const OnboardingSession = () => {
                                 <Pencil className="w-4 h-4 mr-1" />
                                 Editar
                               </Button>
-                            <div className="p-2 rounded-full bg-green-500/20">
-                              <Check className="w-5 h-5 text-green-400" />
+                            <div className="p-2 rounded-full bg-accent/15">
+                              <Check className="w-5 h-5 text-accent" />
                             </div>
                           </div>
                         ) : (
-                          <Button variant="ghost" size="sm" className={`${config.color} shrink-0`}>
+                          <Button variant="ghost" size="sm" className="text-accent shrink-0">
                             Preencher <ArrowRight className="w-4 h-4 ml-1" />
                           </Button>
                         )}
@@ -381,9 +363,9 @@ const OnboardingSession = () => {
               transition={{ delay: 0.5 }}
               className="mt-8 text-center"
             >
-              <Card className="bg-green-500/10 border-green-500/30">
+              <Card className="bg-accent/10 border-accent/30">
                 <CardContent className="p-6">
-                  <Check className="w-12 h-12 mx-auto text-green-400 mb-3" />
+                  <Check className="w-12 h-12 mx-auto text-accent mb-3" />
                   <h3 className="text-lg font-semibold text-foreground mb-2">
                     Onboarding Completo!
                   </h3>

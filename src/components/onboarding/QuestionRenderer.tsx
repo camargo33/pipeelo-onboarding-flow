@@ -267,8 +267,8 @@ export function QuestionRenderer({
               type="button"
               variant={naoTemPortal ? "default" : "outline"}
               className={`w-full justify-center py-3 h-auto ${
-                naoTemPortal 
-                  ? 'bg-pipeelo-purple hover:bg-pipeelo-purple/90 text-white' 
+                naoTemPortal
+                  ? 'bg-accent text-accent-foreground hover:bg-accent/90'
                   : 'border-dashed'
               }`}
               onClick={() => {
@@ -405,9 +405,9 @@ export function QuestionRenderer({
                 key={option.value}
                 type="button"
                 variant={localValue === option.value ? "default" : "outline"}
-                className={`w-full justify-start text-left py-4 h-auto ${
-                  localValue === option.value 
-                    ? 'bg-pipeelo-green hover:bg-pipeelo-green/90 text-white' 
+                className={`w-full justify-start text-left py-4 h-auto whitespace-normal ${
+                  localValue === option.value
+                    ? 'bg-accent text-accent-foreground hover:bg-accent/90 font-semibold'
                     : ''
                 }`}
                 onClick={() => {

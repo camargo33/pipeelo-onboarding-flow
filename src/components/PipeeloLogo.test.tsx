@@ -1,27 +1,26 @@
 import { describe, it, expect } from 'vitest';
 import { render } from '@testing-library/react';
 import { PipeeloLogo } from './PipeeloLogo';
-import { LIME_ACCENT } from '@/styles/theme';
 
 describe('<PipeeloLogo />', () => {
-  it('renderiza SVG inline (nao img)', () => {
+  it('renderiza o asset oficial como img', () => {
     const { container } = render(<PipeeloLogo />);
-    expect(container.querySelector('svg')).not.toBeNull();
-    expect(container.querySelector('img')).toBeNull();
+    const img = container.querySelector('img');
+    expect(img).not.toBeNull();
+    expect(img?.getAttribute('src')).toBe('/pipeelo-logo.png');
+    expect(img?.getAttribute('alt')).toBe('Pipeelo');
   });
 
-  it('usa fill LIME_ACCENT por default', () => {
-    const { container } = render(<PipeeloLogo />);
-    const svg = container.querySelector('svg')!;
-    // Pelo menos um elemento pintado deve usar o lime accent.
-    const html = svg.outerHTML;
-    expect(html.toLowerCase()).toContain(LIME_ACCENT.toLowerCase());
+  it('iconOnly usa o glyph circular', () => {
+    const { container } = render(<PipeeloLogo iconOnly />);
+    expect(container.querySelector('img')?.getAttribute('src')).toBe('/pipeelo-icon.png');
   });
 
-  it('aceita className prop', () => {
-    const { container } = render(<PipeeloLogo className="h-8 w-auto" />);
-    const svg = container.querySelector('svg');
-    expect(svg?.getAttribute('class')).toContain('h-8');
+  it('aceita className e size props', () => {
+    const { container } = render(<PipeeloLogo size="lg" className="opacity-90" />);
+    const cls = container.querySelector('img')?.getAttribute('class') ?? '';
+    expect(cls).toContain('h-10');
+    expect(cls).toContain('opacity-90');
   });
 
   it('snapshot estavel', () => {

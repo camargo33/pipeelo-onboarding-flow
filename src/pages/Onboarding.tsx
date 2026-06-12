@@ -23,14 +23,6 @@ const departmentIcons: Record<DepartmentId, typeof Building2> = {
   vendas: TrendingUp
 };
 
-const departmentColors: Record<DepartmentId, string> = {
-  identificacao: 'bg-slate-600',
-  sac_geral: 'bg-pipeelo-purple',
-  financeiro: 'bg-pipeelo-green',
-  suporte: 'bg-pipeelo-blue',
-  vendas: 'bg-amber-500'
-};
-
 const VALID_DEPTS: DepartmentId[] = ['identificacao', 'sac_geral', 'financeiro', 'suporte', 'vendas'];
 
 /**
@@ -432,9 +424,9 @@ export default function Onboarding() {
               <PipeeloLogo />
               {state.departamento && departamentoData && (
                 <div className="hidden sm:flex items-center gap-2 text-sm text-muted-foreground">
-                  <span>/</span>
-                  <div className={`p-1 rounded ${departmentColors[state.departamento]}`}>
-                    {DeptIcon && <DeptIcon className="h-3.5 w-3.5 text-white" />}
+                  <span className="text-border">/</span>
+                  <div className="p-1 rounded-md bg-accent/10">
+                    {DeptIcon && <DeptIcon className="h-3.5 w-3.5 text-accent" />}
                   </div>
                   <span>{departamentoData.nome}</span>
                 </div>
@@ -498,7 +490,7 @@ export default function Onboarding() {
                 </Button>
                 <Button
                   onClick={handleNext}
-                  className="flex-1 bg-pipeelo-green hover:bg-pipeelo-green/90"
+                  className="flex-1 bg-accent text-accent-foreground hover:bg-accent/90 font-semibold"
                   size="lg"
                 >
                   {isLastQuestion ? 'Revisar respostas' : 'Próxima'}
@@ -616,7 +608,7 @@ export default function Onboarding() {
                 </Button>
                 <Button
                   onClick={handleNext}
-                  className="flex-1 bg-pipeelo-green hover:bg-pipeelo-green/90"
+                  className="flex-1 bg-accent text-accent-foreground hover:bg-accent/90 font-semibold"
                   size="lg"
                   disabled={isSubmitting}
                 >
@@ -676,7 +668,7 @@ export default function Onboarding() {
                       const tokenSuffix = token ? `?token=${encodeURIComponent(token)}` : '';
                       navigate(`/${slug}${tokenSuffix}`);
                     }}
-                    className="bg-pipeelo-green hover:bg-pipeelo-green/90"
+                    className="bg-accent text-accent-foreground hover:bg-accent/90 font-semibold"
                     size="lg"
                   >
                     Ver status dos departamentos

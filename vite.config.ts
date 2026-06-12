@@ -6,6 +6,13 @@ export default defineConfig({
   server: {
     host: "::",
     port: 8080,
+    // Dev local não tem backend (api/ roda no Express/Vercel) — proxy pra prod.
+    proxy: {
+      "/api": {
+        target: "https://onboarding.pipeelo.com",
+        changeOrigin: true,
+      },
+    },
   },
   plugins: [react()],
   resolve: {
