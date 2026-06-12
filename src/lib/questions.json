@@ -114,7 +114,7 @@
           "titulo": "Acessos das Integrações",
           "icone": "🔌",
           "descricao": "Credenciais dos sistemas que você marcou ao gerar o link. Só aparecem perguntas pros sistemas selecionados — se faltar algum, fale com o time pra ajustar.",
-          "condicional_secao": "_session_erp != '' || _session_mapas != '' || _session_gerenciamento_rede != '' || _session_gateway_pagamento != '' || _session_sistema_os != ''",
+          "condicional_secao": "_session_erp != '' || _session_mapas != '' || _session_gerenciamento_rede != '' || _session_gateway_pagamento != ''",
           "perguntas": [
             { "id": "_int_erp_header", "pergunta": "ERP / Sistema de gestão", "tipo": "info", "texto": "Agora os acessos do seu ERP. A IA usa isso pra consultar planos, faturas, contratos e dados do cliente em tempo real — sem isso, o atendimento fica limitado.", "condicional": "_session_erp != ''" },
 
@@ -201,22 +201,7 @@
             { "id": "mapas_outros_url", "pergunta": "URL do sistema", "tipo": "url", "condicional": "_session_mapas == 'Outros'" },
             { "id": "mapas_outros_token", "pergunta": "Token / API Key (se houver)", "tipo": "password", "condicional": "_session_mapas == 'Outros'" },
             { "id": "mapas_outros_usuario", "pergunta": "Usuário (se houver)", "tipo": "text", "condicional": "_session_mapas == 'Outros'" },
-            { "id": "mapas_outros_senha", "pergunta": "Senha (se houver)", "tipo": "password", "condicional": "_session_mapas == 'Outros'" },
-
-            { "id": "_int_os_header", "pergunta": "Sistema de OS / Campo", "tipo": "info", "texto": "Acessos do sistema de ordens de serviço. É com ele que a IA detecta o fechamento de OS pra disparar pós-instalação e pós-suporte, e atualiza a OS com o resultado da pesquisa.", "condicional": "_session_sistema_os != ''" },
-
-            { "id": "os_ltsoft_url", "pergunta": "URL do LTSoft (Phoenix)", "tipo": "url", "placeholder": "https://ltsoft.suaempresa.com.br", "condicional": "_session_sistema_os == 'LTSoft (Phoenix)'" },
-            { "id": "os_ltsoft_usuario", "pergunta": "Usuário LTSoft", "tipo": "text", "condicional": "_session_sistema_os == 'LTSoft (Phoenix)'" },
-            { "id": "os_ltsoft_senha", "pergunta": "Senha LTSoft", "tipo": "password", "condicional": "_session_sistema_os == 'LTSoft (Phoenix)'" },
-            { "id": "os_ltsoft_token", "pergunta": "Token / API Key LTSoft (se houver)", "tipo": "password", "condicional": "_session_sistema_os == 'LTSoft (Phoenix)'" },
-
-            { "id": "_int_os_erp_info", "pergunta": "Sistema de OS no ERP", "tipo": "info", "texto": "Vocês usam o módulo de OS do próprio ERP — vamos usar as credenciais do ERP informadas acima, sem precisar de acesso extra.", "condicional": "_session_sistema_os == 'Módulo do próprio ERP'" },
-
-            { "id": "os_outros_nome", "pergunta": "Qual sistema de OS/campo vocês usam?", "tipo": "text", "placeholder": "Ex: Field Control, Auvo, próprio…", "condicional": "_session_sistema_os == 'Outros'" },
-            { "id": "os_outros_url", "pergunta": "URL do sistema", "tipo": "url", "condicional": "_session_sistema_os == 'Outros'" },
-            { "id": "os_outros_usuario", "pergunta": "Usuário (se houver)", "tipo": "text", "condicional": "_session_sistema_os == 'Outros'" },
-            { "id": "os_outros_senha", "pergunta": "Senha (se houver)", "tipo": "password", "condicional": "_session_sistema_os == 'Outros'" },
-            { "id": "os_outros_token", "pergunta": "Token / API Key (se houver)", "tipo": "password", "condicional": "_session_sistema_os == 'Outros'" }
+            { "id": "mapas_outros_senha", "pergunta": "Senha (se houver)", "tipo": "password", "condicional": "_session_mapas == 'Outros'" }
           ]
         }
       }

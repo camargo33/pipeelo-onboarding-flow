@@ -26,7 +26,6 @@ type SessionRow = {
   mapas: string | null;
   gerenciamento_rede: string | null;
   gateway_pagamento: string | null;
-  sistema_os: string | null;
   slug: string;
   access_token: string | null;
 };
@@ -84,11 +83,6 @@ const EXPECTED_FIELDS: Record<string, Record<string, string[]>> = {
     OZMap: ['mapas_ozmap_url', 'mapas_ozmap_token', 'mapas_ozmap_usuario', 'mapas_ozmap_senha'],
     Outros: ['mapas_outros_nome', 'mapas_outros_url', 'mapas_outros_token'],
   },
-  sistema_os: {
-    'LTSoft (Phoenix)': ['os_ltsoft_url', 'os_ltsoft_usuario', 'os_ltsoft_senha'],
-    // 'Módulo do próprio ERP' não exige credenciais extras (usa as do ERP).
-    Outros: ['os_outros_nome', 'os_outros_url'],
-  },
 };
 
 function buildDescription(s: SessionRow, respostas: RespostaRow[]): string {
@@ -108,7 +102,6 @@ function buildDescription(s: SessionRow, respostas: RespostaRow[]): string {
     s.gateway_pagamento && `Gateway=${s.gateway_pagamento}`,
     s.gerenciamento_rede && `Rede=${s.gerenciamento_rede}`,
     s.mapas && `Mapas=${s.mapas}`,
-    s.sistema_os && `OS=${s.sistema_os}`,
   ].filter(Boolean);
   if (stackParts.length) lines.push(`- Stack: ${stackParts.join(' · ')}`);
 
@@ -119,7 +112,6 @@ function buildDescription(s: SessionRow, respostas: RespostaRow[]): string {
     ['gateway_pagamento', s.gateway_pagamento],
     ['gerenciamento_rede', s.gerenciamento_rede],
     ['mapas', s.mapas],
-    ['sistema_os', s.sistema_os],
   ] as const) {
     if (!system) continue;
     const expected = EXPECTED_FIELDS[field]?.[system] ?? [];
@@ -170,7 +162,7 @@ export async function maybePromoteToBoard(
   const { data: session, error } = await supabase
     .from('onboarding_sessions')
     .select(
-      'id, empresa_nome, tenant_id, modo, card_created_at, erp, mapas, gerenciamento_rede, gateway_pagamento, sistema_os, slug, access_token'
+      'id, empresa_nome, tenant_id, modo, card_created_at, erp, mapas, gerenciamento_rede, gateway_pagamento, slug, access_token'
     )
     .eq('id', sessionId)
     .maybeSingle<SessionRow>();
