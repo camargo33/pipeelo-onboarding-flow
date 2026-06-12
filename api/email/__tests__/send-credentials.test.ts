@@ -21,7 +21,7 @@ vi.mock('../../_lib/magic-link', () => ({
 import { getServiceSupabase } from '../../_lib/supabase';
 import { sendTransactionalEmail } from '../../_lib/email-sender';
 import { createCredentialsMagicLink } from '../../_lib/magic-link';
-import handler from '../send-credentials';
+import handler from '../_send-credentials';
 
 describe('POST /api/email/send-credentials', () => {
   beforeEach(() => {

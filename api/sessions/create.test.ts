@@ -19,7 +19,7 @@ vi.mock('../_lib/supabase', () => ({
 }));
 
 import { getServiceSupabase } from '../_lib/supabase';
-import handler from './create';
+import handler from './_create';
 
 const VALID_CNPJ = '11222333000181';
 

@@ -18,7 +18,7 @@ vi.mock('../_lib/supabase', () => ({
 }));
 import { assertSessionAccess } from '../_lib/auth-session';
 import { getServiceSupabase } from '../_lib/supabase';
-import handler from './complete-department';
+import handler from './_complete-department';
 
 describe('POST /api/sessions/complete-department', () => {
   beforeEach(() => vi.clearAllMocks());

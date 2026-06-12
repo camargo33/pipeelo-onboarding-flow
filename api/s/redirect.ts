@@ -10,7 +10,8 @@ import { getServiceSupabase } from '../_lib/supabase';
  * `/api/*` porque o path é mais curto pra UX).
  */
 export default async function handler(req: Request, res: Response) {
-  const code = (req.params?.code ?? '').trim();
+  const rawCode = req.params?.code;
+  const code = (Array.isArray(rawCode) ? rawCode[0] : rawCode ?? '').trim();
 
   if (!code || code.length > 16 || !/^[A-Za-z0-9]+$/.test(code)) {
     return res.redirect(302, '/');

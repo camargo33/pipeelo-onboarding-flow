@@ -13,7 +13,7 @@ vi.mock('../../_lib/email-sender', () => ({
 
 import { getServiceSupabase } from '../../_lib/supabase';
 import { sendTransactionalEmail } from '../../_lib/email-sender';
-import handler from '../send-welcome';
+import handler from '../_send-welcome';
 
 describe('POST /api/email/send-welcome', () => {
   beforeEach(() => {

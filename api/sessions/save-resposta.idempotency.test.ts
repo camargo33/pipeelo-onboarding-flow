@@ -13,7 +13,7 @@ vi.mock('../_lib/supabase', () => ({
   requireSupabase: vi.fn(),
 }));
 import { getServiceSupabase } from '../_lib/supabase';
-import handler from './save-resposta';
+import handler from './_save-resposta';
 
 describe('save-resposta idempotency', () => {
   beforeEach(() => vi.clearAllMocks());

@@ -20,7 +20,7 @@ vi.mock('../_lib/supabase', () => ({
 
 import { getServiceSupabase } from '../_lib/supabase';
 import { verifyTurnstileToken } from '../_lib/turnstile';
-import handler from './create';
+import handler from './_create';
 
 const validBody = {
   empresa_nome: 'Acme ISP',

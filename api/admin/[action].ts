@@ -1,0 +1,28 @@
+import type { VercelRequest, VercelResponse } from '@vercel/node';
+import sessionsCreate from './_sessions-create';
+import sessionsDelete from './_sessions-delete';
+import sessionsList from './_sessions-list';
+import sessionsUpdate from './_sessions-update';
+import shortLinksCreate from './_short-links-create';
+import whatsappSendWelcome from './_whatsapp-send-welcome';
+
+/**
+ * Router /api/admin/[action] — consolida os endpoints admin em 1 serverless
+ * function (limite de 12 do plano Hobby). As URLs públicas não mudam:
+ * /api/admin/sessions-create continua respondendo igual.
+ */
+const HANDLERS: Record<string, (req: VercelRequest, res: VercelResponse) => unknown> = {
+  'sessions-create': sessionsCreate,
+  'sessions-delete': sessionsDelete,
+  'sessions-list': sessionsList,
+  'sessions-update': sessionsUpdate,
+  'short-links-create': shortLinksCreate,
+  'whatsapp-send-welcome': whatsappSendWelcome,
+};
+
+export default function handler(req: VercelRequest, res: VercelResponse) {
+  const action = Array.isArray(req.query.action) ? req.query.action[0] : req.query.action;
+  const h = HANDLERS[action ?? ''];
+  if (!h) return res.status(404).json({ error: 'not_found' });
+  return h(req, res);
+}
