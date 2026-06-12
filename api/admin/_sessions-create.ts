@@ -9,6 +9,7 @@ const ERP_OPTIONS = ['IXC', 'SGP', 'MK Solution', 'RBX', 'Topp Sap', 'Hubsoft', 
 const MAPAS_OPTIONS = ['OZMap', 'Geogrid', 'Geosite', 'Outros'] as const;
 const REDE_OPTIONS = ['Smart OLT', 'Anlix', 'OLT Cloud', 'Made 4 Graph', 'Outros'] as const;
 const GATEWAY_OPTIONS = ['7AZ (Bemobi)', 'Outros'] as const;
+const OS_OPTIONS = ['LTSoft (Phoenix)', 'Módulo do próprio ERP', 'Outros'] as const;
 
 const optionalEnum = <T extends readonly [string, ...string[]]>(vals: T) =>
   z.enum(vals).optional().or(z.literal('').transform(() => undefined)).or(z.null().transform(() => undefined));
@@ -20,6 +21,7 @@ const Body = z.object({
   mapas: optionalEnum(MAPAS_OPTIONS),
   gerenciamento_rede: optionalEnum(REDE_OPTIONS),
   gateway_pagamento: optionalEnum(GATEWAY_OPTIONS),
+  sistema_os: optionalEnum(OS_OPTIONS),
   modo: z.enum(['completo', 'comercial']).optional().default('completo'),
   contratou_crm: z.boolean().optional().default(false),
 });
@@ -61,6 +63,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         mapas: body.mapas ?? null,
         gerenciamento_rede: body.gerenciamento_rede ?? null,
         gateway_pagamento: body.gateway_pagamento ?? null,
+        sistema_os: body.sistema_os ?? null,
         modo: body.modo,
         // Modo comercial JÁ é CRM por definição; no completo é escolha do admin.
         contratou_crm: isComercial ? true : body.contratou_crm,

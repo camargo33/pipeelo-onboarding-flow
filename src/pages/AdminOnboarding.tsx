@@ -15,6 +15,7 @@ import {
   MAPAS_OPTIONS,
   REDE_OPTIONS,
   GATEWAY_OPTIONS,
+  OS_OPTIONS,
   type SessionDTO,
 } from '@/lib/api-client';
 import {
@@ -63,10 +64,11 @@ type StackPatch = {
   mapas?: string | null;
   gerenciamento_rede?: string | null;
   gateway_pagamento?: string | null;
+  sistema_os?: string | null;
 };
 
 const STACK_FIELDS: Array<{
-  key: 'erp' | 'mapas' | 'gerenciamento_rede' | 'gateway_pagamento';
+  key: 'erp' | 'mapas' | 'gerenciamento_rede' | 'gateway_pagamento' | 'sistema_os';
   label: string;
   chip: string;
   options: readonly string[];
@@ -75,6 +77,7 @@ const STACK_FIELDS: Array<{
   { key: 'mapas', label: 'Mapas', chip: 'Mapas', options: MAPAS_OPTIONS },
   { key: 'gerenciamento_rede', label: 'Gerenciamento de Rede', chip: 'Rede', options: REDE_OPTIONS },
   { key: 'gateway_pagamento', label: 'Gateway de Pagamentos', chip: 'Gateway', options: GATEWAY_OPTIONS },
+  { key: 'sistema_os', label: 'Sistema de OS / Campo', chip: 'OS', options: OS_OPTIONS },
 ];
 
 function StackEditor({
@@ -245,6 +248,7 @@ const AdminOnboarding = () => {
   const [mapas, setMapas] = useState<string>('');
   const [rede, setRede] = useState<string>('');
   const [gateway, setGateway] = useState<string>('');
+  const [sistemaOs, setSistemaOs] = useState<string>('');
   const [tipo, setTipo] = useState<OnboardingTipo>('completo');
   const [contratouCrm, setContratouCrm] = useState(false);
   const [sessions, setSessions] = useState<OnboardingSession[]>([]);
@@ -339,6 +343,7 @@ const AdminOnboarding = () => {
         mapas: mapas || undefined,
         gerenciamento_rede: rede || undefined,
         gateway_pagamento: gateway || undefined,
+        sistema_os: sistemaOs || undefined,
         modo: tipo,
         contratou_crm: tipo === 'comercial' ? true : contratouCrm,
       });
@@ -349,6 +354,7 @@ const AdminOnboarding = () => {
       setMapas('');
       setRede('');
       setGateway('');
+      setSistemaOs('');
       setTipo('completo');
       setContratouCrm(false);
       fetchSessions();
@@ -716,6 +722,18 @@ const AdminOnboarding = () => {
                   </SelectTrigger>
                   <SelectContent>
                     {GATEWAY_OPTIONS.map((v) => (
+                      <SelectItem key={v} value={v}>
+                        {v}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <Select value={sistemaOs} onValueChange={setSistemaOs}>
+                  <SelectTrigger className="h-10">
+                    <SelectValue placeholder="Sistema de OS / Campo" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {OS_OPTIONS.map((v) => (
                       <SelectItem key={v} value={v}>
                         {v}
                       </SelectItem>

@@ -56,6 +56,7 @@ export type SessionDTO = {
   mapas?: string | null;
   gerenciamento_rede?: string | null;
   gateway_pagamento?: string | null;
+  sistema_os?: string | null;
   contratou_crm?: boolean | null;
   created_at?: string;
   updated_at?: string;
@@ -147,6 +148,7 @@ export type StackPatch = {
   mapas?: string | null;
   gerenciamento_rede?: string | null;
   gateway_pagamento?: string | null;
+  sistema_os?: string | null;
   contratou_crm?: boolean;
 };
 
@@ -154,6 +156,7 @@ export const ERP_OPTIONS = ['IXC', 'SGP', 'MK Solution', 'RBX', 'Topp Sap', 'Hub
 export const MAPAS_OPTIONS = ['OZMap', 'Geogrid', 'Geosite', 'Outros'] as const;
 export const REDE_OPTIONS = ['Smart OLT', 'Anlix', 'OLT Cloud', 'Made 4 Graph', 'Outros'] as const;
 export const GATEWAY_OPTIONS = ['7AZ (Bemobi)', 'Outros'] as const;
+export const OS_OPTIONS = ['LTSoft (Phoenix)', 'Módulo do próprio ERP', 'Outros'] as const;
 
 export const adminSessionApi = {
   list: (authToken: string) =>
@@ -168,6 +171,7 @@ export const adminSessionApi = {
       mapas?: string;
       gerenciamento_rede?: string;
       gateway_pagamento?: string;
+      sistema_os?: string;
       modo?: 'completo' | 'comercial';
       contratou_crm?: boolean;
     }

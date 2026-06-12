@@ -114,7 +114,7 @@
           "titulo": "Acessos das Integrações",
           "icone": "🔌",
           "descricao": "Credenciais dos sistemas que você marcou ao gerar o link. Só aparecem perguntas pros sistemas selecionados — se faltar algum, fale com o time pra ajustar.",
-          "condicional_secao": "_session_erp != '' || _session_mapas != '' || _session_gerenciamento_rede != '' || _session_gateway_pagamento != ''",
+          "condicional_secao": "_session_erp != '' || _session_mapas != '' || _session_gerenciamento_rede != '' || _session_gateway_pagamento != '' || _session_sistema_os != ''",
           "perguntas": [
             { "id": "_int_erp_header", "pergunta": "ERP / Sistema de gestão", "tipo": "info", "texto": "Agora os acessos do seu ERP. A IA usa isso pra consultar planos, faturas, contratos e dados do cliente em tempo real — sem isso, o atendimento fica limitado.", "condicional": "_session_erp != ''" },
 
@@ -201,7 +201,22 @@
             { "id": "mapas_outros_url", "pergunta": "URL do sistema", "tipo": "url", "condicional": "_session_mapas == 'Outros'" },
             { "id": "mapas_outros_token", "pergunta": "Token / API Key (se houver)", "tipo": "password", "condicional": "_session_mapas == 'Outros'" },
             { "id": "mapas_outros_usuario", "pergunta": "Usuário (se houver)", "tipo": "text", "condicional": "_session_mapas == 'Outros'" },
-            { "id": "mapas_outros_senha", "pergunta": "Senha (se houver)", "tipo": "password", "condicional": "_session_mapas == 'Outros'" }
+            { "id": "mapas_outros_senha", "pergunta": "Senha (se houver)", "tipo": "password", "condicional": "_session_mapas == 'Outros'" },
+
+            { "id": "_int_os_header", "pergunta": "Sistema de OS / Campo", "tipo": "info", "texto": "Acessos do sistema de ordens de serviço. É com ele que a IA detecta o fechamento de OS pra disparar pós-instalação e pós-suporte, e atualiza a OS com o resultado da pesquisa.", "condicional": "_session_sistema_os != ''" },
+
+            { "id": "os_ltsoft_url", "pergunta": "URL do LTSoft (Phoenix)", "tipo": "url", "placeholder": "https://ltsoft.suaempresa.com.br", "condicional": "_session_sistema_os == 'LTSoft (Phoenix)'" },
+            { "id": "os_ltsoft_usuario", "pergunta": "Usuário LTSoft", "tipo": "text", "condicional": "_session_sistema_os == 'LTSoft (Phoenix)'" },
+            { "id": "os_ltsoft_senha", "pergunta": "Senha LTSoft", "tipo": "password", "condicional": "_session_sistema_os == 'LTSoft (Phoenix)'" },
+            { "id": "os_ltsoft_token", "pergunta": "Token / API Key LTSoft (se houver)", "tipo": "password", "condicional": "_session_sistema_os == 'LTSoft (Phoenix)'" },
+
+            { "id": "_int_os_erp_info", "pergunta": "Sistema de OS no ERP", "tipo": "info", "texto": "Vocês usam o módulo de OS do próprio ERP — vamos usar as credenciais do ERP informadas acima, sem precisar de acesso extra.", "condicional": "_session_sistema_os == 'Módulo do próprio ERP'" },
+
+            { "id": "os_outros_nome", "pergunta": "Qual sistema de OS/campo vocês usam?", "tipo": "text", "placeholder": "Ex: Field Control, Auvo, próprio…", "condicional": "_session_sistema_os == 'Outros'" },
+            { "id": "os_outros_url", "pergunta": "URL do sistema", "tipo": "url", "condicional": "_session_sistema_os == 'Outros'" },
+            { "id": "os_outros_usuario", "pergunta": "Usuário (se houver)", "tipo": "text", "condicional": "_session_sistema_os == 'Outros'" },
+            { "id": "os_outros_senha", "pergunta": "Senha (se houver)", "tipo": "password", "condicional": "_session_sistema_os == 'Outros'" },
+            { "id": "os_outros_token", "pergunta": "Token / API Key (se houver)", "tipo": "password", "condicional": "_session_sistema_os == 'Outros'" }
           ]
         }
       }
@@ -710,6 +725,57 @@
           ]
         },
 
+        "regua_cobranca": {
+          "titulo": "Régua de Cobrança",
+          "icone": "📅",
+          "descricao": "O agente de cobrança da Pipeelo envia boleto e lembretes automaticamente, antes e depois do vencimento. Aqui você define a régua.",
+          "perguntas": [
+            {
+              "id": "_info_regua",
+              "pergunta": "Como funciona",
+              "tipo": "info",
+              "texto": "A IA envia o boleto (PIX copia-e-cola + PDF) automaticamente nos dias que você marcar — antes do vencimento como lembrete, e depois como cobrança. Você pode mudar a régua depois com o nosso time."
+            },
+            {
+              "id": "regua_dias_antes",
+              "pergunta": "Em quais dias ANTES do vencimento a IA deve enviar o boleto/lembrete?",
+              "tipo": "checkbox_multiple",
+              "obrigatoria": true,
+              "opcoes": [
+                {"value": "10_antes", "label": "10 dias antes"},
+                {"value": "7_antes", "label": "7 dias antes"},
+                {"value": "5_antes", "label": "5 dias antes"},
+                {"value": "3_antes", "label": "3 dias antes"},
+                {"value": "1_antes", "label": "1 dia antes"},
+                {"value": "no_dia", "label": "No dia do vencimento"},
+                {"value": "outro", "label": "Outros dias"}
+              ]
+            },
+            {
+              "id": "regua_dias_depois",
+              "pergunta": "APÓS o vencimento, em quais dias a IA deve enviar a cobrança?",
+              "tipo": "checkbox_multiple",
+              "obrigatoria": true,
+              "opcoes": [
+                {"value": "1_depois", "label": "1 dia depois"},
+                {"value": "3_depois", "label": "3 dias depois"},
+                {"value": "5_depois", "label": "5 dias depois"},
+                {"value": "7_depois", "label": "7 dias depois"},
+                {"value": "10_depois", "label": "10 dias depois"},
+                {"value": "15_depois", "label": "15 dias depois"},
+                {"value": "outro", "label": "Outros dias"}
+              ]
+            },
+            {
+              "id": "regua_horario_disparo",
+              "pergunta": "Qual horário os disparos da régua de cobrança devem acontecer?",
+              "tipo": "time",
+              "obrigatoria": true,
+              "hint": "Horário comercial costuma ter mais resposta. Ex: 09:00"
+            }
+          ]
+        },
+
         "formas_pagamento": {
           "titulo": "Formas de Pagamento",
           "icone": "💳",
@@ -821,6 +887,26 @@
               "condicional": "liberacao_confianca == 'sim'",
               "placeholder": "Ex: 3",
               "hint": "Prazo que o cliente tem para confirmar o pagamento antes de bloquear novamente"
+            },
+            {
+              "id": "carencia_liberacao_confianca",
+              "pergunta": "O padrão Pipeelo é liberar em confiança no máximo 1 vez a cada 30 dias por cliente. Esse padrão funciona para vocês?",
+              "tipo": "select",
+              "obrigatoria": true,
+              "condicional": "liberacao_confianca == 'sim'",
+              "hint": "A carência evita que o mesmo cliente use a liberação em confiança repetidamente sem pagar.",
+              "opcoes": [
+                {"value": "padrao_30", "label": "Sim, 1 vez a cada 30 dias está ótimo"},
+                {"value": "outro_padrao", "label": "Não, usamos outro padrão"}
+              ]
+            },
+            {
+              "id": "carencia_liberacao_descricao",
+              "pergunta": "Descreva o padrão de carência que vocês utilizam:",
+              "tipo": "textarea",
+              "obrigatoria": true,
+              "condicional": "carencia_liberacao_confianca == 'outro_padrao'",
+              "placeholder": "Ex: 1 vez a cada 60 dias, ou no máximo 2 liberações por ano…"
             },
             {
               "id": "limite_dias_sem_confianca",
@@ -1210,6 +1296,82 @@
                 {"value": "nao_cobra_equipamento_empresa", "label": "NÃO COBRA se o equipamento for da empresa (comodato)"},
                 {"value": "nao_cobra_recem_instalado", "label": "NÃO COBRA na primeira visita pós-instalação"}
               ]
+            }
+          ]
+        },
+
+        "pesquisas_automaticas": {
+          "titulo": "Pesquisas Automáticas (Pós-instalação e Pós-suporte)",
+          "icone": "📊",
+          "descricao": "Agentes da Pipeelo que disparam pesquisa de satisfação depois da instalação e depois de visitas técnicas, gravando o resultado na ordem de serviço.",
+          "perguntas": [
+            {
+              "id": "_info_pos_instalacao",
+              "pergunta": "Agente de pós-instalação",
+              "tipo": "info",
+              "texto": "Quando uma OS de instalação é fechada, a IA envia uma mensagem ao cliente no dia seguinte com pesquisa de satisfação e grava o resultado na OS."
+            },
+            {
+              "id": "pos_instalacao_ativo",
+              "pergunta": "Querem ativar a pesquisa automática de pós-instalação?",
+              "tipo": "select",
+              "obrigatoria": true,
+              "opcoes": [
+                {"value": "sim", "label": "Sim, ativar"},
+                {"value": "nao", "label": "Não por enquanto"}
+              ]
+            },
+            {
+              "id": "pos_instalacao_horario",
+              "pergunta": "Qual horário a mensagem de pós-instalação deve ser enviada?",
+              "tipo": "time",
+              "obrigatoria": true,
+              "condicional": "pos_instalacao_ativo == 'sim'",
+              "hint": "Enviada no dia seguinte à instalação. Ex: 10:00"
+            },
+            {
+              "id": "_info_pos_suporte",
+              "pergunta": "Agente de pós-suporte",
+              "tipo": "info",
+              "texto": "Depois de uma visita técnica, a IA dispara uma pesquisa de satisfação sobre o atendimento e atualiza a ordem de serviço com o resultado."
+            },
+            {
+              "id": "pos_suporte_ativo",
+              "pergunta": "Querem ativar a pesquisa automática de pós-suporte (após visita técnica)?",
+              "tipo": "select",
+              "obrigatoria": true,
+              "opcoes": [
+                {"value": "sim", "label": "Sim, ativar"},
+                {"value": "nao", "label": "Não por enquanto"}
+              ]
+            },
+            {
+              "id": "pos_suporte_quando",
+              "pergunta": "Quando a pesquisa de pós-suporte deve ser disparada?",
+              "tipo": "select",
+              "obrigatoria": true,
+              "condicional": "pos_suporte_ativo == 'sim'",
+              "opcoes": [
+                {"value": "horas_depois", "label": "Algumas horas depois da visita (mesmo dia)"},
+                {"value": "dia_seguinte", "label": "No dia seguinte"},
+                {"value": "outro", "label": "Outro momento"}
+              ]
+            },
+            {
+              "id": "pos_suporte_quando_outro",
+              "pergunta": "Descreva quando a pesquisa deve ser disparada:",
+              "tipo": "text",
+              "obrigatoria": true,
+              "condicional": "pos_suporte_quando == 'outro'",
+              "placeholder": "Ex: 2 dias depois, sempre às 18h"
+            },
+            {
+              "id": "pos_suporte_horario",
+              "pergunta": "Qual horário a pesquisa de pós-suporte deve ser enviada?",
+              "tipo": "time",
+              "obrigatoria": true,
+              "condicional": "pos_suporte_quando == 'dia_seguinte'",
+              "hint": "Ex: 10:00"
             }
           ]
         },

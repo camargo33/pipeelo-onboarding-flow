@@ -125,11 +125,13 @@ export default function Onboarding() {
           mapas?: string | null;
           gerenciamento_rede?: string | null;
           gateway_pagamento?: string | null;
+          sistema_os?: string | null;
         };
         setResposta('_session_erp', s.erp ?? '');
         setResposta('_session_mapas', s.mapas ?? '');
         setResposta('_session_gerenciamento_rede', s.gerenciamento_rede ?? '');
         setResposta('_session_gateway_pagamento', s.gateway_pagamento ?? '');
+        setResposta('_session_sistema_os', s.sistema_os ?? '');
         setResposta('_session_modo', isComercial ? 'comercial' : 'completo');
 
         // Hidratar respostas existentes do departamento atual
@@ -362,7 +364,7 @@ export default function Onboarding() {
       // 4. Email de notificação — filtra pseudo-respostas e credenciais sensíveis.
       // Prefixos `_session_`, `erp_`, `gateway_`, `rede_`, `mapas_` são da seção
       // Acessos das Integrações: tokens, senhas e config interna. Não vão no email.
-      const SENSITIVE_PREFIXES = ['_session_', 'erp_', 'gateway_', 'rede_', 'mapas_'];
+      const SENSITIVE_PREFIXES = ['_session_', 'erp_', 'gateway_', 'rede_', 'mapas_', 'os_'];
       const respostasSafe = Object.fromEntries(
         Object.entries(state.respostas).filter(
           ([k]) => !SENSITIVE_PREFIXES.some((p) => k.startsWith(p))
