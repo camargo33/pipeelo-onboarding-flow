@@ -21,6 +21,7 @@ const Body = z.object({
   gerenciamento_rede: optionalEnum(REDE_OPTIONS),
   gateway_pagamento: optionalEnum(GATEWAY_OPTIONS),
   modo: z.enum(['completo', 'comercial']).optional().default('completo'),
+  contratou_crm: z.boolean().optional().default(false),
 });
 
 /**
@@ -61,6 +62,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         gerenciamento_rede: body.gerenciamento_rede ?? null,
         gateway_pagamento: body.gateway_pagamento ?? null,
         modo: body.modo,
+        // Modo comercial JÁ é CRM por definição; no completo é escolha do admin.
+        contratou_crm: isComercial ? true : body.contratou_crm,
         status_identificacao: 'pendente',
         status_sac_geral: statusDeptoExtra,
         status_financeiro: statusDeptoExtra,

@@ -246,6 +246,7 @@ const AdminOnboarding = () => {
   const [rede, setRede] = useState<string>('');
   const [gateway, setGateway] = useState<string>('');
   const [tipo, setTipo] = useState<OnboardingTipo>('completo');
+  const [contratouCrm, setContratouCrm] = useState(false);
   const [sessions, setSessions] = useState<OnboardingSession[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -339,6 +340,7 @@ const AdminOnboarding = () => {
         gerenciamento_rede: rede || undefined,
         gateway_pagamento: gateway || undefined,
         modo: tipo,
+        contratou_crm: tipo === 'comercial' ? true : contratouCrm,
       });
       toast.success(`Link ${TIPO_LABEL[tipo]} criado com sucesso!`);
       setEmpresaNome('');
@@ -348,6 +350,7 @@ const AdminOnboarding = () => {
       setRede('');
       setGateway('');
       setTipo('completo');
+      setContratouCrm(false);
       fetchSessions();
     } catch (e) {
       // eslint-disable-next-line no-console
@@ -620,6 +623,20 @@ const AdminOnboarding = () => {
                   </div>
                 </button>
               </div>
+              {tipo === 'completo' && (
+                <label className="mt-2 flex items-center gap-2 cursor-pointer select-none rounded-md border border-border bg-card px-3 py-2.5 hover:bg-card/70 transition-colors">
+                  <input
+                    type="checkbox"
+                    checked={contratouCrm}
+                    onChange={(e) => setContratouCrm(e.target.checked)}
+                    className="h-4 w-4 accent-primary"
+                  />
+                  <span className="text-sm font-medium">Cliente contratou o CRM</span>
+                  <span className="text-[11px] text-muted-foreground">
+                    · vai junto no payload final pro admin
+                  </span>
+                </label>
+              )}
             </div>
             <div className="grid gap-4 sm:grid-cols-2">
               <div>

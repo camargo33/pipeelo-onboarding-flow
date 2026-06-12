@@ -17,6 +17,7 @@ const Body = z.object({
   mapas: nullableEnum(MAPAS_OPTIONS).optional(),
   gerenciamento_rede: nullableEnum(REDE_OPTIONS).optional(),
   gateway_pagamento: nullableEnum(GATEWAY_OPTIONS).optional(),
+  contratou_crm: z.boolean().optional(),
 });
 
 /**
@@ -37,11 +38,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const body = Body.parse(req.body);
     const supabase = getServiceSupabase();
 
-    const patch: Record<string, string | null> = {};
+    const patch: Record<string, string | boolean | null> = {};
     if ('erp' in body) patch.erp = body.erp ?? null;
     if ('mapas' in body) patch.mapas = body.mapas ?? null;
     if ('gerenciamento_rede' in body) patch.gerenciamento_rede = body.gerenciamento_rede ?? null;
     if ('gateway_pagamento' in body) patch.gateway_pagamento = body.gateway_pagamento ?? null;
+    if ('contratou_crm' in body && typeof body.contratou_crm === 'boolean')
+      patch.contratou_crm = body.contratou_crm;
 
     if (Object.keys(patch).length === 0) {
       return res.status(400).json({ error: 'no_fields_to_update' });

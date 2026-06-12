@@ -56,6 +56,7 @@ export type SessionDTO = {
   mapas?: string | null;
   gerenciamento_rede?: string | null;
   gateway_pagamento?: string | null;
+  contratou_crm?: boolean | null;
   created_at?: string;
   updated_at?: string;
   [k: string]: unknown;
@@ -146,6 +147,7 @@ export type StackPatch = {
   mapas?: string | null;
   gerenciamento_rede?: string | null;
   gateway_pagamento?: string | null;
+  contratou_crm?: boolean;
 };
 
 export const ERP_OPTIONS = ['IXC', 'SGP', 'MK Solution', 'RBX', 'Topp Sap', 'Hubsoft', 'Voalle', 'Outros'] as const;
@@ -167,6 +169,7 @@ export const adminSessionApi = {
       gerenciamento_rede?: string;
       gateway_pagamento?: string;
       modo?: 'completo' | 'comercial';
+      contratou_crm?: boolean;
     }
   ) =>
     adminApi<{ session: SessionDTO }>('/api/admin/sessions-create', authToken, {

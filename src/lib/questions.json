@@ -1236,11 +1236,9 @@
               "obrigatoria": true,
               "condicional": "troca_senha_wifi == 'sim'",
               "opcoes": [
+                {"value": "localizacao_whatsapp", "label": "Localização do WhatsApp"},
                 {"value": "data_nascimento", "label": "Data de nascimento"},
-                {"value": "cpf", "label": "CPF"},
-                {"value": "endereco", "label": "Endereço completo"},
-                {"value": "email", "label": "Email cadastrado"},
-                {"value": "telefone", "label": "Telefone cadastrado"}
+                {"value": "email", "label": "Email cadastrado"}
               ]
             },
             {
@@ -1427,6 +1425,14 @@
               ]
             },
             {
+              "id": "fixa_carrier_outro",
+              "pergunta": "Qual operadora?",
+              "tipo": "text",
+              "obrigatoria": true,
+              "condicional": "fixa_carrier == 'outro'",
+              "placeholder": "Nome da operadora carrier"
+            },
+            {
               "id": "fixa_minutos_inclusos",
               "pergunta": "Quantos minutos inclusos por mês?",
               "tipo": "text",
@@ -1482,6 +1488,14 @@
                 {"value": "propria", "label": "Própria (operadora autorizada)"},
                 {"value": "outro", "label": "Outra"}
               ]
+            },
+            {
+              "id": "movel_carrier_outro",
+              "pergunta": "Qual operadora?",
+              "tipo": "text",
+              "obrigatoria": true,
+              "condicional": "movel_carrier == 'outro'",
+              "placeholder": "Nome da operadora MVNO/carrier"
             },
             {
               "id": "movel_planos",

@@ -85,6 +85,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         access_token: session.access_token ?? null,
         tenant_id: session.tenant_id ?? null,
         pipeelo_token: session.pipeelo_token ?? null,
+        modo: session.modo ?? 'completo',
+        contratou_crm: session.contratou_crm ?? false,
         created_at: session.created_at,
         responsaveis: {
           sac_geral: session.responsavel_sac_geral,

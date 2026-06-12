@@ -43,6 +43,8 @@ export const SessionEnvelopeSchema = z
     access_token: z.string().nullable().optional(),
     tenant_id: z.string().nullable().optional(),
     pipeelo_token: z.string().nullable().optional(),
+    modo: z.enum(['completo', 'comercial']).nullable().optional(),
+    contratou_crm: z.boolean().nullable().optional(),
     responsaveis: z.record(z.union([z.string(), z.null()])).optional(),
     datas_conclusao: z.record(z.union([z.string(), z.null()])).optional(),
   })
