@@ -4,8 +4,8 @@
     "ordem_sugerida": ["identificacao", "sac_geral", "financeiro", "suporte", "vendas"],
     "tempo_total_estimado": "60-80 minutos",
     "descricao": "Sistema de onboarding Pipeelo v3.0 - 5 departamentos, primeiro (identificacao) é bloqueante e cria o tenant no admin-pipeelo",
-    "versao": "3.2.0",
-    "total_perguntas": 128
+    "versao": "3.3.0",
+    "total_perguntas": 131
   },
 
   "departamentos": {
@@ -1153,6 +1153,49 @@
                 {"value": "sim", "label": "Sim, forneceremos a lista"},
                 {"value": "nao", "label": "Não"}
               ]
+            }
+          ]
+        },
+
+        "cliente_bancada": {
+          "titulo": "Cliente de Bancada (Homologação)",
+          "icone": "🧪",
+          "descricao": "Um cliente de testes pra validarmos as ações da IA antes de liberar pra sua base real.",
+          "perguntas": [
+            {
+              "id": "_info_cliente_bancada",
+              "pergunta": "Por que precisamos disso",
+              "tipo": "info",
+              "texto": "Antes de subir em produção, rodamos uma bateria de testes em *um* cliente de bancada — envio de boleto, envio de PIX, desbloqueio em confiança, reset de ONU, troca de senha do WiFi e troca de nome da rede. É assim que validamos cada integração com segurança antes de liberar pra base inteira. Pode ser um CPF real ou fictício/forjado, desde que esteja com *contrato ativo, ONU vinculada e ao menos uma fatura em aberto* no ERP."
+            },
+            {
+              "id": "cliente_teste_disponibilidade",
+              "pergunta": "Vocês conseguem disponibilizar um cliente de bancada pra testes?",
+              "tipo": "select",
+              "obrigatoria": true,
+              "opcoes": [
+                {"value": "sim", "label": "Sim, já tenho o CPF de um cliente de testes"},
+                {"value": "preparar", "label": "Vou preparar e enviar em até 7 dias"},
+                {"value": "ajuda", "label": "Preciso de ajuda pra montar esse cliente"}
+              ]
+            },
+            {
+              "id": "cliente_teste_cpf",
+              "pergunta": "CPF do cliente de bancada",
+              "tipo": "cpf",
+              "obrigatoria": true,
+              "condicional": "cliente_teste_disponibilidade == 'sim'",
+              "placeholder": "000.000.000-00",
+              "hint": "Cliente com contrato ativo, ONU vinculada e fatura em aberto — real ou fictício."
+            },
+            {
+              "id": "cliente_teste_observacoes",
+              "pergunta": "Observações sobre o cliente de testes (opcional)",
+              "tipo": "textarea",
+              "obrigatoria": false,
+              "condicional": "cliente_teste_disponibilidade == 'sim'",
+              "placeholder": "Ex: login/nº do contrato, qual ONU, plano, se já tem fatura vencida...",
+              "hint": "Qualquer detalhe que ajude a localizar e testar o cliente."
             }
           ]
         },

@@ -297,10 +297,20 @@ export async function buildIntegrationRequestMessage(
     );
   }
 
-  if (erpNome) {
-    itens.push(
-      `Um *cliente de testes* no ${erpNome} com ONU configurada, contratos e mensalidades — pra validarmos consulta de fatura, status de conexão e geração de 2ª via direto no WhatsApp antes de subir em produção.`
-    );
+  // Cliente de bancada (homologação): se o CPF veio no formulário, confirma-o;
+  // senão, pede pra providenciar. Lista as operações que serão testadas.
+  const cpfTeste = respostas.get('cliente_teste_cpf');
+  if (erpNome || cpfTeste) {
+    const ondeErp = erpNome ? ` no ${erpNome}` : '';
+    if (cpfTeste) {
+      itens.push(
+        `Confirmação do *cliente de bancada* pra homologação: CPF *${cpfTeste}*${ondeErp}. Confere que ele está com ONU configurada, contrato ativo e ao menos uma fatura em aberto — é nele que validamos boleto, PIX, desbloqueio em confiança, reset de ONU e troca de senha/nome do WiFi antes de liberar pra base.`
+      );
+    } else {
+      itens.push(
+        `Um *cliente de bancada* pra testes${ondeErp} — com ONU configurada, contrato ativo e ao menos uma fatura em aberto. É nele que validamos boleto, PIX, desbloqueio em confiança, reset de ONU e troca de senha/nome do WiFi antes de subir em produção. Pode ser um CPF real ou fictício.`
+      );
+    }
   }
 
   if (faltantes.length > 0) {

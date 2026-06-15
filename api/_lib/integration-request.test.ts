@@ -63,8 +63,8 @@ describe('buildIntegrationRequestMessage', () => {
     // Sem credenciais faltando
     expect(msg).toContain('Já recebemos todas as credenciais');
     expect(msg).not.toContain('faltaram no formulário');
-    // Cliente de testes referencia o ERP
-    expect(msg).toContain('cliente de testes* no IXC');
+    // Cliente de bancada referencia o ERP
+    expect(msg).toContain('cliente de bancada* pra testes no IXC');
   });
 
   it('lista credenciais faltantes por sistema (rede e mapas inclusos)', async () => {
@@ -90,6 +90,33 @@ describe('buildIntegrationRequestMessage', () => {
     expect(msg).toContain('*7AZ* — Token de API');
     // 7AZ entra na whitelist
     expect(msg).toContain('*7AZ* (gateway de pagamento)');
+  });
+
+  it('confirma o CPF do cliente de bancada quando preenchido no formulário', async () => {
+    const sb = fakeSupabase(
+      { erp: 'IXC', gerenciamento_rede: null, mapas: null, gateway_pagamento: null },
+      {
+        erp_ixc_url: 'u',
+        erp_ixc_userid: '1',
+        erp_ixc_token: 't',
+        cliente_teste_cpf: '123.456.789-00',
+      }
+    );
+    const msg = await buildIntegrationRequestMessage(sb, 's1', 'completo');
+    expect(msg).toContain('cliente de bancada');
+    expect(msg).toContain('123.456.789-00');
+    // não deve pedir pra providenciar quando já temos o CPF
+    expect(msg).not.toContain('Pode ser um CPF real ou fictício');
+  });
+
+  it('pede o cliente de bancada quando o CPF não veio no formulário', async () => {
+    const sb = fakeSupabase(
+      { erp: 'IXC', gerenciamento_rede: null, mapas: null, gateway_pagamento: null },
+      { erp_ixc_url: 'u', erp_ixc_userid: '1', erp_ixc_token: 't' }
+    );
+    const msg = await buildIntegrationRequestMessage(sb, 's1', 'completo');
+    expect(msg).toContain('cliente de bancada');
+    expect(msg).toContain('Pode ser um CPF real ou fictício');
   });
 
   it('usa o nome custom quando o sistema é "Outros"', async () => {
