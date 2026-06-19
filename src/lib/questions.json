@@ -229,6 +229,84 @@
               "validacao": "min:3"
             },
             {
+              "id": "empresa_cep",
+              "pergunta": "Qual o CEP da sede (endereço principal/matriz)?",
+              "tipo": "text",
+              "obrigatoria": true,
+              "placeholder": "00000-000",
+              "hint": "Endereço principal da empresa. A plataforma usa pra configurar os dados da matriz."
+            },
+            {
+              "id": "empresa_logradouro",
+              "pergunta": "Logradouro da sede (rua/avenida)",
+              "tipo": "text",
+              "obrigatoria": true,
+              "placeholder": "Ex: Av. Brasil"
+            },
+            {
+              "id": "empresa_numero",
+              "pergunta": "Número da sede",
+              "tipo": "text",
+              "obrigatoria": true,
+              "placeholder": "Ex: 1500"
+            },
+            {
+              "id": "empresa_complemento",
+              "pergunta": "Complemento (opcional)",
+              "tipo": "text",
+              "obrigatoria": false,
+              "placeholder": "Ex: Sala 304, Bloco B"
+            },
+            {
+              "id": "empresa_bairro",
+              "pergunta": "Bairro da sede",
+              "tipo": "text",
+              "obrigatoria": true,
+              "placeholder": "Ex: Centro"
+            },
+            {
+              "id": "empresa_cidade",
+              "pergunta": "Cidade da sede",
+              "tipo": "text",
+              "obrigatoria": true,
+              "placeholder": "Ex: Londrina"
+            },
+            {
+              "id": "empresa_uf",
+              "pergunta": "Estado (UF) da sede",
+              "tipo": "select",
+              "obrigatoria": true,
+              "opcoes": [
+                {"value": "AC", "label": "Acre (AC)"},
+                {"value": "AL", "label": "Alagoas (AL)"},
+                {"value": "AP", "label": "Amapá (AP)"},
+                {"value": "AM", "label": "Amazonas (AM)"},
+                {"value": "BA", "label": "Bahia (BA)"},
+                {"value": "CE", "label": "Ceará (CE)"},
+                {"value": "DF", "label": "Distrito Federal (DF)"},
+                {"value": "ES", "label": "Espírito Santo (ES)"},
+                {"value": "GO", "label": "Goiás (GO)"},
+                {"value": "MA", "label": "Maranhão (MA)"},
+                {"value": "MT", "label": "Mato Grosso (MT)"},
+                {"value": "MS", "label": "Mato Grosso do Sul (MS)"},
+                {"value": "MG", "label": "Minas Gerais (MG)"},
+                {"value": "PA", "label": "Pará (PA)"},
+                {"value": "PB", "label": "Paraíba (PB)"},
+                {"value": "PR", "label": "Paraná (PR)"},
+                {"value": "PE", "label": "Pernambuco (PE)"},
+                {"value": "PI", "label": "Piauí (PI)"},
+                {"value": "RJ", "label": "Rio de Janeiro (RJ)"},
+                {"value": "RN", "label": "Rio Grande do Norte (RN)"},
+                {"value": "RS", "label": "Rio Grande do Sul (RS)"},
+                {"value": "RO", "label": "Rondônia (RO)"},
+                {"value": "RR", "label": "Roraima (RR)"},
+                {"value": "SC", "label": "Santa Catarina (SC)"},
+                {"value": "SP", "label": "São Paulo (SP)"},
+                {"value": "SE", "label": "Sergipe (SE)"},
+                {"value": "TO", "label": "Tocantins (TO)"}
+              ]
+            },
+            {
               "id": "empresa_cidades",
               "pergunta": "Quais cidades/regiões vocês atendem?",
               "tipo": "textarea",
@@ -262,11 +340,11 @@
             },
             {
               "id": "empresa_enderecos",
-              "pergunta": "Quais os endereços físicos (lojas/escritórios)?",
+              "pergunta": "Outros endereços físicos (lojas/pontos de atendimento)?",
               "tipo": "textarea",
-              "obrigatoria": true,
+              "obrigatoria": false,
               "placeholder": "Rua Exemplo, 123 - Centro - São Paulo/SP",
-              "hint": "Se tiver múltiplos, separe por linha"
+              "hint": "Além da sede. Liste lojas/pontos extras, um por linha. Deixe vazio se só tem a sede."
             },
             {
               "id": "empresa_instagram",
@@ -290,6 +368,19 @@
               "obrigatoria": false,
               "placeholder": "https://maps.app.goo.gl/...",
               "hint": "Usado quando a IA pede avaliação 5⭐ em NPS alto."
+            },
+            {
+              "id": "empresa_timezone",
+              "pergunta": "Qual o fuso horário da empresa?",
+              "tipo": "select",
+              "obrigatoria": true,
+              "hint": "A plataforma usa pra agendar horário de atendimento, régua de cobrança e disparos no horário certo.",
+              "opcoes": [
+                {"value": "America/Sao_Paulo", "label": "Brasília (UTC-3) — SP, Sul, Sudeste, Nordeste, GO, DF, TO, PA"},
+                {"value": "America/Manaus", "label": "Amazônia (UTC-4) — AM, RR, RO, MT, MS"},
+                {"value": "America/Rio_Branco", "label": "Acre (UTC-5) — AC e sudoeste do AM"},
+                {"value": "America/Noronha", "label": "Fernando de Noronha (UTC-2)"}
+              ]
             },
             {
               "id": "horario_atendimento",
