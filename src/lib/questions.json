@@ -1814,6 +1814,7 @@
               "hint": "Planos de fibra para residências. Siga o padrão da KB Techy — preencha benefícios e argumento de venda completos pra IA usar literalmente no atendimento.",
               "campos": [
                 {"id": "nome", "label": "Nome do plano", "tipo": "text", "placeholder": "Ex: Techy Light 350Mbps", "largura": 6},
+                {"id": "id_plano_erp", "label": "ID do plano no ERP", "tipo": "text", "obrigatoria": true, "placeholder": "Ex: 1024", "largura": 6, "hint": "Copie o código/ID deste plano de dentro do seu ERP (IXC, Voalle, MK, Hubsoft, etc.). A IA usa pra casar este plano com o cadastro real e executar contratação/upgrade via API."},
                 {"id": "preco", "label": "Preço mensal (R$)", "tipo": "currency", "placeholder": "Ex: 114.90", "largura": 3},
                 {"id": "taxa_instalacao", "label": "Taxa de instalação (R$)", "tipo": "currency", "placeholder": "0 = grátis", "largura": 3},
                 {"id": "velocidade_download", "label": "Download (Mbps)", "tipo": "number", "placeholder": "Ex: 350", "largura": 3},
@@ -1838,6 +1839,7 @@
               "hint": "Planos voltados pra empresas — geralmente com SLA, IP fixo opcional, suporte prioritário.",
               "campos": [
                 {"id": "nome", "label": "Nome do plano", "tipo": "text", "placeholder": "Ex: Techy Business 450Mbps (PME)", "largura": 6},
+                {"id": "id_plano_erp", "label": "ID do plano no ERP", "tipo": "text", "obrigatoria": true, "placeholder": "Ex: 1024", "largura": 6, "hint": "Copie o código/ID deste plano de dentro do seu ERP (IXC, Voalle, MK, Hubsoft, etc.). A IA usa pra casar este plano com o cadastro real e executar contratação/upgrade via API."},
                 {"id": "preco", "label": "Preço mensal (R$)", "tipo": "currency", "placeholder": "Ex: 179.90", "largura": 3},
                 {"id": "taxa_instalacao", "label": "Taxa de instalação (R$)", "tipo": "currency", "placeholder": "0 = grátis", "largura": 3},
                 {"id": "velocidade_download", "label": "Download (Mbps)", "tipo": "number", "placeholder": "Ex: 450", "largura": 3},
@@ -1860,6 +1862,7 @@
               "hint": "Para áreas onde a fibra ainda não chegou. Pula essa categoria se vocês só oferecem fibra.",
               "campos": [
                 {"id": "nome", "label": "Nome do plano", "tipo": "text", "placeholder": "Ex: Plano Via Rádio 15 Mega", "largura": 6},
+                {"id": "id_plano_erp", "label": "ID do plano no ERP", "tipo": "text", "obrigatoria": true, "placeholder": "Ex: 1024", "largura": 6, "hint": "Copie o código/ID deste plano de dentro do seu ERP (IXC, Voalle, MK, Hubsoft, etc.). A IA usa pra casar este plano com o cadastro real e executar contratação/upgrade via API."},
                 {"id": "preco", "label": "Preço mensal (R$)", "tipo": "currency", "placeholder": "Ex: 109.90", "largura": 3},
                 {"id": "taxa_instalacao", "label": "Taxa de instalação (R$)", "tipo": "currency", "placeholder": "0 = grátis", "largura": 3},
                 {"id": "velocidade_download", "label": "Download (Mbps)", "tipo": "number", "placeholder": "Ex: 15", "largura": 6},
@@ -1881,6 +1884,7 @@
               "hint": "Telefonia fixa avulsa ou combinada. Pula se vocês não oferecem telefonia.",
               "campos": [
                 {"id": "nome", "label": "Nome do plano", "tipo": "text", "placeholder": "Ex: Telefonia Fixa Local / Telefonia Fixa Ilimitada", "largura": 8},
+                {"id": "id_plano_erp", "label": "ID do plano no ERP", "tipo": "text", "obrigatoria": true, "placeholder": "Ex: 1024", "largura": 4, "hint": "Copie o código/ID deste plano de dentro do seu ERP (IXC, Voalle, MK, Hubsoft, etc.). A IA usa pra casar este plano com o cadastro real e executar contratação/upgrade via API."},
                 {"id": "preco", "label": "Preço mensal (R$)", "tipo": "currency", "placeholder": "Ex: 89.90", "largura": 4},
                 {"id": "minutos_inclusos", "label": "Minutos inclusos", "tipo": "text", "placeholder": "Ex: Ilimitado pra fixos da região / Ilimitado pra fixo e móvel Brasil / 100 min", "largura": 12},
                 {"id": "tarifas_extras", "label": "Tarifas para chamadas fora do plano", "tipo": "textarea", "largura": 12, "placeholder": "Ex: Fixo Brasil R$0,25/min | Móvel R$0,75/min. Use | para separar cada faixa."},
@@ -1899,6 +1903,7 @@
               "hint": "Planos de chip operadora própria ou MVNO. Pula se vocês não oferecem.",
               "campos": [
                 {"id": "nome", "label": "Nome do plano", "tipo": "text", "placeholder": "Ex: Techy Chip Móvel 7GB + 1GB portabilidade", "largura": 8},
+                {"id": "id_plano_erp", "label": "ID do plano no ERP", "tipo": "text", "obrigatoria": true, "placeholder": "Ex: 1024", "largura": 4, "hint": "Copie o código/ID deste plano de dentro do seu ERP (IXC, Voalle, MK, Hubsoft, etc.). A IA usa pra casar este plano com o cadastro real e executar contratação/upgrade via API."},
                 {"id": "preco", "label": "Preço mensal (R$)", "tipo": "currency", "placeholder": "Ex: 59.90", "largura": 4},
                 {"id": "franquia_dados_gb", "label": "Franquia de dados (GB)", "tipo": "number", "placeholder": "Ex: 7", "largura": 3},
                 {"id": "bonus_portabilidade_gb", "label": "Bônus portabilidade (GB)", "tipo": "number", "placeholder": "Ex: 1", "largura": 3},
@@ -1919,6 +1924,7 @@
               "hint": "TV por assinatura (IPTV/cabo) ou pacotes de streaming combinados. Pula se vocês não oferecem.",
               "campos": [
                 {"id": "nome", "label": "Nome do plano", "tipo": "text", "placeholder": "Ex: Techy TV Plus 165 canais / Pacote Streaming Premium", "largura": 8},
+                {"id": "id_plano_erp", "label": "ID do plano no ERP", "tipo": "text", "obrigatoria": true, "placeholder": "Ex: 1024", "largura": 4, "hint": "Copie o código/ID deste plano de dentro do seu ERP (IXC, Voalle, MK, Hubsoft, etc.). A IA usa pra casar este plano com o cadastro real e executar contratação/upgrade via API."},
                 {"id": "preco", "label": "Preço mensal (R$)", "tipo": "currency", "placeholder": "Ex: 49.90", "largura": 4},
                 {"id": "tipo_servico", "label": "Tipo", "tipo": "select", "largura": 6,
                   "opcoes": [

@@ -542,6 +542,7 @@ export function QuestionRenderer({
                       <div key={campo.id} className={widthClass(campo.largura)}>
                         <Label className="text-sm mb-1 block">
                           {campo.label}
+                          {campo.obrigatoria && <span className="text-destructive ml-0.5">*</span>}
                         </Label>
                         {(campo.tipo === 'text' || campo.tipo === 'number' || campo.tipo === 'currency') && (
                           <Input
