@@ -3,7 +3,7 @@ import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { toast } from 'sonner';
-import { Building2, DollarSign, Wrench, TrendingUp, Check, Clock, ArrowRight, AlertCircle, Info, Users, MessageSquare, Pencil, IdCard } from 'lucide-react';
+import { Building2, DollarSign, Wrench, TrendingUp, Check, Clock, ArrowRight, AlertCircle, Info, Users, MessageSquare, Pencil, IdCard, Sparkles } from 'lucide-react';
 import { PipeeloLogo } from '@/components/PipeeloLogo';
 import { motion } from 'framer-motion';
 import { DepartmentId, DEPARTMENT_ORDER } from '@/types/onboarding';
@@ -260,6 +260,47 @@ const OnboardingSession = () => {
               />
             </div>
           </div>
+
+          {/* Onboarding conversacional (V2) */}
+          {!allCompleted && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.25 }}
+              className="mb-6"
+            >
+              <Card
+                className="bg-accent/10 border-accent/30 hover:border-accent/50 hover:-translate-y-0.5 hover:shadow-lg transition-[border-color,transform,box-shadow] duration-200 ease-out cursor-pointer"
+                onClick={() => {
+                  const tokenSuffix = token ? `?token=${encodeURIComponent(token)}` : '';
+                  navigate(`/${slug}/ia${tokenSuffix}`);
+                }}
+              >
+                <CardContent className="p-5">
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="flex items-start gap-4">
+                      <div className="p-3 rounded-xl shrink-0 bg-accent/15">
+                        <Sparkles className="w-6 h-6 text-accent" />
+                      </div>
+                      <div className="min-w-0">
+                        <h3 className="font-semibold text-foreground">
+                          Prefere conversar? Configure com a IA
+                        </h3>
+                        <p className="text-sm text-muted-foreground">
+                          Em vez de preencher os formulários, converse com a Arquiteta da Pipeelo:
+                          ela conduz as etapas, entende o funcionamento da sua empresa e configura
+                          tudo com você.
+                        </p>
+                      </div>
+                    </div>
+                    <Button variant="ghost" size="sm" className="text-accent shrink-0">
+                      Conversar <ArrowRight className="w-4 h-4 ml-1" />
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
+          )}
 
           {/* Department cards */}
           <div className="space-y-4">

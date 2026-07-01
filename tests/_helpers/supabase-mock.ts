@@ -18,6 +18,7 @@ export function makeSupabaseMock(overrides: Record<string, unknown> = {}) {
     delete: vi.fn(() => chain),
     eq: vi.fn(() => chain),
     in: vi.fn(() => chain),
+    order: vi.fn(() => chain),
     single: vi.fn(async () => ({ data: null, error: null })),
     maybeSingle: vi.fn(async () => ({ data: null, error: null })),
     then: undefined,

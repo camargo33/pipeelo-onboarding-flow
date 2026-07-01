@@ -73,17 +73,35 @@ export const RespostasByDepartmentSchema = z
 export type RespostasByDepartment = z.infer<typeof RespostasByDepartmentSchema>;
 
 /**
+ * Insight coletado pelo agente de onboarding conversacional (V2) — informação
+ * relevante que NÃO tem pergunta correspondente no questionário (fluxo real,
+ * exceção, serviço não oferecido, regra de negócio...). Alimenta a geração
+ * dos prompts no admin-pipeelo.
+ */
+export const AgentInsightSchema = z.object({
+  departamento: z.string().nullable().optional(),
+  categoria: z.string(),
+  titulo: z.string(),
+  detalhe: z.string(),
+  created_at: IsoDateTimeSchema.optional(),
+});
+
+export type AgentInsight = z.infer<typeof AgentInsightSchema>;
+
+/**
  * Payload completo trafegado entre onboarding-flow (sender)
  * e admin-pipeelo (receiver) via webhook
  * `POST /api/clients/onboarding/create`.
  *
  * `payload_version` é literal `'v1'` — mudança no shape exige bump
- * + suporte a múltiplas versões no receiver.
+ * + suporte a múltiplas versões no receiver. `agent_insights` é ADITIVO
+ * e opcional (só presente quando o onboarding rodou via chat V2).
  */
 export const OnboardingPayloadSchema = z.object({
   payload_version: z.literal(PAYLOAD_VERSION).default(PAYLOAD_VERSION),
   session: SessionEnvelopeSchema,
   respostas: RespostasByDepartmentSchema,
+  agent_insights: z.array(AgentInsightSchema).optional(),
 });
 
 export type OnboardingPayload = z.infer<typeof OnboardingPayloadSchema>;

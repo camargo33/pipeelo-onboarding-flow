@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import NovoOnboarding from "./pages/NovoOnboarding";
 import Onboarding from "./pages/Onboarding";
+import OnboardingChat from "./pages/OnboardingChat";
 import OnboardingSession from "./pages/OnboardingSession";
 import AdminOnboarding from "./pages/AdminOnboarding";
 import ComercialEntry from "./pages/ComercialEntry";
@@ -25,6 +26,7 @@ const App = () => (
           <Route path="/admin" element={<AdminOnboarding />} />
           <Route path="/comercial/:slug" element={<ComercialEntry />} />
           <Route path="/:slug" element={<OnboardingSession />} />
+          <Route path="/:slug/ia" element={<OnboardingChat />} />
           <Route path="/:slug/:departamento" element={<Onboarding />} />
           <Route path="*" element={<NotFound />} />
         </Routes>

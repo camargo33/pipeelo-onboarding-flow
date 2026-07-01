@@ -57,6 +57,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       .eq("session_id", sessionId);
     if (respostasError) return res.status(500).json({ error: "Error fetching responses" });
 
+    // Insights do onboarding conversacional (V2) — aditivo, vazio quando o
+    // onboarding rodou só pelo formulário.
+    const { data: agentInsights } = await supabase
+      .from("onboarding_agent_insights")
+      .select("departamento, categoria, titulo, detalhe, created_at")
+      .eq("session_id", sessionId)
+      .order("created_at", { ascending: true });
+
     const respostasPorDepartamento: Record<string, Record<string, unknown>> = {
       identificacao: {},
       sac_geral: {},
@@ -102,6 +110,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         },
       },
       respostas: respostasPorDepartamento,
+      ...(agentInsights?.length ? { agent_insights: agentInsights } : {}),
     };
 
     // PIPE-01/PIPE-02/PIPE-08: validar contrato antes de mandar pro admin.

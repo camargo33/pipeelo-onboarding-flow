@@ -66,8 +66,8 @@ function makeOutboxRow(overrides: Record<string, unknown> = {}) {
   };
 }
 
-/** Cria mock do supabase com dois `from()` calls: sessions + respostas */
-function setupSupabaseFor(session: any, respostas: any[] = []) {
+/** Cria mock do supabase roteando por tabela: sessions + respostas + agent_insights */
+function setupSupabaseFor(session: any, respostas: any[] = [], agentInsights: any[] = []) {
   const sessionChain = makeSupabaseMock();
   sessionChain._chain.single = vi.fn(async () => ({ data: session, error: null }));
 
@@ -76,11 +76,14 @@ function setupSupabaseFor(session: any, respostas: any[] = []) {
     Promise.resolve({ data: respostas, error: null }),
   );
 
-  let callIndex = 0;
+  const insightsChain = makeSupabaseMock();
+  insightsChain._chain.order = vi.fn(async () => ({ data: agentInsights, error: null }));
+
   const sb = {
-    from: vi.fn(() => {
-      callIndex++;
-      return callIndex === 1 ? sessionChain._chain : respostasChain._chain;
+    from: vi.fn((table: string) => {
+      if (table === 'onboarding_sessions') return sessionChain._chain;
+      if (table === 'onboarding_agent_insights') return insightsChain._chain;
+      return respostasChain._chain;
     }),
   };
   (requireSupabase as unknown as ReturnType<typeof vi.fn>).mockReturnValue(sb);
