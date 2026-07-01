@@ -151,8 +151,8 @@ export type StackPatch = {
 };
 
 export const ERP_OPTIONS = ['IXC', 'SGP', 'MK Solution', 'RBX', 'Topp Sap', 'Hubsoft', 'Voalle', 'Outros'] as const;
-export const MAPAS_OPTIONS = ['OZMap', 'Geogrid', 'Geosite', 'Outros'] as const;
-export const REDE_OPTIONS = ['Smart OLT', 'Anlix', 'OLT Cloud', 'Made 4 Graph', 'Outros'] as const;
+export const MAPAS_OPTIONS = ['OZMap', 'Geogrid', 'Geosite', 'IXC Maps', 'Outros'] as const;
+export const REDE_OPTIONS = ['Smart OLT', 'Anlix', 'OLT Cloud', 'Made 4 Graph', 'IXC-ACS', 'Outros'] as const;
 export const GATEWAY_OPTIONS = ['7AZ (Bemobi)', 'Outros'] as const;
 
 export const adminSessionApi = {
