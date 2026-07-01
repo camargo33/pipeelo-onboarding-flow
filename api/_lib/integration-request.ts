@@ -90,6 +90,11 @@ const REDE_CREDENTIALS: Record<string, CredField[]> = {
     { id: 'rede_made4graph_senha', label: 'Senha' },
     { id: 'rede_made4graph_token', label: 'Token' },
   ],
+  'IXC-ACS': [
+    { id: 'rede_ixcacs_url', label: 'URL' },
+    { id: 'rede_ixcacs_usuario', label: 'Usuário' },
+    { id: 'rede_ixcacs_senha', label: 'Senha' },
+  ],
 };
 
 const REDE_CREDENTIALS_OUTROS: CredField[] = [
@@ -112,6 +117,11 @@ const MAPAS_CREDENTIALS: Record<string, CredField[]> = {
     { id: 'mapas_ozmap_token', label: 'Token' },
     { id: 'mapas_ozmap_usuario', label: 'Usuário' },
     { id: 'mapas_ozmap_senha', label: 'Senha' },
+  ],
+  'IXC Maps': [
+    { id: 'mapas_ixcmaps_url', label: 'URL' },
+    { id: 'mapas_ixcmaps_usuario', label: 'Usuário' },
+    { id: 'mapas_ixcmaps_senha', label: 'Senha' },
   ],
 };
 

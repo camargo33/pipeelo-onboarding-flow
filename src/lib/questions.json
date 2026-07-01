@@ -179,6 +179,10 @@
             { "id": "rede_made4graph_senha", "pergunta": "Senha Made 4 Graph", "tipo": "password", "condicional": "_session_gerenciamento_rede == 'Made 4 Graph'" },
             { "id": "rede_made4graph_token", "pergunta": "Token Made 4 Graph", "tipo": "password", "condicional": "_session_gerenciamento_rede == 'Made 4 Graph'" },
 
+            { "id": "rede_ixcacs_url", "pergunta": "URL IXC-ACS", "tipo": "url", "placeholder": "https://ixcacs.suaempresa.com.br", "condicional": "_session_gerenciamento_rede == 'IXC-ACS'" },
+            { "id": "rede_ixcacs_usuario", "pergunta": "Usuário IXC-ACS", "tipo": "text", "condicional": "_session_gerenciamento_rede == 'IXC-ACS'" },
+            { "id": "rede_ixcacs_senha", "pergunta": "Senha IXC-ACS", "tipo": "password", "condicional": "_session_gerenciamento_rede == 'IXC-ACS'" },
+
             { "id": "rede_outros_nome", "pergunta": "Qual gerenciador de rede vocês usam?", "tipo": "text", "placeholder": "Ex: Mikrotik, UNMS, próprio…", "condicional": "_session_gerenciamento_rede == 'Outros'" },
             { "id": "rede_outros_url", "pergunta": "URL do gerenciador", "tipo": "url", "condicional": "_session_gerenciamento_rede == 'Outros'" },
             { "id": "rede_outros_usuario", "pergunta": "Usuário", "tipo": "text", "condicional": "_session_gerenciamento_rede == 'Outros'" },
@@ -196,6 +200,10 @@
             { "id": "mapas_ozmap_token", "pergunta": "Token OZMap", "tipo": "password", "condicional": "_session_mapas == 'OZMap'" },
             { "id": "mapas_ozmap_usuario", "pergunta": "Usuário OZMap", "tipo": "text", "condicional": "_session_mapas == 'OZMap'" },
             { "id": "mapas_ozmap_senha", "pergunta": "Senha OZMap", "tipo": "password", "condicional": "_session_mapas == 'OZMap'" },
+
+            { "id": "mapas_ixcmaps_url", "pergunta": "URL IXC Maps", "tipo": "url", "placeholder": "https://ixcmaps.suaempresa.com.br", "condicional": "_session_mapas == 'IXC Maps'" },
+            { "id": "mapas_ixcmaps_usuario", "pergunta": "Usuário IXC Maps", "tipo": "text", "condicional": "_session_mapas == 'IXC Maps'" },
+            { "id": "mapas_ixcmaps_senha", "pergunta": "Senha IXC Maps", "tipo": "password", "condicional": "_session_mapas == 'IXC Maps'" },
 
             { "id": "mapas_outros_nome", "pergunta": "Qual sistema de mapas/geo vocês usam?", "tipo": "text", "placeholder": "Ex: Google Maps interno, planilha, próprio…", "condicional": "_session_mapas == 'Outros'" },
             { "id": "mapas_outros_url", "pergunta": "URL do sistema", "tipo": "url", "condicional": "_session_mapas == 'Outros'" },

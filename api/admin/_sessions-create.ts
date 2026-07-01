@@ -6,8 +6,8 @@ import { getServiceSupabase } from '../_lib/supabase';
 import { sendTransactionalEmail } from '../_lib/email-sender';
 
 const ERP_OPTIONS = ['IXC', 'SGP', 'MK Solution', 'RBX', 'Topp Sap', 'Hubsoft', 'Voalle', 'Outros'] as const;
-const MAPAS_OPTIONS = ['OZMap', 'Geogrid', 'Geosite', 'Outros'] as const;
-const REDE_OPTIONS = ['Smart OLT', 'Anlix', 'OLT Cloud', 'Made 4 Graph', 'Outros'] as const;
+const MAPAS_OPTIONS = ['OZMap', 'Geogrid', 'Geosite', 'IXC Maps', 'Outros'] as const;
+const REDE_OPTIONS = ['Smart OLT', 'Anlix', 'OLT Cloud', 'Made 4 Graph', 'IXC-ACS', 'Outros'] as const;
 const GATEWAY_OPTIONS = ['7AZ (Bemobi)', 'Outros'] as const;
 
 const optionalEnum = <T extends readonly [string, ...string[]]>(vals: T) =>
