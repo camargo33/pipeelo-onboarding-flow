@@ -23,7 +23,7 @@ type ChatEvent =
   | { type: 'done' }
   | { type: 'error'; message: string };
 
-type Activity = { kind: 'saved' | 'insight' | 'completed'; label: string };
+type Activity = { kind: 'saved' | 'insight' | 'completed' | 'flow'; label: string };
 
 type ChatItem =
   | { role: 'user'; text: string }
@@ -45,7 +45,10 @@ function activityFromEvent(ev: Extract<ChatEvent, { type: 'tool_result' }>): Act
     return { kind: 'saved', label: `${n} resposta${n > 1 ? 's' : ''} salva${n > 1 ? 's' : ''}` };
   }
   if (ev.name === 'record_insight') {
-    return { kind: 'insight', label: 'Detalhe do seu fluxo registrado' };
+    return { kind: 'insight', label: 'Detalhe do seu negócio registrado' };
+  }
+  if (ev.name === 'confirm_flow') {
+    return { kind: 'flow', label: 'Fluxo de atendimento confirmado' };
   }
   if (ev.name === 'complete_department') {
     const dep = (ev.summary as { departamento_concluido?: string })?.departamento_concluido;
@@ -59,6 +62,7 @@ const ACTIVITY_ICON = {
   saved: Save,
   insight: Sparkles,
   completed: Flag,
+  flow: Check,
 } as const;
 
 const OnboardingChat = () => {

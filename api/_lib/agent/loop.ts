@@ -100,7 +100,7 @@ export async function runAgentTurn(input: RunAgentTurnInput): Promise<void> {
       .eq('session_id', sessionId),
     supabase
       .from('onboarding_agent_insights')
-      .select('departamento, categoria, titulo, detalhe')
+      .select('departamento, categoria, titulo, detalhe, flow_id')
       .eq('session_id', sessionId)
       .order('created_at', { ascending: true }),
     loadHistory(supabase, sessionId),
@@ -108,11 +108,17 @@ export async function runAgentTurn(input: RunAgentTurnInput): Promise<void> {
 
   const contextBlock = renderSessionContext(session, respostas ?? [], insights ?? []);
   const answers = buildAnswerMap(respostas ?? [], session);
+  const confirmedFlows = new Set<string>(
+    (insights ?? [])
+      .map((i) => (i as { flow_id?: string | null }).flow_id)
+      .filter((v): v is string => Boolean(v))
+  );
 
   const ctx: AgentToolContext = {
     supabase,
     session,
     answers,
+    confirmedFlows,
     slug,
     baseUrl,
     pendingSideEffects: [],

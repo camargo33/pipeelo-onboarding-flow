@@ -10,6 +10,7 @@ import {
   missingRequired,
   type DepartmentSlug,
 } from './blueprint';
+import { findFlow, flowsForDepartment } from './flows';
 import type { ORToolDef } from './openrouter';
 import { maybeNotifyOnboardingComplete } from '../whatsapp-notify';
 import { maybePromoteToBoard } from '../promote-to-board';
@@ -30,6 +31,8 @@ export interface AgentToolContext {
   session: Record<string, unknown>;
   /** Mapa vivo pergunta_id → valor (inclui pseudo-campos _session_*). */
   answers: Record<string, unknown>;
+  /** Fluxos já confirmados via confirm_flow (gate do complete_department). */
+  confirmedFlows: Set<string>;
   slug: string;
   baseUrl: string;
   /** Side-effects (provision/sync/email/webhook) em voo — aguardados no fim do turno. */
@@ -93,6 +96,44 @@ export const AGENT_TOOLS: ORToolDef[] = [
           },
         },
         required: ['categoria', 'titulo', 'detalhe'],
+      },
+    },
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'confirm_flow',
+      description:
+        'Registra um FLUXO DE ATENDIMENTO montado e CONFIRMADO pelo cliente. Use DEPOIS de: (1) apresentar o fluxo padrão, (2) percorrer os pontos de decisão com o cliente, (3) mostrar o fluxo final montado e (4) o cliente confirmar explicitamente. Os fluxos pendentes de cada departamento estão no <session_context> — todos precisam ser confirmados antes de concluir a etapa.',
+      parameters: {
+        type: 'object',
+        properties: {
+          flow_id: {
+            type: 'string',
+            description:
+              'Id do fluxo do catálogo (ex.: cancelamento_retencao). Para um fluxo extra que o cliente descreveu e não está no catálogo, use custom_<slug>.',
+          },
+          departamento: { type: 'string', enum: [...DEPARTMENT_ORDER] },
+          titulo: { type: 'string' },
+          fluxo_final: {
+            type: 'string',
+            description:
+              'O fluxo COMPLETO montado com o cliente, passo a passo numerado, incluindo as exceções e textos aprovados. É isso que o time usa para configurar a IA de atendimento — seja específico.',
+          },
+          decisoes: {
+            type: 'array',
+            description: 'As decisões tomadas nos pontos de decisão do fluxo',
+            items: {
+              type: 'object',
+              properties: {
+                ponto: { type: 'string', description: 'Id do ponto de decisão (ex.: motivo_lentidao)' },
+                escolha: { type: 'string', description: 'O que o cliente decidiu, com detalhes' },
+              },
+              required: ['ponto', 'escolha'],
+            },
+          },
+        },
+        required: ['flow_id', 'departamento', 'titulo', 'fluxo_final', 'decisoes'],
       },
     },
   },
@@ -243,6 +284,8 @@ export async function executeAgentTool(
         return await saveAnswers(args, ctx);
       case 'record_insight':
         return await recordInsight(args, ctx);
+      case 'confirm_flow':
+        return await confirmFlow(args, ctx);
       case 'complete_department':
         return await completeDepartment(args, ctx);
       default:
@@ -340,6 +383,77 @@ async function recordInsight(
   return { ok: true, registrado: titulo };
 }
 
+async function confirmFlow(
+  args: Record<string, unknown>,
+  ctx: AgentToolContext
+): Promise<Record<string, unknown>> {
+  const flowId = String(args.flow_id ?? '').trim();
+  const departamento = args.departamento as DepartmentSlug;
+  const titulo = String(args.titulo ?? '').trim();
+  const fluxoFinal = String(args.fluxo_final ?? '').trim();
+  const decisoes = (args.decisoes ?? []) as Array<{ ponto: string; escolha: string }>;
+
+  if (!DEPARTMENT_ORDER.includes(departamento))
+    return { error: `departamento inválido: ${departamento}` };
+  const catalogFlow = findFlow(flowId);
+  if (!catalogFlow && !flowId.startsWith('custom_'))
+    return {
+      error: `flow_id "${flowId}" não existe no catálogo. Use um id do <session_context> ou custom_<slug> para fluxo extra.`,
+    };
+  if (!titulo || fluxoFinal.length < 80)
+    return {
+      error:
+        'fluxo_final muito curto — descreva o fluxo completo passo a passo, com as decisões e textos aprovados pelo cliente.',
+    };
+
+  // Verificação determinística: pontos de decisão do catálogo sem escolha registrada
+  const warnings: string[] = [];
+  if (catalogFlow) {
+    const decididos = new Set(decisoes.map((d) => d.ponto));
+    const faltando = catalogFlow.decisoes.filter((d) => !decididos.has(d.id)).map((d) => d.id);
+    if (faltando.length) {
+      return {
+        error: `Faltam decisões nos pontos: ${faltando.join(', ')}. Pergunte ao cliente (ou registre explicitamente que ele escolheu o padrão) antes de confirmar o fluxo.`,
+        pontos_pendentes: faltando,
+      };
+    }
+  }
+
+  const detalhe = [
+    fluxoFinal,
+    '',
+    'DECISÕES:',
+    ...decisoes.map((d) => `- ${d.ponto}: ${d.escolha}`),
+  ].join('\n');
+
+  // Re-confirmação substitui o fluxo anterior (mantém 1 versão viva por flow_id)
+  await ctx.supabase
+    .from('onboarding_agent_insights')
+    .delete()
+    .eq('session_id', ctx.session.id)
+    .eq('flow_id', flowId);
+  const { error } = await ctx.supabase.from('onboarding_agent_insights').insert({
+    session_id: ctx.session.id,
+    departamento,
+    categoria: 'fluxo_confirmado',
+    titulo,
+    detalhe,
+    flow_id: flowId,
+  });
+  if (error) return { error: `falha ao registrar fluxo: ${error.message}` };
+
+  ctx.confirmedFlows.add(flowId);
+  const pendentes = flowsForDepartment(departamento)
+    .filter((f) => !ctx.confirmedFlows.has(f.id))
+    .map((f) => f.id);
+  return {
+    ok: true,
+    fluxo_confirmado: flowId,
+    ...(warnings.length ? { warnings } : {}),
+    fluxos_pendentes_no_departamento: pendentes,
+  };
+}
+
 async function completeDepartment(
   args: Record<string, unknown>,
   ctx: AgentToolContext
@@ -367,6 +481,18 @@ async function completeDepartment(
     return {
       error: 'Ainda há perguntas obrigatórias pendentes neste departamento.',
       pendentes: missing.map((q) => ({ pergunta_id: q.id, pergunta: q.pergunta })),
+    };
+  }
+
+  // Gate determinístico: todos os fluxos do departamento montados e confirmados
+  const flowsPendentes = flowsForDepartment(departamento).filter(
+    (f) => !ctx.confirmedFlows.has(f.id)
+  );
+  if (flowsPendentes.length) {
+    return {
+      error:
+        'Ainda há fluxos de atendimento não confirmados neste departamento. Apresente o fluxo padrão, percorra as decisões com o cliente, monte o fluxo final e confirme via confirm_flow.',
+      fluxos_pendentes: flowsPendentes.map((f) => ({ flow_id: f.id, titulo: f.titulo })),
     };
   }
 

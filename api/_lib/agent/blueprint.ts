@@ -8,6 +8,7 @@
  */
 import onboardingData from '../../../src/lib/questions.json';
 import { evaluateConditional } from './conditional';
+import { renderFlowsSection } from './flows';
 
 export interface BlueprintQuestion {
   id: string;
@@ -202,8 +203,11 @@ function renderQuestionLine(q: BlueprintQuestion, answers: AnswerMap): string {
 export function renderSessionContext(
   session: SessionRow,
   respostas: Array<{ departamento: string; pergunta_id: string; valor: unknown }>,
-  insights: Array<{ departamento: string | null; categoria: string; titulo: string; detalhe: string }>
+  insights: Array<{ departamento: string | null; categoria: string; titulo: string; detalhe: string; flow_id?: string | null }>
 ): string {
+  const confirmedFlowIds = new Set(
+    insights.map((i) => i.flow_id).filter((v): v is string => Boolean(v))
+  );
   const answers = buildAnswerMap(respostas, session);
   const modo = (session.modo as string) ?? 'completo';
   const requiredDepts: string[] =
@@ -250,6 +254,11 @@ export function renderSessionContext(
         const line = renderQuestionLine(q, answers);
         if (line) lines.push(line);
       }
+    }
+    const flowLines = renderFlowsSection(dep.slug, confirmedFlowIds);
+    if (flowLines.length) {
+      lines.push('');
+      lines.push(...flowLines);
     }
   }
 
