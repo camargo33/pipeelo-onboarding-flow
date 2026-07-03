@@ -102,7 +102,18 @@ const OnboardingChat = () => {
           sessionApi.get(slug, token),
           fetch(
             `/api/agent/history?slug=${encodeURIComponent(slug)}&token=${encodeURIComponent(token)}`
-          ).then((r) => (r.ok ? r.json() : { messages: [] })),
+          )
+            .then(async (r) => {
+              if (!r.ok) return { messages: [] };
+              try {
+                return await r.json();
+              } catch {
+                // rota /api/agent ausente no backend apontado (ex.: proxy pra
+                // prod antes do deploy) devolve HTML — não derruba a página
+                return { messages: [] };
+              }
+            })
+            .catch(() => ({ messages: [] })),
         ]);
         setSession(dto);
         const restored: ChatItem[] = (historyRes.messages ?? []).map(
