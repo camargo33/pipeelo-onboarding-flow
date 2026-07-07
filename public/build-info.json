@@ -1,1 +1,1 @@
-{"commit":"mapas-kmz-google-maps","feature":"opcao-mapas-kmz + repeater-poligono-area-atendimento + msg-integracao-pede-kmz"}
+{"commit":"mapas-kmz-backend-enum","feature":"KMZ no enum Zod do sessions-create + sessions-update (fix invalid_payload)"}
