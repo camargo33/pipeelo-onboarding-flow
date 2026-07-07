@@ -205,6 +205,12 @@
             { "id": "mapas_ixcmaps_usuario", "pergunta": "Usuário IXC Maps", "tipo": "text", "condicional": "_session_mapas == 'IXC Maps'" },
             { "id": "mapas_ixcmaps_senha", "pergunta": "Senha IXC Maps", "tipo": "password", "condicional": "_session_mapas == 'IXC Maps'" },
 
+            { "id": "mapas_kmz_info", "pergunta": "Área de atendimento (KMZ / Google Maps)", "tipo": "info", "texto": "Vocês usam o mapa de cobertura em KMZ (Google Maps / My Maps). Precisamos do arquivo com o polígono da área atendida — é com ele que a IA identifica se o endereço do lead está dentro da cobertura. Exporte no Google My Maps (menu ⋮ → Exportar para KML/KMZ), hospede num link público (Google Drive, por exemplo) e cole abaixo. Se tiver mais de uma área, adicione quantas precisar. Se preferir, pode enviar o(s) arquivo(s) .kmz direto no nosso grupo do WhatsApp.", "condicional": "_session_mapas == 'KMZ (Google Maps)'" },
+            { "id": "mapas_kmz_areas", "pergunta": "Arquivos de área de atendimento (KMZ/KML)", "tipo": "repeater", "condicional": "_session_mapas == 'KMZ (Google Maps)'", "rotulo_item": "Área de atendimento", "rotulo_adicionar": "Adicionar área", "hint": "Um item por polígono/arquivo. Cole o link público do KMZ/KML de cada área — ou envie o arquivo no grupo.", "campos": [
+              { "id": "nome", "label": "Nome da área", "tipo": "text", "placeholder": "Ex: Centro / Zona Norte / Cidade X", "largura": 6 },
+              { "id": "link", "label": "Link do arquivo KMZ/KML", "tipo": "text", "placeholder": "Cole o link público (Google Drive, My Maps…)", "largura": 6 }
+            ] },
+
             { "id": "mapas_outros_nome", "pergunta": "Qual sistema de mapas/geo vocês usam?", "tipo": "text", "placeholder": "Ex: Google Maps interno, planilha, próprio…", "condicional": "_session_mapas == 'Outros'" },
             { "id": "mapas_outros_url", "pergunta": "URL do sistema", "tipo": "url", "condicional": "_session_mapas == 'Outros'" },
             { "id": "mapas_outros_token", "pergunta": "Token / API Key (se houver)", "tipo": "password", "condicional": "_session_mapas == 'Outros'" },

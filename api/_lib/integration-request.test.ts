@@ -6,7 +6,7 @@ import { buildIntegrationRequestMessage, PIPEELO_WHITELIST_IPS } from './integra
  *   - onboarding_sessions: .select().eq().maybeSingle() → { data: session }
  *   - onboarding_respostas: .select().eq() (thenable) → { data: respostas }
  */
-function fakeSupabase(session: Record<string, unknown> | null, respostas: Record<string, string>) {
+function fakeSupabase(session: Record<string, unknown> | null, respostas: Record<string, unknown>) {
   const respostasRows = Object.entries(respostas).map(([pergunta_id, valor]) => ({ pergunta_id, valor }));
 
   return {
@@ -147,6 +147,35 @@ describe('buildIntegrationRequestMessage', () => {
     );
     const msg = await buildIntegrationRequestMessage(sb, 's1', 'completo');
     expect(msg).not.toContain('gateway de pagamento');
+  });
+
+  it('mapas KMZ sem áreas: pede o polígono e NÃO entra na whitelist de IPs', async () => {
+    const sb = fakeSupabase(
+      { erp: null, gerenciamento_rede: null, mapas: 'KMZ (Google Maps)', gateway_pagamento: null },
+      {}
+    );
+    const msg = await buildIntegrationRequestMessage(sb, 's1', 'completo');
+    expect(msg).toBeTruthy();
+    expect(msg).toContain('polígono da área de atendimento');
+    // KMZ é arquivo estático — não pede whitelist de IP
+    expect(msg).not.toContain('whitelist da API');
+    expect(msg).not.toContain('(mapas)');
+  });
+
+  it('mapas KMZ com áreas preenchidas: não pede nada de mapas', async () => {
+    const sb = fakeSupabase(
+      { erp: 'IXC', gerenciamento_rede: null, mapas: 'KMZ (Google Maps)', gateway_pagamento: null },
+      {
+        erp_ixc_url: 'u',
+        erp_ixc_userid: '1',
+        erp_ixc_token: 't',
+        mapas_kmz_areas: [{ nome: 'Centro', link: 'https://drive.google.com/centro.kmz' }],
+      }
+    );
+    const msg = await buildIntegrationRequestMessage(sb, 's1', 'completo');
+    expect(msg).toBeTruthy();
+    expect(msg).not.toContain('polígono');
+    expect(msg).not.toContain('KMZ');
   });
 
   it('fallback: sessão antiga sem coluna erp usa resposta erp_utilizado', async () => {

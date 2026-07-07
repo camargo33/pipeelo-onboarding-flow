@@ -245,15 +245,38 @@ export async function buildIntegrationRequestMessage(
   });
   if (rede) sistemas.push(rede);
 
-  const mapas = resolverSistema({
-    sessionValue: asText(sessionData.mapas),
-    categoria: 'mapas',
-    credenciais: MAPAS_CREDENTIALS,
-    credenciaisOutros: MAPAS_CREDENTIALS_OUTROS,
-    rotulosOutros: ['Outros'],
-    nomeOutrosId: 'mapas_outros_nome',
-    respostas,
-  });
+  const mapasValue = asText(sessionData.mapas);
+  let mapas: SistemaIntegrado | null;
+  if (mapasValue === 'KMZ (Google Maps)') {
+    // KMZ é arquivo estático (Google Maps / My Maps) — não tem API pra whitelist.
+    // O que precisamos é o(s) polígono(s) da área de atendimento, pedidos como
+    // repeater no formulário (mapas_kmz_areas). Se não vieram, entram como pendência.
+    const kmzRaw = (respostasData ?? []).find((r) => r.pergunta_id === 'mapas_kmz_areas')?.valor;
+    const temAreas =
+      Array.isArray(kmzRaw) &&
+      kmzRaw.some(
+        (item) =>
+          item &&
+          typeof item === 'object' &&
+          Object.values(item).some((v) => typeof v === 'string' && v.trim())
+      );
+    mapas = {
+      nome: 'Mapa de cobertura (KMZ)',
+      categoria: 'mapas',
+      faltantes: temAreas ? [] : ['arquivo(s) KMZ com o polígono da área de atendimento'],
+      whitelist: false,
+    };
+  } else {
+    mapas = resolverSistema({
+      sessionValue: mapasValue,
+      categoria: 'mapas',
+      credenciais: MAPAS_CREDENTIALS,
+      credenciaisOutros: MAPAS_CREDENTIALS_OUTROS,
+      rotulosOutros: ['Outros'],
+      nomeOutrosId: 'mapas_outros_nome',
+      respostas,
+    });
+  }
   if (mapas) sistemas.push(mapas);
 
   // Gateway: só '7AZ (Bemobi)' e 'Outros' viram coluna de sessão (ambos exigem
