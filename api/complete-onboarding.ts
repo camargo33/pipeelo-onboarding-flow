@@ -87,6 +87,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         pipeelo_token: session.pipeelo_token ?? null,
         modo: session.modo ?? 'completo',
         contratou_crm: session.contratou_crm ?? false,
+        // Dados comerciais do deal preenchidos pelo admin na criação do link.
+        // numeric pode chegar como string do PostgREST → normaliza pra number.
+        comercial: {
+          valor_sessao: session.valor_sessao != null ? Number(session.valor_sessao) : null,
+          qtd_sessoes: session.qtd_sessoes != null ? Number(session.qtd_sessoes) : null,
+          valor_mensal: session.valor_mensal != null ? Number(session.valor_mensal) : null,
+          dia_vencimento: session.dia_vencimento != null ? Number(session.dia_vencimento) : null,
+          observacoes: session.observacoes ?? null,
+        },
         created_at: session.created_at,
         responsaveis: {
           sac_geral: session.responsavel_sac_geral,

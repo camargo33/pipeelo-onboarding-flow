@@ -22,6 +22,12 @@ const Body = z.object({
   gateway_pagamento: optionalEnum(GATEWAY_OPTIONS),
   modo: z.enum(['completo', 'comercial']).optional().default('completo'),
   contratou_crm: z.boolean().optional().default(false),
+  // Dados comerciais do deal — opcionais, vão no payload final (session.comercial)
+  valor_sessao: z.number().positive().max(99999999.99).optional().nullable(),
+  qtd_sessoes: z.number().int().positive().max(100000000).optional().nullable(),
+  valor_mensal: z.number().positive().max(9999999999.99).optional().nullable(),
+  dia_vencimento: z.number().int().min(1).max(31).optional().nullable(),
+  observacoes: z.string().max(4000).optional().nullable(),
 });
 
 /**
@@ -64,6 +70,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         modo: body.modo,
         // Modo comercial JÁ é CRM por definição; no completo é escolha do admin.
         contratou_crm: isComercial ? true : body.contratou_crm,
+        valor_sessao: body.valor_sessao ?? null,
+        qtd_sessoes: body.qtd_sessoes ?? null,
+        valor_mensal: body.valor_mensal ?? null,
+        dia_vencimento: body.dia_vencimento ?? null,
+        observacoes: body.observacoes?.trim() || null,
         status_identificacao: 'pendente',
         status_sac_geral: statusDeptoExtra,
         status_financeiro: statusDeptoExtra,

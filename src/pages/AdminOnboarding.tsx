@@ -5,7 +5,8 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
-import { Copy, Plus, Building2, ExternalLink, Check, Clock, RefreshCw, Trash2, Loader2, LogOut, Layers, X, ChevronDown, Send } from 'lucide-react';
+import { Copy, Plus, Building2, ExternalLink, Check, Clock, RefreshCw, Trash2, Loader2, LogOut, Layers, X, ChevronDown, Send, CircleDollarSign } from 'lucide-react';
+import { Textarea } from '@/components/ui/textarea';
 import { PipeeloLogo } from '@/components/PipeeloLogo';
 import { AdminLogin } from '@/components/AdminLogin';
 import {
@@ -64,6 +65,43 @@ type StackPatch = {
   gerenciamento_rede?: string | null;
   gateway_pagamento?: string | null;
 };
+
+type ComercialPatch = {
+  valor_sessao?: number | null;
+  qtd_sessoes?: number | null;
+  valor_mensal?: number | null;
+  dia_vencimento?: number | null;
+  observacoes?: string | null;
+};
+
+const DIAS_VENCIMENTO = Array.from({ length: 31 }, (_, i) => String(i + 1));
+
+/** Aceita "0,65", "6.500,00" e "6500.00" — retorna null se vazio/inválido. */
+function parseMoney(raw: string): number | null {
+  const s = raw.trim();
+  if (!s) return null;
+  const normalized = s.includes(',') ? s.replace(/\./g, '').replace(',', '.') : s;
+  const n = Number(normalized);
+  return Number.isFinite(n) && n > 0 ? Math.round(n * 100) / 100 : null;
+}
+
+function parseIntPositivo(raw: string): number | null {
+  const n = Number(raw.trim().replace(/\./g, ''));
+  return Number.isInteger(n) && n > 0 ? n : null;
+}
+
+function formatBRL(v: number | string | null | undefined): string | null {
+  if (v == null || v === '') return null;
+  const n = typeof v === 'string' ? Number(v) : v;
+  if (!Number.isFinite(n)) return null;
+  return n.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+}
+
+/** number/string do banco → valor de input pt-BR ("0.65" → "0,65"). */
+function numToInput(v: number | string | null | undefined): string {
+  if (v == null || v === '') return '';
+  return String(v).replace('.', ',');
+}
 
 const STACK_FIELDS: Array<{
   key: 'erp' | 'mapas' | 'gerenciamento_rede' | 'gateway_pagamento';
@@ -238,6 +276,190 @@ function StackEditor({
   );
 }
 
+function ComercialEditor({
+  session,
+  onSave,
+}: {
+  session: OnboardingSession;
+  onSave: (sessionId: string, patch: ComercialPatch) => Promise<void>;
+}) {
+  const [open, setOpen] = useState(false);
+  const [valorSessao, setValorSessao] = useState('');
+  const [qtdSessoes, setQtdSessoes] = useState('');
+  const [valorMensal, setValorMensal] = useState('');
+  const [diaVencimento, setDiaVencimento] = useState('');
+  const [observacoes, setObservacoes] = useState('');
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    if (open) {
+      setValorSessao(numToInput(session.valor_sessao));
+      setQtdSessoes(session.qtd_sessoes != null ? String(session.qtd_sessoes) : '');
+      setValorMensal(numToInput(session.valor_mensal));
+      setDiaVencimento(session.dia_vencimento != null ? String(session.dia_vencimento) : '');
+      setObservacoes(session.observacoes ?? '');
+    }
+  }, [
+    open,
+    session.valor_sessao,
+    session.qtd_sessoes,
+    session.valor_mensal,
+    session.dia_vencimento,
+    session.observacoes,
+  ]);
+
+  const hasComercial =
+    session.valor_sessao != null ||
+    session.qtd_sessoes != null ||
+    session.valor_mensal != null ||
+    session.dia_vencimento != null ||
+    Boolean(session.observacoes);
+
+  const handleSave = async () => {
+    setSaving(true);
+    try {
+      await onSave(session.id, {
+        valor_sessao: parseMoney(valorSessao),
+        qtd_sessoes: parseIntPositivo(qtdSessoes),
+        valor_mensal: parseMoney(valorMensal),
+        dia_vencimento: diaVencimento ? Number(diaVencimento) : null,
+        observacoes: observacoes.trim() || null,
+      });
+      setOpen(false);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const chips = [
+    session.valor_sessao != null
+      ? { label: 'Sessão', value: formatBRL(session.valor_sessao) ?? '' }
+      : null,
+    session.qtd_sessoes != null
+      ? { label: 'Sessões', value: Number(session.qtd_sessoes).toLocaleString('pt-BR') }
+      : null,
+    session.valor_mensal != null
+      ? { label: 'Mensal', value: formatBRL(session.valor_mensal) ?? '' }
+      : null,
+    session.dia_vencimento != null
+      ? { label: 'Venc.', value: `dia ${session.dia_vencimento}` }
+      : null,
+    session.observacoes
+      ? {
+          label: 'Obs',
+          value:
+            session.observacoes.length > 40
+              ? `${session.observacoes.slice(0, 40)}…`
+              : session.observacoes,
+        }
+      : null,
+  ].filter(Boolean) as Array<{ label: string; value: string }>;
+
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        {hasComercial ? (
+          <button
+            type="button"
+            className="group flex flex-wrap gap-1.5 mt-1.5 cursor-pointer"
+            aria-label="Editar dados comerciais"
+          >
+            {chips.map((c) => (
+              <span
+                key={c.label}
+                className="px-2 py-0.5 rounded-md text-[10px] font-medium bg-primary/5 text-muted-foreground border border-primary/20 group-hover:border-primary/50 group-hover:text-foreground transition-colors"
+              >
+                <span className="text-muted-foreground/60 mr-1">{c.label}</span>
+                {c.value}
+              </span>
+            ))}
+          </button>
+        ) : (
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            className="h-6 px-2 mt-1.5 -ml-2 text-[11px] text-muted-foreground hover:text-foreground"
+          >
+            <CircleDollarSign className="w-3 h-3 mr-1" />
+            Adicionar dados comerciais
+          </Button>
+        )}
+      </PopoverTrigger>
+      <PopoverContent className="w-80 p-4 space-y-3" align="start">
+        <p className="text-[11px] uppercase tracking-wider text-muted-foreground font-medium">
+          Dados Comerciais
+        </p>
+        <div className="grid grid-cols-2 gap-2">
+          <div className="space-y-1">
+            <label className="text-xs text-muted-foreground">Valor da sessão (R$)</label>
+            <Input
+              inputMode="decimal"
+              placeholder="0,65"
+              value={valorSessao}
+              onChange={(e) => setValorSessao(e.target.value)}
+              className="h-9"
+            />
+          </div>
+          <div className="space-y-1">
+            <label className="text-xs text-muted-foreground">Qtd. de sessões</label>
+            <Input
+              inputMode="numeric"
+              placeholder="10000"
+              value={qtdSessoes}
+              onChange={(e) => setQtdSessoes(e.target.value)}
+              className="h-9"
+            />
+          </div>
+          <div className="space-y-1">
+            <label className="text-xs text-muted-foreground">Valor mensal (R$)</label>
+            <Input
+              inputMode="decimal"
+              placeholder="6.500,00"
+              value={valorMensal}
+              onChange={(e) => setValorMensal(e.target.value)}
+              className="h-9"
+            />
+          </div>
+          <div className="space-y-1">
+            <label className="text-xs text-muted-foreground">Dia de vencimento</label>
+            <Select value={diaVencimento} onValueChange={setDiaVencimento}>
+              <SelectTrigger className="h-9">
+                <SelectValue placeholder="Dia" />
+              </SelectTrigger>
+              <SelectContent>
+                {DIAS_VENCIMENTO.map((d) => (
+                  <SelectItem key={d} value={d}>
+                    Dia {d}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+        <div className="space-y-1">
+          <label className="text-xs text-muted-foreground">Observações</label>
+          <Textarea
+            placeholder="Condições do deal, cortesias, etc."
+            value={observacoes}
+            onChange={(e) => setObservacoes(e.target.value)}
+            className="min-h-[64px] text-sm"
+            maxLength={4000}
+          />
+        </div>
+        <div className="flex justify-end gap-2 pt-1">
+          <Button variant="ghost" size="sm" onClick={() => setOpen(false)} disabled={saving}>
+            Cancelar
+          </Button>
+          <Button size="sm" onClick={handleSave} disabled={saving}>
+            {saving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : 'Salvar'}
+          </Button>
+        </div>
+      </PopoverContent>
+    </Popover>
+  );
+}
+
 const AdminOnboarding = () => {
   const [empresaNome, setEmpresaNome] = useState('');
   const [ceoEmail, setCeoEmail] = useState('');
@@ -247,6 +469,13 @@ const AdminOnboarding = () => {
   const [gateway, setGateway] = useState<string>('');
   const [tipo, setTipo] = useState<OnboardingTipo>('completo');
   const [contratouCrm, setContratouCrm] = useState(false);
+  const [valorSessao, setValorSessao] = useState('');
+  const [qtdSessoes, setQtdSessoes] = useState('');
+  const [valorMensal, setValorMensal] = useState('');
+  // Enquanto o admin não editar o mensal manualmente, sugere sessão × qtd
+  const [valorMensalEditado, setValorMensalEditado] = useState(false);
+  const [diaVencimento, setDiaVencimento] = useState('');
+  const [observacoes, setObservacoes] = useState('');
   const [sessions, setSessions] = useState<OnboardingSession[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -318,6 +547,13 @@ const AdminOnboarding = () => {
     toast.success('Logout realizado');
   };
 
+  const valorSessaoNum = parseMoney(valorSessao);
+  const qtdSessoesNum = parseIntPositivo(qtdSessoes);
+  const valorMensalSugerido =
+    valorSessaoNum != null && qtdSessoesNum != null
+      ? (Math.round(valorSessaoNum * qtdSessoesNum * 100) / 100).toFixed(2).replace('.', ',')
+      : '';
+
   const createSession = async () => {
     if (!empresaNome.trim()) {
       toast.error('Digite o nome da empresa');
@@ -332,6 +568,7 @@ const AdminOnboarding = () => {
         setIsAuthenticated(false);
         return;
       }
+      const mensalEfetivo = valorMensalEditado ? valorMensal : valorMensalSugerido;
       await adminSessionApi.create(token, {
         empresa_nome: empresaNome.trim(),
         ceo_email: ceoEmail.trim() || undefined,
@@ -341,6 +578,11 @@ const AdminOnboarding = () => {
         gateway_pagamento: gateway || undefined,
         modo: tipo,
         contratou_crm: tipo === 'comercial' ? true : contratouCrm,
+        valor_sessao: parseMoney(valorSessao) ?? undefined,
+        qtd_sessoes: parseIntPositivo(qtdSessoes) ?? undefined,
+        valor_mensal: parseMoney(mensalEfetivo) ?? undefined,
+        dia_vencimento: diaVencimento ? Number(diaVencimento) : undefined,
+        observacoes: observacoes.trim() || undefined,
       });
       toast.success(`Link ${TIPO_LABEL[tipo]} criado com sucesso!`);
       setEmpresaNome('');
@@ -351,6 +593,12 @@ const AdminOnboarding = () => {
       setGateway('');
       setTipo('completo');
       setContratouCrm(false);
+      setValorSessao('');
+      setQtdSessoes('');
+      setValorMensal('');
+      setValorMensalEditado(false);
+      setDiaVencimento('');
+      setObservacoes('');
       fetchSessions();
     } catch (e) {
       // eslint-disable-next-line no-console
@@ -364,7 +612,7 @@ const AdminOnboarding = () => {
 
   const updateSessionStack = async (
     sessionId: string,
-    patch: { erp?: string | null; mapas?: string | null; gerenciamento_rede?: string | null; gateway_pagamento?: string | null }
+    patch: StackPatch & ComercialPatch
   ) => {
     const token = await getAuthToken();
     if (!token) {
@@ -375,9 +623,9 @@ const AdminOnboarding = () => {
     try {
       const { session } = await adminSessionApi.update(token, sessionId, patch);
       setSessions((prev) => prev.map((s) => (s.id === sessionId ? { ...s, ...session } : s)));
-      toast.success('Stack atualizada');
+      toast.success('Dados atualizados');
     } catch (e) {
-      const msg = e instanceof ApiError ? e.message : 'Erro ao atualizar stack';
+      const msg = e instanceof ApiError ? e.message : 'Erro ao atualizar dados';
       toast.error(msg);
     }
   };
@@ -724,6 +972,90 @@ const AdminOnboarding = () => {
                 </Select>
               </div>
             </div>
+            <div className="space-y-2 pt-1">
+              <div className="flex items-center gap-2">
+                <CircleDollarSign className="w-3.5 h-3.5 text-muted-foreground/70" />
+                <p className="text-[11px] uppercase tracking-wider text-muted-foreground/70 font-medium">
+                  Dados Comerciais
+                  <span className="ml-1 normal-case tracking-normal text-muted-foreground/50">
+                    · opcional — vão no payload final
+                  </span>
+                </p>
+              </div>
+              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                <div>
+                  <label className="text-xs text-muted-foreground mb-1 block">
+                    Valor da sessão (R$)
+                  </label>
+                  <Input
+                    inputMode="decimal"
+                    placeholder="0,65"
+                    value={valorSessao}
+                    onChange={(e) => setValorSessao(e.target.value)}
+                    className="h-10"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs text-muted-foreground mb-1 block">
+                    Qtd. de sessões
+                  </label>
+                  <Input
+                    inputMode="numeric"
+                    placeholder="10000"
+                    value={qtdSessoes}
+                    onChange={(e) => setQtdSessoes(e.target.value)}
+                    className="h-10"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs text-muted-foreground mb-1 block">
+                    Valor mensal (R$)
+                  </label>
+                  <Input
+                    inputMode="decimal"
+                    placeholder={valorMensalSugerido || '6.500,00'}
+                    value={valorMensalEditado ? valorMensal : valorMensalSugerido}
+                    onChange={(e) => {
+                      setValorMensal(e.target.value);
+                      setValorMensalEditado(e.target.value !== '');
+                    }}
+                    className="h-10"
+                  />
+                  {!valorMensalEditado && valorMensalSugerido && (
+                    <p className="text-[10px] text-muted-foreground mt-1">
+                      Sugerido: sessão × quantidade — edite pra sobrescrever
+                    </p>
+                  )}
+                </div>
+                <div>
+                  <label className="text-xs text-muted-foreground mb-1 block">
+                    Dia de vencimento
+                  </label>
+                  <Select value={diaVencimento} onValueChange={setDiaVencimento}>
+                    <SelectTrigger className="h-10">
+                      <SelectValue placeholder="Dia" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {DIAS_VENCIMENTO.map((d) => (
+                        <SelectItem key={d} value={d}>
+                          Dia {d}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              <div>
+                <label className="text-xs text-muted-foreground mb-1 block">Observações</label>
+                <Textarea
+                  placeholder="Condições do deal, cortesias, contexto comercial..."
+                  value={observacoes}
+                  onChange={(e) => setObservacoes(e.target.value)}
+                  className="min-h-[64px] text-sm"
+                  maxLength={4000}
+                />
+              </div>
+            </div>
             <Button
               onClick={createSession}
               disabled={creating || !empresaNome.trim()}
@@ -818,6 +1150,7 @@ const AdminOnboarding = () => {
                         </div>
 
                         <StackEditor session={session} onSave={updateSessionStack} />
+                        <ComercialEditor session={session} onSave={updateSessionStack} />
                       </div>
 
                       <div className="flex items-center gap-2">

@@ -156,6 +156,57 @@ describe('OnboardingPayloadSchema (Plan 02-01)', () => {
     expect(r.success).toBe(true);
   });
 
+  it('aceita bloco comercial completo (dados do deal)', () => {
+    const r = OnboardingPayloadSchema.safeParse({
+      ...validPayload,
+      session: {
+        ...validPayload.session,
+        comercial: {
+          valor_sessao: 0.65,
+          qtd_sessoes: 10000,
+          valor_mensal: 6500,
+          dia_vencimento: 10,
+          observacoes: 'All-inclusive, CRM cortesia',
+        },
+      },
+    });
+    expect(r.success).toBe(true);
+  });
+
+  it('aceita bloco comercial todo null (link criado sem dados do deal)', () => {
+    const r = OnboardingPayloadSchema.safeParse({
+      ...validPayload,
+      session: {
+        ...validPayload.session,
+        comercial: {
+          valor_sessao: null,
+          qtd_sessoes: null,
+          valor_mensal: null,
+          dia_vencimento: null,
+          observacoes: null,
+        },
+      },
+    });
+    expect(r.success).toBe(true);
+  });
+
+  it('rejeita dia_vencimento fora de 1–31', () => {
+    const r = OnboardingPayloadSchema.safeParse({
+      ...validPayload,
+      session: {
+        ...validPayload.session,
+        comercial: {
+          valor_sessao: null,
+          qtd_sessoes: null,
+          valor_mensal: null,
+          dia_vencimento: 32,
+          observacoes: null,
+        },
+      },
+    });
+    expect(r.success).toBe(false);
+  });
+
   it('SessionEnvelopeSchema permite passthrough de campos extras', () => {
     const r = SessionEnvelopeSchema.safeParse({
       ...validPayload.session,

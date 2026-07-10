@@ -57,6 +57,11 @@ export type SessionDTO = {
   gerenciamento_rede?: string | null;
   gateway_pagamento?: string | null;
   contratou_crm?: boolean | null;
+  valor_sessao?: number | string | null;
+  qtd_sessoes?: number | null;
+  valor_mensal?: number | string | null;
+  dia_vencimento?: number | null;
+  observacoes?: string | null;
   created_at?: string;
   updated_at?: string;
   [k: string]: unknown;
@@ -150,6 +155,14 @@ export type StackPatch = {
   contratou_crm?: boolean;
 };
 
+export type ComercialPatch = {
+  valor_sessao?: number | null;
+  qtd_sessoes?: number | null;
+  valor_mensal?: number | null;
+  dia_vencimento?: number | null;
+  observacoes?: string | null;
+};
+
 export const ERP_OPTIONS = ['IXC', 'SGP', 'MK Solution', 'RBX', 'Topp Sap', 'Hubsoft', 'Voalle', 'Outros'] as const;
 export const MAPAS_OPTIONS = ['OZMap', 'Geogrid', 'Geosite', 'IXC Maps', 'KMZ (Google Maps)', 'Outros'] as const;
 export const REDE_OPTIONS = ['Smart OLT', 'Anlix', 'OLT Cloud', 'Made 4 Graph', 'IXC-ACS', 'Outros'] as const;
@@ -170,6 +183,11 @@ export const adminSessionApi = {
       gateway_pagamento?: string;
       modo?: 'completo' | 'comercial';
       contratou_crm?: boolean;
+      valor_sessao?: number;
+      qtd_sessoes?: number;
+      valor_mensal?: number;
+      dia_vencimento?: number;
+      observacoes?: string;
     }
   ) =>
     adminApi<{ session: SessionDTO }>('/api/admin/sessions-create', authToken, {
@@ -177,7 +195,7 @@ export const adminSessionApi = {
       body: JSON.stringify(input),
     }),
 
-  update: (authToken: string, session_id: string, patch: StackPatch) =>
+  update: (authToken: string, session_id: string, patch: StackPatch & ComercialPatch) =>
     adminApi<{ session: SessionDTO }>('/api/admin/sessions-update', authToken, {
       method: 'POST',
       body: JSON.stringify({ session_id, ...patch }),

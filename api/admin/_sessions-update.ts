@@ -18,6 +18,12 @@ const Body = z.object({
   gerenciamento_rede: nullableEnum(REDE_OPTIONS).optional(),
   gateway_pagamento: nullableEnum(GATEWAY_OPTIONS).optional(),
   contratou_crm: z.boolean().optional(),
+  // Dados comerciais — `null` limpa o campo (mesma semântica da stack)
+  valor_sessao: z.number().positive().max(99999999.99).nullable().optional(),
+  qtd_sessoes: z.number().int().positive().max(100000000).nullable().optional(),
+  valor_mensal: z.number().positive().max(9999999999.99).nullable().optional(),
+  dia_vencimento: z.number().int().min(1).max(31).nullable().optional(),
+  observacoes: z.string().max(4000).nullable().optional(),
 });
 
 /**
@@ -38,13 +44,18 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const body = Body.parse(req.body);
     const supabase = getServiceSupabase();
 
-    const patch: Record<string, string | boolean | null> = {};
+    const patch: Record<string, string | boolean | number | null> = {};
     if ('erp' in body) patch.erp = body.erp ?? null;
     if ('mapas' in body) patch.mapas = body.mapas ?? null;
     if ('gerenciamento_rede' in body) patch.gerenciamento_rede = body.gerenciamento_rede ?? null;
     if ('gateway_pagamento' in body) patch.gateway_pagamento = body.gateway_pagamento ?? null;
     if ('contratou_crm' in body && typeof body.contratou_crm === 'boolean')
       patch.contratou_crm = body.contratou_crm;
+    if ('valor_sessao' in body) patch.valor_sessao = body.valor_sessao ?? null;
+    if ('qtd_sessoes' in body) patch.qtd_sessoes = body.qtd_sessoes ?? null;
+    if ('valor_mensal' in body) patch.valor_mensal = body.valor_mensal ?? null;
+    if ('dia_vencimento' in body) patch.dia_vencimento = body.dia_vencimento ?? null;
+    if ('observacoes' in body) patch.observacoes = body.observacoes?.trim() || null;
 
     if (Object.keys(patch).length === 0) {
       return res.status(400).json({ error: 'no_fields_to_update' });
